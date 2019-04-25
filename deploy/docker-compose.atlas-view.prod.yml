@@ -1,0 +1,14 @@
+version: '3.5'
+
+services:
+  atlas-view:
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          memory: 410M

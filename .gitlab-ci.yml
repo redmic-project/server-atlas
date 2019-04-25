@@ -1,0 +1,44 @@
+include:
+  - project: 'redmic-project/gitlab-ci-templates'
+    ref: master
+    file: '/maven-building-functional-unit.yml'
+  - project: 'redmic-project/gitlab-ci-templates'
+    ref: master
+    file: '/license-listing.yml'
+  - project: 'redmic-project/gitlab-ci-templates'
+    ref: master
+    file: '/packaging.yml'
+  - project: 'redmic-project/gitlab-ci-templates'
+    ref: master
+    file: '/deployment-functional-unit.yml'
+
+stages:
+  - build-lib
+  - build-service
+  - license-list
+  - package
+  - test-package
+  - deploy
+
+variables:
+  DOCKER_BUILD_ARGS: --build-arg PARENT_IMAGE_NAME=${REDMIC_SERVER_IMAGE_NAME} --build-arg PARENT_IMAGE_TAG=${REDMIC_SERVER_IMAGE_TAG}
+  STACK: template
+
+.deploy-commands:
+  script:
+    - >
+      deploy.sh IMAGE_NAME=${IMAGE_NAME} IMAGE_TAG=${IMAGE_TAG} COMPOSE_FILE=${COMPOSE_FILE}
+      SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE} OAUTH_CLIENT_ID=${OAUTH_CLIENT_ID}
+      OAUTH_CLIENT_SECRET=${OAUTH_CLIENT_SECRET} PUBLIC_HOSTNAME=${PUBLIC_HOSTNAME}
+  environment:
+    url: https://${PUBLIC_HOSTNAME}/api/${CI_PROJECT_NAME}/commands
+
+.deploy-view:
+  script:
+    - >
+      deploy.sh IMAGE_NAME=${IMAGE_NAME} IMAGE_TAG=${IMAGE_TAG} COMPOSE_FILE=${COMPOSE_FILE}
+      SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE} OAUTH_CLIENT_ID=${OAUTH_CLIENT_ID}
+      OAUTH_CLIENT_SECRET=${OAUTH_CLIENT_SECRET} ELASTIC_CLUSTERNAME=${ELASTIC_CLUSTERNAME}
+      ELASTIC_USER=${ELASTIC_USER} ELASTIC_PASSWORD=${ELASTIC_PASSWORD} PUBLIC_HOSTNAME=${PUBLIC_HOSTNAME}
+  environment:
+    url: https://${PUBLIC_HOSTNAME}/api/${CI_PROJECT_NAME}/view

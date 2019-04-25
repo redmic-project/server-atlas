@@ -1,0 +1,73 @@
+= Atlas management | REDMIC
+:doctype: book
+:toc: left
+:sectanchors:
+:sectlinks:
+:toclevels: 4
+:source-highlighter: highlightjs
+
+[[introduction]]
+= Introduction
+
+Atlas management provide...
+ 
+[[overview]]
+= Overview
+ 
+[[overview-http-verbs]]
+== HTTP verbs
+ 
+RESTful SpringRestDocs tries to adhere as closely as possible to standard HTTP and REST conventions in its
+use of HTTP verbs.
+ 
+|===
+| Verb | Usage
+ 
+| `GET`
+| Used to retrieve a resource like item/s, suggests or filter schema
+ 
+| `POST`
+| Used to create (add or update) a new resource, search with complex queries or get by multiple ids.
+ 
+| `DELETE`
+| Used to delete an existing resource
+|===
+ 
+[[overview-http-status-codes]]
+== HTTP status codes
+ 
+RESTful SpringRestDocs tries to adhere as closely as possible to standard HTTP and REST conventions in its
+use of HTTP status codes.
+ 
+|===
+| Status code | Usage
+ 
+| `200 OK`
+| The request completed successfully
+ 
+| `201 Created`
+| A new resource has been saved (created or updated) successfully.
+// The resource's URI is available from the response's `Location` header
+ 
+| `302 Found`
+| The searched resource was successfully found
+ 
+| `400 Bad Request`
+| The request was malformed. The response body will include an error providing further information
+ 
+| `404 Not Found`
+| The requested resource did not exist
+|===
+ 
+[[overview-errors]]
+== Errors
+ 
+Whenever an error response (status code >= 400) is returned, the body will contain a JSON object
+that describes the problem. The error object has the following structure:
+ 
+For example, a request that attempts to save a malformed superhero will produce a
+`400 Bad Request` response:
+ 
+[[resources]]
+= Resources
+

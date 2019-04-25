@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<groupId>es.redmic</groupId>
+		<artifactId>server-parent</artifactId>
+		<version>0.3.0</version>
+		<relativePath />
+	</parent>
+
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>es.redmic.atlas</groupId>
+	<artifactId>atlas</artifactId>
+	<packaging>pom</packaging>
+	<version>0.1.0</version>
+	<name>atlas</name>
+
+	<properties>
+		<!-- Versions of the REDMIC library used in the children -->
+		<redmic.broker-lib.version>0.10.0</redmic.broker-lib.version>
+		<!-- Añadir versión de la librería de la unidad funcional -->
+		<redmic.commands-lib.version>0.9.0</redmic.commands-lib.version>
+		<redmic.test-utils.version>0.9.0</redmic.test-utils.version>
+		<!-- Añadir versión de la librería del tipo de vista elegida (elasticsearch/postgresql) -->
+		<redmic.view-lib.version>0.10.0</redmic.view-lib.version>
+
+		<!-- Versions of the OTHERS library used in the children -->
+
+		<!-- Plugins -->
+		<asciidoctor.maven.plugin.version>1.5.6</asciidoctor.maven.plugin.version>
+	</properties>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+		<!-- Test -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>es.redmic.lib</groupId>
+			<artifactId>test-utils</artifactId>
+			<version>${redmic.test-utils.version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	<repositories>
+		<repository>
+			<id>central</id>
+			<name>libs-release</name>
+			<url>https://artifactory.redmic.net/artifactory/libs-release</url>
+		</repository>
+		<repository>
+			<id>snapshots</id>
+			<name>libs-snapshot</name>
+			<url>https://artifactory.redmic.net/artifactory/libs-snapshot</url>
+		</repository>
+	</repositories>
+	<modules>
+		<module>atlas-commands</module>
+		<module>atlas-view</module>
+		<module>atlas-lib</module>
+	</modules>
+</project>
