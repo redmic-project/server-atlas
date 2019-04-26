@@ -17,7 +17,7 @@
 
 	<properties>
 		<!-- Versions of the REDMIC library used in the children -->
-		<redmic.broker-lib.version>0.10.0</redmic.broker-lib.version>
+		<redmic.broker-lib.version>0.10.0-feature-atlasMicroservice</redmic.broker-lib.version>
 		<redmic.test-utils.version>0.9.0</redmic.test-utils.version>
 		<redmic.atlas-lib.version>0.1.0</redmic.atlas-lib.version>
 		<redmic.exceptions.version>0.9.0</redmic.exceptions.version>
