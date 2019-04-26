@@ -13,7 +13,16 @@
 	<artifactId>atlas-view</artifactId>
 	<packaging>jar</packaging>
 	<name>atlas view</name>
-	<description>Atlas view microservice</description>
+	<description>Atlas query endpoint microservice. (get and consulting atlas layers)</description>
+	
+	<properties>
+		<!-- REDMIC -->
+		<redmic.elasticsearch-lib.version>0.10.0</redmic.elasticsearch-lib.version>
+		<redmic.view-lib.version>0.10.0</redmic.view-lib.version>
+
+		<!-- OTROS -->
+		<elasticsearch.version>6.5.1</elasticsearch.version>
+	</properties>
 
 	<dependencies>
 
@@ -43,6 +52,33 @@
 			<groupId>es.redmic.lib</groupId>
 			<artifactId>view-lib</artifactId>
 			<version>${redmic.view-lib.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>es.redmic.atlas</groupId>
+			<artifactId>atlas-lib</artifactId>
+			<version>${redmic.atlas-lib.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>es.redmic.lib</groupId>
+			<artifactId>elasticsearch-lib</artifactId>
+			<version>${redmic.elasticsearch-lib.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>ma.glasnost.orika</groupId>
+			<artifactId>orika-core</artifactId>
+			<version>${ma.glasnost.orika.core.version}</version>
+		</dependency>
+
+		<!-- tests -->
+
+		<dependency>
+			<groupId>es.redmic.lib</groupId>
+			<artifactId>test-utils</artifactId>
+			<version>${redmic.test-utils.version}</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<build>
