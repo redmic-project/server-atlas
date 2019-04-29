@@ -2,7 +2,7 @@ package es.redmic.atlaslib.unit.events.themeinspire;
 
 /*-
  * #%L
- * atlas-lib
+ * Atlas-lib
  * %%
  * Copyright (C) 2019 REDMIC Project / Server
  * %%
@@ -38,11 +38,11 @@ import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireConfirmed
 import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireEvent;
 import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireFailedEvent;
 import es.redmic.atlaslib.events.themeinspire.delete.ThemeInspireDeletedEvent;
+import es.redmic.atlaslib.events.themeinspire.update.ThemeInspireUpdatedEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireCancelledEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireConfirmedEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireFailedEvent;
-import es.redmic.atlaslib.events.themeinspire.update.ThemeInspireUpdatedEvent;
 import es.redmic.atlaslib.unit.utils.AtlasAvroBaseTest;
 import es.redmic.atlaslib.unit.utils.ThemeInspireDataUtil;
 

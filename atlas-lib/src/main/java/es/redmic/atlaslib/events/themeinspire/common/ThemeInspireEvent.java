@@ -2,7 +2,7 @@ package es.redmic.atlaslib.events.themeinspire.common;
 
 /*-
  * #%L
- * atlas-lib
+ * Atlas-lib
  * %%
  * Copyright (C) 2019 REDMIC Project / Server
  * %%
@@ -25,8 +25,8 @@ import org.joda.time.DateTimeZone;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import es.redmic.brokerlib.avro.common.Event;
 import es.redmic.atlaslib.dto.themeinspire.ThemeInspireDTO;
+import es.redmic.brokerlib.avro.common.Event;
 
 public abstract class ThemeInspireEvent extends Event {
 

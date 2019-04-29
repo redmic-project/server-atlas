@@ -10,7 +10,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>atlas-lib</artifactId>
 	<packaging>jar</packaging>
-	<name>atlas-lib</name>
+	<name>Atlas-lib</name>
 
 	<dependencies>
 		<!-- REDMIC -->

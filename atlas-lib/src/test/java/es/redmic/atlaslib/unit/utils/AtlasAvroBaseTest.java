@@ -2,7 +2,7 @@ package es.redmic.atlaslib.unit.utils;
 
 /*-
  * #%L
- * atlas-lib
+ * Atlas-lib
  * %%
  * Copyright (C) 2019 REDMIC Project / Server
  * %%

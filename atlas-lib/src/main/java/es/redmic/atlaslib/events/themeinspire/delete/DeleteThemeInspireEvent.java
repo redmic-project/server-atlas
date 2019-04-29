@@ -2,7 +2,7 @@ package es.redmic.atlaslib.events.themeinspire.delete;
 
 /*-
  * #%L
- * atlas-lib
+ * Atlas-lib
  * %%
  * Copyright (C) 2019 REDMIC Project / Server
  * %%
@@ -24,8 +24,8 @@ import java.util.UUID;
 
 import org.apache.avro.Schema;
 
-import es.redmic.brokerlib.avro.common.SimpleEvent;
 import es.redmic.atlaslib.events.themeinspire.ThemeInspireEventTypes;
+import es.redmic.brokerlib.avro.common.SimpleEvent;
 
 public class DeleteThemeInspireEvent extends SimpleEvent {
 

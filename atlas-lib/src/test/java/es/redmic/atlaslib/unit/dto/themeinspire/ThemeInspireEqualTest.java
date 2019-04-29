@@ -2,7 +2,7 @@ package es.redmic.atlaslib.unit.dto.themeinspire;
 
 /*-
  * #%L
- * atlas-lib
+ * Atlas-lib
  * %%
  * Copyright (C) 2019 REDMIC Project / Server
  * %%
@@ -29,7 +29,7 @@ import es.redmic.atlaslib.dto.themeinspire.ThemeInspireDTO;
 import es.redmic.atlaslib.unit.utils.ThemeInspireDataUtil;
 
 public class ThemeInspireEqualTest {
-	
+
 	@Test
 	public void equal_returnTrue_IfThemeInspireTypeIsEqual() {
 

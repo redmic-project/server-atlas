@@ -2,7 +2,7 @@ package es.redmic.atlaslib.unit.events.themeinspire;
 
 /*-
  * #%L
- * atlas-lib
+ * Atlas-lib
  * %%
  * Copyright (C) 2019 REDMIC Project / Server
  * %%
@@ -25,8 +25,6 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-import es.redmic.brokerlib.avro.common.Event;
-import es.redmic.brokerlib.avro.common.EventError;
 import es.redmic.atlaslib.events.themeinspire.ThemeInspireEventFactory;
 import es.redmic.atlaslib.events.themeinspire.ThemeInspireEventTypes;
 import es.redmic.atlaslib.events.themeinspire.create.CreateThemeInspireCancelledEvent;
@@ -40,11 +38,13 @@ import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireConfirmed
 import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireEvent;
 import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireFailedEvent;
 import es.redmic.atlaslib.events.themeinspire.delete.ThemeInspireDeletedEvent;
+import es.redmic.atlaslib.events.themeinspire.update.ThemeInspireUpdatedEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireCancelledEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireConfirmedEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireFailedEvent;
-import es.redmic.atlaslib.events.themeinspire.update.ThemeInspireUpdatedEvent;
 import es.redmic.atlaslib.unit.utils.ThemeInspireDataUtil;
+import es.redmic.brokerlib.avro.common.Event;
+import es.redmic.brokerlib.avro.common.EventError;
 
 public class ThemeInspireEventFactoryTest {
 
@@ -64,8 +64,8 @@ public class ThemeInspireEventFactoryTest {
 	public void GetEvent_ReturnDeleteThemeInspireCheckedEvent_IfTypeIsDelete_Checked() {
 
 		Event source = ThemeInspireDataUtil.getCheckDeleteThemeInspireEvent();
-		DeleteThemeInspireCheckedEvent event = (DeleteThemeInspireCheckedEvent) ThemeInspireEventFactory.getEvent(source,
-				ThemeInspireEventTypes.DELETE_CHECKED);
+		DeleteThemeInspireCheckedEvent event = (DeleteThemeInspireCheckedEvent) ThemeInspireEventFactory
+				.getEvent(source, ThemeInspireEventTypes.DELETE_CHECKED);
 
 		assertEquals(ThemeInspireEventTypes.DELETE_CHECKED, event.getType());
 
@@ -76,8 +76,8 @@ public class ThemeInspireEventFactoryTest {
 	public void GetEvent_ReturnCreateThemeInspireConfirmedEvent_IfTypeIsCreateConfirmed() {
 
 		Event source = ThemeInspireDataUtil.getCreateThemeInspireConfirmedEvent();
-		CreateThemeInspireConfirmedEvent event = (CreateThemeInspireConfirmedEvent) ThemeInspireEventFactory.getEvent(source,
-				ThemeInspireEventTypes.CREATE_CONFIRMED);
+		CreateThemeInspireConfirmedEvent event = (CreateThemeInspireConfirmedEvent) ThemeInspireEventFactory
+				.getEvent(source, ThemeInspireEventTypes.CREATE_CONFIRMED);
 
 		assertEquals(ThemeInspireEventTypes.CREATE_CONFIRMED, event.getType());
 
@@ -88,8 +88,8 @@ public class ThemeInspireEventFactoryTest {
 	public void GetEvent_ReturnUpdateThemeInspireConfirmedEvent_IfTypeIsUpdateConfirmed() {
 
 		Event source = ThemeInspireDataUtil.getUpdateThemeInspireConfirmedEvent();
-		UpdateThemeInspireConfirmedEvent event = (UpdateThemeInspireConfirmedEvent) ThemeInspireEventFactory.getEvent(source,
-				ThemeInspireEventTypes.UPDATE_CONFIRMED);
+		UpdateThemeInspireConfirmedEvent event = (UpdateThemeInspireConfirmedEvent) ThemeInspireEventFactory
+				.getEvent(source, ThemeInspireEventTypes.UPDATE_CONFIRMED);
 
 		assertEquals(ThemeInspireEventTypes.UPDATE_CONFIRMED, event.getType());
 
@@ -100,8 +100,8 @@ public class ThemeInspireEventFactoryTest {
 	public void GetEvent_ReturnDeleteThemeInspireConfirmedEvent_IfTypeIsDeleteConfirmed() {
 
 		Event source = ThemeInspireDataUtil.getDeleteThemeInspireConfirmedEvent();
-		DeleteThemeInspireConfirmedEvent event = (DeleteThemeInspireConfirmedEvent) ThemeInspireEventFactory.getEvent(source,
-				ThemeInspireEventTypes.DELETE_CONFIRMED);
+		DeleteThemeInspireConfirmedEvent event = (DeleteThemeInspireConfirmedEvent) ThemeInspireEventFactory
+				.getEvent(source, ThemeInspireEventTypes.DELETE_CONFIRMED);
 
 		assertEquals(ThemeInspireEventTypes.DELETE_CONFIRMED, event.getType());
 
@@ -205,9 +205,9 @@ public class ThemeInspireEventFactoryTest {
 
 		Event source = ThemeInspireDataUtil.getCheckDeleteThemeInspireEvent();
 
-		DeleteThemeInspireCheckFailedEvent event = (DeleteThemeInspireCheckFailedEvent) ThemeInspireEventFactory.getEvent(
-				source, ThemeInspireEventTypes.DELETE_CHECK_FAILED, exception.getExceptionType(),
-				exception.getArguments());
+		DeleteThemeInspireCheckFailedEvent event = (DeleteThemeInspireCheckFailedEvent) ThemeInspireEventFactory
+				.getEvent(source, ThemeInspireEventTypes.DELETE_CHECK_FAILED, exception.getExceptionType(),
+						exception.getArguments());
 
 		assertEquals(ThemeInspireEventTypes.DELETE_CHECK_FAILED, event.getType());
 
@@ -222,8 +222,9 @@ public class ThemeInspireEventFactoryTest {
 
 		Event source = ThemeInspireDataUtil.getCreateEvent();
 
-		CreateThemeInspireCancelledEvent event = (CreateThemeInspireCancelledEvent) ThemeInspireEventFactory.getEvent(source,
-				ThemeInspireEventTypes.CREATE_CANCELLED, exception.getExceptionType(), exception.getArguments());
+		CreateThemeInspireCancelledEvent event = (CreateThemeInspireCancelledEvent) ThemeInspireEventFactory.getEvent(
+				source, ThemeInspireEventTypes.CREATE_CANCELLED, exception.getExceptionType(),
+				exception.getArguments());
 
 		assertEquals(ThemeInspireEventTypes.CREATE_CANCELLED, event.getType());
 
@@ -240,9 +241,9 @@ public class ThemeInspireEventFactoryTest {
 
 		Event source = ThemeInspireDataUtil.getUpdateEvent();
 
-		UpdateThemeInspireCancelledEvent event = (UpdateThemeInspireCancelledEvent) ThemeInspireEventFactory.getEvent(source,
-				ThemeInspireEventTypes.UPDATE_CANCELLED, ThemeInspireDataUtil.getThemeInspire(), exception.getExceptionType(),
-				exception.getArguments());
+		UpdateThemeInspireCancelledEvent event = (UpdateThemeInspireCancelledEvent) ThemeInspireEventFactory.getEvent(
+				source, ThemeInspireEventTypes.UPDATE_CANCELLED, ThemeInspireDataUtil.getThemeInspire(),
+				exception.getExceptionType(), exception.getArguments());
 
 		assertEquals(ThemeInspireEventTypes.UPDATE_CANCELLED, event.getType());
 
@@ -258,9 +259,9 @@ public class ThemeInspireEventFactoryTest {
 
 		Event source = ThemeInspireDataUtil.getDeleteEvent();
 
-		DeleteThemeInspireCancelledEvent event = (DeleteThemeInspireCancelledEvent) ThemeInspireEventFactory.getEvent(source,
-				ThemeInspireEventTypes.DELETE_CANCELLED, ThemeInspireDataUtil.getThemeInspire(), exception.getExceptionType(),
-				exception.getArguments());
+		DeleteThemeInspireCancelledEvent event = (DeleteThemeInspireCancelledEvent) ThemeInspireEventFactory.getEvent(
+				source, ThemeInspireEventTypes.DELETE_CANCELLED, ThemeInspireDataUtil.getThemeInspire(),
+				exception.getExceptionType(), exception.getArguments());
 
 		assertEquals(ThemeInspireEventTypes.DELETE_CANCELLED, event.getType());
 

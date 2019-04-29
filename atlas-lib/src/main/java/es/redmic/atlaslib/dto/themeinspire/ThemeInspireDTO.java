@@ -2,7 +2,7 @@ package es.redmic.atlaslib.dto.themeinspire;
 
 /*-
  * #%L
- * atlas-lib
+ * Atlas-lib
  * %%
  * Copyright (C) 2019 REDMIC Project / Server
  * %%
@@ -101,8 +101,6 @@ public class ThemeInspireDTO extends DomainDTO {
 		final int prime = 31;
 		int result = super.hashCode();
 		result = prime * result + ((code == null) ? 0 : code.hashCode());
-		result = prime * result + ((getName() == null) ? 0 : getName().hashCode());
-		result = prime * result + ((getName_en() == null) ? 0 : getName_en().hashCode());
 		return result;
 	}
 
@@ -119,16 +117,6 @@ public class ThemeInspireDTO extends DomainDTO {
 			if (other.code != null)
 				return false;
 		} else if (!code.equals(other.code))
-			return false;
-		if (getName() == null) {
-			if (other.getName() != null)
-				return false;
-		} else if (!getName().equals(other.getName()))
-			return false;
-		if (getName_en() == null) {
-			if (other.getName_en() != null)
-				return false;
-		} else if (!getName_en().equals(other.getName_en()))
 			return false;
 		return true;
 	}

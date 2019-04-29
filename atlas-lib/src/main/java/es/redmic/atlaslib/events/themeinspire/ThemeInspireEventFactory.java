@@ -2,7 +2,7 @@ package es.redmic.atlaslib.events.themeinspire;
 
 /*-
  * #%L
- * atlas-lib
+ * Atlas-lib
  * %%
  * Copyright (C) 2019 REDMIC Project / Server
  * %%
@@ -25,10 +25,6 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import es.redmic.brokerlib.avro.common.Event;
-import es.redmic.brokerlib.avro.common.EventError;
-import es.redmic.exception.common.ExceptionType;
-import es.redmic.exception.common.InternalException;
 import es.redmic.atlaslib.dto.themeinspire.ThemeInspireDTO;
 import es.redmic.atlaslib.events.themeinspire.common.ThemeInspireCancelledEvent;
 import es.redmic.atlaslib.events.themeinspire.common.ThemeInspireEvent;
@@ -43,10 +39,14 @@ import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireConfirmed
 import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireEvent;
 import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireFailedEvent;
 import es.redmic.atlaslib.events.themeinspire.delete.ThemeInspireDeletedEvent;
+import es.redmic.atlaslib.events.themeinspire.update.ThemeInspireUpdatedEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireCancelledEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireConfirmedEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireFailedEvent;
-import es.redmic.atlaslib.events.themeinspire.update.ThemeInspireUpdatedEvent;
+import es.redmic.brokerlib.avro.common.Event;
+import es.redmic.brokerlib.avro.common.EventError;
+import es.redmic.exception.common.ExceptionType;
+import es.redmic.exception.common.InternalException;
 
 public class ThemeInspireEventFactory {
 
@@ -127,17 +127,17 @@ public class ThemeInspireEventFactory {
 
 		if (type.equals(ThemeInspireEventTypes.CREATE_FAILED)) {
 
-			logger.debug("No se pudo crear Vessel type en la vista");
+			logger.debug("No se pudo crear Atlas type en la vista");
 			failedEvent = new CreateThemeInspireFailedEvent().buildFrom(source);
 		}
 		if (type.equals(ThemeInspireEventTypes.UPDATE_FAILED)) {
 
-			logger.debug("No se pudo modificar Vessel type en la vista");
+			logger.debug("No se pudo modificar Atlas type en la vista");
 			failedEvent = new UpdateThemeInspireFailedEvent().buildFrom(source);
 		}
 		if (type.equals(ThemeInspireEventTypes.DELETE_FAILED)) {
 
-			logger.debug("No se pudo eliminar Vessel type de la vista");
+			logger.debug("No se pudo eliminar Atlas type de la vista");
 			failedEvent = new DeleteThemeInspireFailedEvent().buildFrom(source);
 		}
 

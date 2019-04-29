@@ -2,7 +2,7 @@ package es.redmic.atlaslib.unit.dto.themeinspire;
 
 /*-
  * #%L
- * atlas-lib
+ * Atlas-lib
  * %%
  * Copyright (C) 2019 REDMIC Project / Server
  * %%
@@ -29,7 +29,7 @@ import es.redmic.testutils.dto.DTOBaseTest;
 public class ThemeInspireCheckDTOValidationTest extends DTOBaseTest<ThemeInspireDTO> {
 
 	private static ThemeInspireDTO dto;
-	
+
 	@Before
 	public void reset() {
 
