@@ -12,13 +12,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>atlas-view</artifactId>
 	<packaging>jar</packaging>
-	<name>atlas view</name>
+	<name>Atlas-query-endpoint</name>
 	<description>Atlas query endpoint microservice. (get and consulting atlas layers)</description>
 	
 	<properties>
 		<!-- REDMIC -->
 		<redmic.elasticsearch-lib.version>0.10.0</redmic.elasticsearch-lib.version>
-		<redmic.view-lib.version>0.10.0</redmic.view-lib.version>
+		<redmic.view-lib.version>0.10.0-feature-atlasMicroservice</redmic.view-lib.version>
 
 		<!-- OTROS -->
 		<elasticsearch.version>6.5.1</elasticsearch.version>
