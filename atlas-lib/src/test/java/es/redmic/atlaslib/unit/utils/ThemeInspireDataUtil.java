@@ -219,8 +219,8 @@ public abstract class ThemeInspireDataUtil {
 		ThemeInspireDTO themeInspire = new ThemeInspireDTO();
 		themeInspire.setCode(CODE);
 		themeInspire.setId(PREFIX + CODE);
-		themeInspire.setName("Cargo, all ships of this type");
-		themeInspire.setName_en("Cargo, all ships of this type");
+		themeInspire.setName("Sistema de cuadrículas geográficas");
+		themeInspire.setName_en("Geographical grid systems");
 
 		return themeInspire;
 	}
