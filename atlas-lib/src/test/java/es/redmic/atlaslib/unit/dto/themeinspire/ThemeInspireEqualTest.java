@@ -83,7 +83,7 @@ public class ThemeInspireEqualTest {
 	}
 
 	@Test
-	public void equal_returnTrue_IfThemeInspireTypeNameIsDifferent() {
+	public void equal_returnFalse_IfThemeInspireTypeNameIsDifferent() {
 
 		ThemeInspireDTO dto1 = ThemeInspireDataUtil.getThemeInspire();
 
@@ -94,7 +94,7 @@ public class ThemeInspireEqualTest {
 	}
 
 	@Test
-	public void equal_returnTrue_IfThemeInspireTypeNameIsNull() {
+	public void equal_returnFalse_IfThemeInspireTypeNameIsNull() {
 
 		ThemeInspireDTO dto1 = ThemeInspireDataUtil.getThemeInspire();
 
@@ -105,7 +105,7 @@ public class ThemeInspireEqualTest {
 	}
 
 	@Test
-	public void equal_returnTrue_IfThemeInspireTypeName_enIsDifferent() {
+	public void equal_returnFalse_IfThemeInspireTypeName_enIsDifferent() {
 
 		ThemeInspireDTO dto1 = ThemeInspireDataUtil.getThemeInspire();
 
@@ -116,7 +116,7 @@ public class ThemeInspireEqualTest {
 	}
 
 	@Test
-	public void equal_returnTrue_IfThemeInspireTypeName_enIsNull() {
+	public void equal_returnFalse_IfThemeInspireTypeName_enIsNull() {
 
 		ThemeInspireDTO dto1 = ThemeInspireDataUtil.getThemeInspire();
 
