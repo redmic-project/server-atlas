@@ -1,0 +1,22 @@
+{
+	"total": 1,
+	"_meta": {
+		"max_score": null
+	},
+	"_aggs": {
+		
+	},
+	"data": [
+		{
+			"_meta": {
+				"score": 1.0,
+				"version": 1,
+				"highlight": null
+			},
+			"id": "themeinspire-code-gg",
+			"code": "gg",
+			"name": "Sistema de cuadrículas geográficas",
+			"name_en": "Geographical grid systems"
+		}
+	]
+}

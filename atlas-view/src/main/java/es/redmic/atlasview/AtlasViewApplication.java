@@ -2,7 +2,7 @@ package es.redmic.atlasview;
 
 /*-
  * #%L
- * atlas view
+ * Atlas-query-endpoint
  * %%
  * Copyright (C) 2019 REDMIC Project / Server
  * %%
@@ -26,22 +26,31 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCustomizer;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
+import es.redmic.restlib.config.ResourceBundleMessageSource;
 import io.micrometer.core.instrument.MeterRegistry;
 
 @SpringBootApplication
-@ComponentScan({ "es.redmic.atlasview" })
+@ComponentScan({ "es.redmic.atlasview", "es.redmic.viewlib.common.mapper.es2dto", "es.redmic.elasticsearchlib",
+		"es.redmic.restlib" })
 public class AtlasViewApplication {
 
 	@Value("${info.microservice.name}")
 	String microserviceName;
-	
+
 	public static void main(String[] args) {
 		SpringApplication.run(AtlasViewApplication.class, args);
 	}
-	
+
+	@Bean
+	public MessageSource messageSource() {
+
+		return new ResourceBundleMessageSource();
+	}
+
 	@PostConstruct
 	@Bean
 	MeterRegistryCustomizer<MeterRegistry> metricsCommonTags() {
