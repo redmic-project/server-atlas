@@ -87,7 +87,7 @@ import es.redmic.testutils.kafka.KafkaBaseIntegrationTest;
 @DirtiesContext
 @KafkaListener(topics = "${broker.topic.theme-inspire}", groupId = "ThemeInspireCommandHandlerTest")
 @TestPropertySource(properties = { "spring.kafka.consumer.group-id=ThemeInspireCommandHandler",
-		"schema.registry.port=18097" })
+		"schema.registry.port=18096" })
 public class ThemeInspireCommandHandlerTest extends KafkaBaseIntegrationTest {
 
 	protected static Logger logger = LogManager.getLogger();
