@@ -16,6 +16,8 @@ services:
       - kafka-net
       - redmic-net
       - traefik-net
+    volumes:
+      - commands-vol:/tmp/kafka
     healthcheck:
       test: wget --spider -q http://localhost:${COMMANDS_PORT}/api/${UNIT_NAME}/commands/actuator/health
       interval: 30s
