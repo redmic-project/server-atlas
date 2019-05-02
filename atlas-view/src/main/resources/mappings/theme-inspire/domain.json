@@ -24,7 +24,7 @@
 		}
 	},
 	"mappings": {
-		"_doc": {
+		"domain": {
 			"_all": {
 				"enabled": false
 			},

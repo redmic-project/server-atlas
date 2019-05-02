@@ -48,7 +48,7 @@ public class ThemeInspireESRepository extends RWDataESRepository<ThemeInspire, S
 		implements IDataRepository<ThemeInspire, SimpleQueryDTO> {
 
 	private static String[] INDEX = { "theme-inspire" };
-	private static String TYPE = "_doc";
+	private static String TYPE = "domain";
 
 	// @formatter:off
 	
