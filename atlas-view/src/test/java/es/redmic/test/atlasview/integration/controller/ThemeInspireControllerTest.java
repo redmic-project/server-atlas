@@ -80,7 +80,7 @@ public class ThemeInspireControllerTest extends DocumentationViewBaseTest {
 	public static EmbeddedKafkaRule embeddedKafka = new EmbeddedKafkaRule(1);
 
 	@PostConstruct
-	public void CreateVesselFromRestTestPostConstruct() throws Exception {
+	public void CreateThemeInspireFromRestTestPostConstruct() throws Exception {
 
 		createSchemaRegistryRestApp(embeddedKafka.getEmbeddedKafka().getZookeeperConnectionString(),
 				embeddedKafka.getEmbeddedKafka().getBrokersAsString());

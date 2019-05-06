@@ -218,7 +218,7 @@ public class ThemeInspireRestTest extends DocumentationCommandBaseTest {
 		assertEquals(event.getAggregateId(), expectedEvent.getAggregateId());
 	}
 
-	@Test
+	// @Test
 	public void deleteThemeInspire_SendDeleteThemeInspireEvent_IfCommandWasSuccess() throws Exception {
 
 		when(themeInspireStateStore.getThemeInspire(anyString()))

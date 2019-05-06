@@ -24,16 +24,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import es.redmic.atlascommands.service.ThemeInspireService;
 import es.redmic.atlaslib.dto.themeinspire.ThemeInspireDTO;
 import es.redmic.commandslib.controller.CommandController;
-import es.redmic.commandslib.service.CommandServiceItfc;
 
 @Controller
 @RequestMapping(value = "${controller.mapping.themeinspire}")
 public class ThemeInspireController extends CommandController<ThemeInspireDTO> {
 
 	@Autowired
-	public ThemeInspireController(CommandServiceItfc<ThemeInspireDTO> service) {
+	public ThemeInspireController(ThemeInspireService service) {
 		super(service);
 	}
 }

@@ -98,6 +98,10 @@ public class ThemeInspireCommandHandler extends CommandHandler {
 	@Autowired
 	AlertService alertService;
 
+	public ThemeInspireCommandHandler() {
+
+	}
+
 	@PostConstruct
 	private void setUp() {
 
