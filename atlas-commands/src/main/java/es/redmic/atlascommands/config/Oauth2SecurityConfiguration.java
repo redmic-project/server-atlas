@@ -38,7 +38,7 @@ public class Oauth2SecurityConfiguration {
 		public void configure(HttpSecurity http) throws Exception {
 			// @formatter:off
 			
-			http.anonymous().and().authorizeRequests()
+			http.cors().and().anonymous().and().authorizeRequests()
 				.antMatchers(HttpMethod.GET, "/actuator/**").permitAll();
 			
 			http.authorizeRequests().antMatchers(HttpMethod.POST, "/**").access(
