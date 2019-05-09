@@ -1,4 +1,4 @@
-package es.redmic.atlasview.config;
+package es.redmic.atlasview.model.layer;
 
 /*-
  * #%L
@@ -20,15 +20,30 @@ package es.redmic.atlasview.config;
  * #L%
  */
 
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import es.redmic.models.es.common.model.BaseAbstractStringES;
 
-@Configuration
-public class CorsConfiguration implements WebMvcConfigurer {
+public class Protocols extends BaseAbstractStringES {
 
-	@Override
-	public void addCorsMappings(CorsRegistry registry) {
-		registry.addMapping("/**").allowedMethods("GET", "PUT", "POST", "DELETE");
+	private String type;
+
+	private String url;
+
+	public Protocols() {
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
 	}
 }
