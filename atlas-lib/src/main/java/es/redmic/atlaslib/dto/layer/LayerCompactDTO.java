@@ -1,4 +1,24 @@
-package es.redmic.atlaslib.dto.atlas;
+package es.redmic.atlaslib.dto.layer;
+
+/*-
+ * #%L
+ * Atlas-lib
+ * %%
+ * Copyright (C) 2019 REDMIC Project / Server
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,11 +39,12 @@ public abstract class LayerCompactDTO extends LayerBaseDTO {
 
 	public LayerCompactDTO() {
 		super();
-		this.protocol = new ArrayList<ProtocolDTO>();
+		this.protocols = new ArrayList<ProtocolDTO>();
 	}
 
 	@JsonDeserialize(using = CustomRelationDeserializer.class)
 	@JsonSchemaUrl(value = "controller.mapping.THEME_INSPIRE")
+	@Valid
 	private ThemeInspireDTO themeInspire;
 
 	@Valid
@@ -33,7 +54,7 @@ public abstract class LayerCompactDTO extends LayerBaseDTO {
 	@Valid
 	@NotNull
 	@Size(min = 1)
-	private List<ProtocolDTO> protocol;
+	private List<ProtocolDTO> protocols;
 
 	@Size(min = 0, max = 1500)
 	private String description;
@@ -65,12 +86,12 @@ public abstract class LayerCompactDTO extends LayerBaseDTO {
 		this.latLonBoundsImage = latLonBoundsImage;
 	}
 
-	public List<ProtocolDTO> getProtocol() {
-		return protocol;
+	public List<ProtocolDTO> getProtocols() {
+		return protocols;
 	}
 
-	public void setProtocol(List<ProtocolDTO> protocol) {
-		this.protocol = protocol;
+	public void setProtocols(List<ProtocolDTO> protocols) {
+		this.protocols = protocols;
 	}
 
 	public String getDescription() {
@@ -113,7 +134,7 @@ public abstract class LayerCompactDTO extends LayerBaseDTO {
 		result = prime * result + ((atlas == null) ? 0 : atlas.hashCode());
 		result = prime * result + ((description == null) ? 0 : description.hashCode());
 		result = prime * result + ((latLonBoundsImage == null) ? 0 : latLonBoundsImage.hashCode());
-		result = prime * result + ((protocol == null) ? 0 : protocol.hashCode());
+		result = prime * result + ((protocols == null) ? 0 : protocols.hashCode());
 		result = prime * result + ((refresh == null) ? 0 : refresh.hashCode());
 		result = prime * result + ((themeInspire == null) ? 0 : themeInspire.hashCode());
 		return result;
@@ -148,10 +169,10 @@ public abstract class LayerCompactDTO extends LayerBaseDTO {
 				return false;
 		} else if (!latLonBoundsImage.equals(other.latLonBoundsImage))
 			return false;
-		if (protocol == null) {
-			if (other.protocol != null)
+		if (protocols == null) {
+			if (other.protocols != null)
 				return false;
-		} else if (!protocol.equals(other.protocol))
+		} else if (!protocols.equals(other.protocols))
 			return false;
 		if (refresh == null) {
 			if (other.refresh != null)

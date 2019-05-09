@@ -1,7 +1,31 @@
-package es.redmic.atlaslib.dto.atlas;
+package es.redmic.atlaslib.dto.layer;
+
+/*-
+ * #%L
+ * Atlas-lib
+ * %%
+ * Copyright (C) 2019 REDMIC Project / Server
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 
 import java.io.IOException;
 import java.util.List;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import org.apache.avro.Schema;
 import org.locationtech.jts.geom.Geometry;
@@ -11,6 +35,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kjetland.jackson.jsonSchema.annotations.JsonSchemaDefault;
 
 import es.redmic.atlaslib.dto.themeinspire.ThemeInspireDTO;
 import es.redmic.jts4jackson.module.JTSModule;
@@ -25,87 +50,69 @@ public class LayerDTO extends LayerCompactDTO {
 
 	@JsonIgnore
 	public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse(
-		"{\"type\":\"record\",\"name\":\"LayerDTO\",\"namespace\":\"es.redmic.atlaslib.dto.atlas\",\"fields\":["
-				+ "{\"name\":\"title\",\"type\":[\"string\", \"null\"]},"
-				+ "{\"name\":\"abstractLayer\",\"type\":[\"string\", \"null\"]},"
-				+ "{\"name\":\"keyword\",\"type\":[{\"type\":\"array\",\"items\":\"string\"},\"null\"]},"
-				+ "{\"name\":\"srs\",\"type\":[{\"type\":\"array\",\"items\":\"string\"},\"null\"]},"
-				+ "{\"name\":\"styleLayer\",\"type\":[{ \"name\":\"StyleLayerDTO\", \"type\":\"record\","
-					+ "\"namespace\":\"es.redmic.atlaslib.dto.atlas\",\"fields\":["
-						+ "{\"name\":\"name\",\"type\":[\"string\", \"null\"]},"
-						+ "{\"name\":\"title\",\"type\":[\"string\", \"null\"]},"
-						+ "{\"name\":\"abstractStyle\",\"type\":[\"string\", \"null\"]},"
-						+ "{\"name\":\"format\",\"type\":[\"string\", \"null\"]},"
-						+ "{\"name\":\"url\",\"type\":[\"string\", \"null\"]}]},\"null\"]},"
-				+ "{\"name\":\"contact\",\"type\":[{ \"name\":\"ContactDTO\", \"type\":\"record\","
-					+ "\"namespace\":\"es.redmic.atlaslib.dto.atlas\",\"fields\":["
-						+ "{\"name\":\"name\",\"type\":[\"string\", \"null\"]},"
-						+ "{\"name\":\"email\",\"type\":[\"string\", \"null\"]},"
-						+ "{\"name\":\"phone\",\"type\":[\"string\", \"null\"]},"
-						+ "{\"name\":\"fax\",\"type\":[\"string\", \"null\"]},"
-						+ "{\"name\":\"address\",\"type\":[\"string\", \"null\"]},"
-						+ "{\"name\":\"organization\",\"type\":[\"string\", \"null\"]},"
-						+ "{\"name\":\"contactPosition\",\"type\":[\"string\", \"null\"]}]},\"null\"]},"
-				+ "{\"name\": \"activities\",\"type\": [{\"type\": \"array\",\"items\": {\"type\":\"record\","
-					+ "\"namespace\":\"es.redmic.atlaslib.dto.atlas\",\"name\":\"ActivityDTO\",\"fields\": ["
-						+ "{\"name\": \"id\",\"type\": \"string\"},"
-						+ "{\"name\": \"name\",\"type\": \"string\"},"
-						+ "{\"name\": \"path\",\"type\": \"string\"}]}},\"null\"]},"
-				+ "{\"name\":\"urlSource\",\"type\":[\"string\", \"null\"]},"
-				+ "{\"name\":\"queryable\",\"type\":[\"boolean\", \"null\"]},"
-				+ "{\"name\":\"formats\",\"type\":[{\"type\":\"array\",\"items\":\"string\"},\"null\"]},"
-				+ "{\"name\":\"image\",\"type\":[\"string\", \"null\"]},"
-				+ "{\"name\":\"geometry\",\"type\":[\"string\", \"null\"]},"
-				+ "{\"name\":\"themeInspire\",\"type\":[{\"type\":\"record\","
-					+ "\"name\":\"ThemeInspireDTO\",\"namespace\":\"es.redmic.atlaslib.dto.themeinspire\",\"fields\":["
-						+ "{\"name\":\"code\",\"type\":\"string\"},"
-						+ "{\"name\":\"name\",\"type\":[\"string\", \"null\"]},"
-						+ "{\"name\":\"name_en\",\"type\":[\"string\", \"null\"]},"
-						+ "{\"name\":\"id\",\"type\":\"string\"}]}, \"null\"]},"
-				+ "{\"name\":\"latLonBoundsImage\",\"type\":[{ \"name\":\"LatLonBoundingBoxDTO\", \"type\":\"record\","
-					+ "\"namespace\":\"es.redmic.atlaslib.dto.atlas\",\"fields\":["
-						+ "{\"name\":\"minX\",\"type\":\"double\"},"
-						+ "{\"name\":\"minY\",\"type\":\"double\"},"
-						+ "{\"name\":\"maxX\",\"type\":\"double\"},"
-						+ "{\"name\":\"maxY\",\"type\":\"double\"}]}, \"null\"]},"
-				+ "{\"name\": \"protocol\",\"type\": [{\"type\": \"array\",\"items\": {\"type\":\"record\","
-					+ "\"namespace\":\"es.redmic.atlaslib.dto.atlas\",\"name\":\"ProtocolDTO\",\"fields\": ["
-						+ "{\"name\": \"type\",\"type\": \"string\"},"
-						+ "{\"name\": \"url\",\"type\": \"string\"}]}},\"null\"]},"
-				+ "{\"name\":\"description\",\"type\":[\"string\", \"null\"]},"
-				+ "{\"name\":\"alias\",\"type\":[\"string\", \"null\"]},"
-				+ "{\"name\":\"atlas\",\"type\":\"boolean\", \"default\": \"false\"},"
-				+ "{\"name\":\"refresh\",\"type\":\"int\", \"default\": \"0\"},"
-				+ "{\"name\":\"name\",\"type\":\"string\"},"
-				+ "{\"name\":\"id\",\"type\":\"string\"}]}");
+		"{\"type\":\"record\",\"name\":\"LayerDTO\",\"namespace\":\"es.redmic.atlaslib.dto.layer\",\"fields\":["
+			+ "{\"name\":\"title\",\"type\":\"string\"},"
+			+ "{\"name\":\"abstractLayer\",\"type\":[\"string\", \"null\"]},"
+			+ "{\"name\":\"keyword\",\"type\":[{\"type\":\"array\",\"items\":\"string\"},\"null\"]},"
+			+ "{\"name\":\"srs\",\"type\":{\"type\":\"array\",\"items\":\"string\"}},"
+			+ "{\"name\":\"styleLayer\",\"type\":[ " + StyleLayerDTO.SCHEMA$ + ",\"null\"]},"
+			+ "{\"name\":\"contact\",\"type\":[" + ContactDTO.SCHEMA$ + ",\"null\"]},"
+			+ "{\"name\": \"activities\",\"type\": [{\"type\": \"array\",\"items\": "+ ActivityDTO.SCHEMA$ +"},\"null\"]},"
+			+ "{\"name\":\"urlSource\",\"type\":\"string\"},"
+			+ "{\"name\":\"queryable\",\"type\":\"boolean\", \"default\": \"true\"},"
+			+ "{\"name\":\"formats\",\"type\":{\"type\":\"array\",\"items\":\"string\"}},"
+			+ "{\"name\":\"image\",\"type\":[\"string\", \"null\"]},"
+			+ "{\"name\":\"geometry\",\"type\":\"string\"},"
+			+ "{\"name\":\"themeInspire\",\"type\":["+ ThemeInspireDTO.SCHEMA$ +", \"null\"]},"
+			+ "{\"name\":\"latLonBoundsImage\",\"type\":[" + LatLonBoundingBoxDTO.SCHEMA$ + ", \"null\"]},"
+			+ "{\"name\": \"protocols\",\"type\": [{\"type\": \"array\",\"items\":" + ProtocolDTO.SCHEMA$ + "},\"null\"]},"
+			+ "{\"name\":\"description\",\"type\":[\"string\", \"null\"]},"
+			+ "{\"name\":\"alias\",\"type\":[\"string\", \"null\"]},"
+			+ "{\"name\":\"atlas\",\"type\":\"boolean\", \"default\": \"false\"},"
+			+ "{\"name\":\"refresh\",\"type\":\"int\", \"default\": \"0\"},"
+			+ "{\"name\":\"name\",\"type\":\"string\"},"
+			+ "{\"name\":\"id\",\"type\":\"string\"}]}");
 	// @formatter:on
 
 	public LayerDTO() {
 		super();
 	}
 
+	@NotNull
+	@Size(min = 3)
 	private String title;
 
 	private String abstractLayer;
 
 	private List<String> keyword;
 
+	@NotNull
+	@Size(min = 1)
 	private List<String> srs;
 
+	@Valid
 	private StyleLayerDTO styleLayer;
 
+	@Valid
 	private ContactDTO contact;
 
+	@Valid
 	private List<ActivityDTO> activities;
 
+	@NotNull
 	private String urlSource;
 
-	private Boolean queryable;
+	@JsonSchemaDefault(value = "true")
+	@NotNull
+	private Boolean queryable = true;
 
+	@NotNull
+	@Size(min = 1)
 	private List<String> formats;
 
 	private String image;
 
+	@NotNull
 	private Geometry geometry;
 
 	public String getTitle() {
@@ -204,6 +211,13 @@ public class LayerDTO extends LayerCompactDTO {
 		this.geometry = geometry;
 	}
 
+	@Override
+	@Size(min = 1, max = 500)
+	@NotNull
+	public String getName() {
+		return super.getName();
+	}
+
 	@JsonIgnore
 	@Override
 	public Schema getSchema() {
@@ -248,7 +262,7 @@ public class LayerDTO extends LayerCompactDTO {
 		case 13:
 			return getLatLonBoundsImage();
 		case 14:
-			return getProtocol();
+			return getProtocols();
 		case 15:
 			return getDescription();
 		case 16:
@@ -320,7 +334,7 @@ public class LayerDTO extends LayerCompactDTO {
 			setLatLonBoundsImage(value != null ? (LatLonBoundingBoxDTO) value : null);
 			break;
 		case 14:
-			setProtocol(value != null ? (java.util.List) value : null);
+			setProtocols(value != null ? (java.util.List) value : null);
 			break;
 		case 15:
 			setDescription(value != null ? value.toString() : null);
@@ -343,7 +357,6 @@ public class LayerDTO extends LayerCompactDTO {
 		default:
 			throw new org.apache.avro.AvroRuntimeException("Bad index");
 		}
-
 	}
 
 	@Override

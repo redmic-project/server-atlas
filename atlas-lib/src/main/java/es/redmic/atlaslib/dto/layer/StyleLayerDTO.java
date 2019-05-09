@@ -1,11 +1,47 @@
-package es.redmic.atlaslib.dto.atlas;
+package es.redmic.atlaslib.dto.layer;
+
+import org.apache.avro.Schema;
+
+/*-
+ * #%L
+ * Atlas-lib
+ * %%
+ * Copyright (C) 2019 REDMIC Project / Server
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 
 import org.geotools.data.ows.StyleImpl;
 import org.opengis.util.InternationalString;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
-public class StyleLayerDTO {
+public class StyleLayerDTO extends org.apache.avro.specific.SpecificRecordBase
+		implements org.apache.avro.specific.SpecificRecord {
+
+	// @formatter:off
+
+	@JsonIgnore
+	public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse(
+		"{\"type\":\"record\",\"name\":\"StyleLayerDTO\",\"namespace\":\"es.redmic.atlaslib.dto.layer\",\"fields\":["
+				+ "{\"name\":\"name\",\"type\":[\"string\", \"null\"]},"
+				+ "{\"name\":\"title\",\"type\":[\"string\", \"null\"]},"
+				+ "{\"name\":\"abstractStyle\",\"type\":[\"string\", \"null\"]},"
+				+ "{\"name\":\"format\",\"type\":[\"string\", \"null\"]},"
+				+ "{\"name\":\"url\",\"type\":[\"string\", \"null\"]}]}");
+	// @formatter:on
 
 	private String name;
 	private String title;
@@ -132,5 +168,54 @@ public class StyleLayerDTO {
 	public String toString() {
 		return "Name: " + getName() + ", Title: " + getTitle() + ", Abstract: " + getabstractStyle() + ", URL: "
 				+ getUrl();
+	}
+
+	@JsonIgnore
+	@Override
+	public Schema getSchema() {
+		return SCHEMA$;
+	}
+
+	@JsonIgnore
+	@Override
+	public java.lang.Object get(int field$) {
+		switch (field$) {
+		case 0:
+			return name;
+		case 1:
+			return title;
+		case 2:
+			return abstractStyle;
+		case 3:
+			return format;
+		case 4:
+			return url;
+		default:
+			throw new org.apache.avro.AvroRuntimeException("Bad index");
+		}
+	}
+
+	@JsonIgnore
+	@Override
+	public void put(int field$, java.lang.Object value$) {
+		switch (field$) {
+		case 0:
+			name = value$ != null ? value$.toString() : null;
+			break;
+		case 1:
+			title = value$ != null ? value$.toString() : null;
+			break;
+		case 2:
+			abstractStyle = value$ != null ? value$.toString() : null;
+			break;
+		case 3:
+			format = value$ != null ? value$.toString() : null;
+			break;
+		case 4:
+			url = value$ != null ? value$.toString() : null;
+			break;
+		default:
+			throw new org.apache.avro.AvroRuntimeException("Bad index");
+		}
 	}
 }

@@ -1,4 +1,4 @@
-package es.redmic.atlaslib.events.atlas.partialupdate.themeinspire;
+package es.redmic.atlaslib.events.layer.partialupdate.themeinspire;
 
 /*-
  * #%L

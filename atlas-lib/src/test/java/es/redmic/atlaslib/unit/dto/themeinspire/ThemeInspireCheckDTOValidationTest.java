@@ -24,6 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import es.redmic.atlaslib.dto.themeinspire.ThemeInspireDTO;
+import es.redmic.atlaslib.unit.utils.ThemeInspireDataUtil;
 import es.redmic.testutils.dto.DTOBaseTest;
 
 public class ThemeInspireCheckDTOValidationTest extends DTOBaseTest<ThemeInspireDTO> {
@@ -33,11 +34,7 @@ public class ThemeInspireCheckDTOValidationTest extends DTOBaseTest<ThemeInspire
 	@Before
 	public void reset() {
 
-		dto = new ThemeInspireDTO();
-		dto.setId("1");
-		dto.setCode("1234");
-		dto.setName("type");
-		dto.setName_en("type");
+		dto = ThemeInspireDataUtil.getThemeInspire();
 	}
 
 	@Test
