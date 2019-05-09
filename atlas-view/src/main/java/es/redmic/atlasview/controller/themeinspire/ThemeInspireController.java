@@ -45,7 +45,7 @@ import es.redmic.models.es.common.query.dto.SimpleQueryDTO;
 import es.redmic.viewlib.data.controller.DataController;
 
 @Controller
-@RequestMapping(value = "${controller.mapping.themeinspire}")
+@RequestMapping(value = "${controller.mapping.THEME_INSPIRE}")
 @KafkaListener(topics = "${broker.topic.theme-inspire}")
 public class ThemeInspireController extends DataController<ThemeInspire, ThemeInspireDTO, SimpleQueryDTO> {
 

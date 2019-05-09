@@ -29,7 +29,7 @@ import es.redmic.atlaslib.dto.themeinspire.ThemeInspireDTO;
 import es.redmic.commandslib.controller.CommandController;
 
 @Controller
-@RequestMapping(value = "${controller.mapping.themeinspire}")
+@RequestMapping(value = "${controller.mapping.THEME_INSPIRE}")
 public class ThemeInspireController extends CommandController<ThemeInspireDTO> {
 
 	@Autowired

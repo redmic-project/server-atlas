@@ -68,7 +68,7 @@ public class ThemeInspireControllerTest extends DocumentationViewBaseTest {
 	@Value("${documentation.ATLAS_HOST}")
 	private String HOST;
 
-	@Value("${controller.mapping.themeinspire}")
+	@Value("${controller.mapping.THEME_INSPIRE}")
 	private String THEMEINSPIRE_PATH;
 
 	@Autowired
