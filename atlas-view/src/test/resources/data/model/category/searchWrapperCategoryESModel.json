@@ -1,0 +1,26 @@
+{
+	"took": 1,
+	"timed_out": false,
+	"_shards": {
+		"total": 5,
+		"successful": 5,
+		"failed": 0
+	},
+	"hits": {
+		"total": 1,
+		"max_score": null,
+		"hits": [
+			{
+				"_index": "category",
+				"_type": "_doc",
+				"_id": "category-a31bd54e-836e-4942-b10b-8d7bdbd6f196",
+				"_version": 1,
+				"_score": 1,
+				"_source": {
+					"id": "category-a31bd54e-836e-4942-b10b-8d7bdbd6f196",
+					"name": "AIS"
+				}
+			}
+		]
+	}
+}
