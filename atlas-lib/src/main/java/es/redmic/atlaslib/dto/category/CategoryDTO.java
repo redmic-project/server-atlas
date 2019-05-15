@@ -27,7 +27,7 @@ import org.apache.avro.Schema;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import es.redmic.atlaslib.dto.layer.LayerBaseDTO;
+import es.redmic.brokerlib.avro.common.CommonDTO;
 
 /**
  * DTO de entrada para datos enviados por el cliente y que corresponde con una
@@ -36,7 +36,7 @@ import es.redmic.atlaslib.dto.layer.LayerBaseDTO;
  * Necesario validación DTO
  * 
  */
-public class CategoryDTO extends LayerBaseDTO {
+public class CategoryDTO extends CommonDTO {
 
 	// @formatter:off
 	
@@ -51,11 +51,41 @@ public class CategoryDTO extends LayerBaseDTO {
 		super();
 	}
 
-	@Override
 	@NotNull
-	@Size(min = 3)
+	@Size(min = 3, max = 150)
+	private String name;
+
 	public String getName() {
-		return super.getName();
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		CategoryDTO other = (CategoryDTO) obj;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		return true;
 	}
 
 	@JsonIgnore
