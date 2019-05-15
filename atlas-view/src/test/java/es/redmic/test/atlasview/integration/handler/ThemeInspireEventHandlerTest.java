@@ -236,7 +236,7 @@ public class ThemeInspireEventHandlerTest extends DocumentationViewBaseTest {
 		// Guarda el que va a entrar en conflicto
 		repository.save(mapper.getMapperFacade().map(conflict, ThemeInspire.class));
 
-		// Edita el mmsi del que se va a modificar para entrar en conflicto
+		// Edita el code del que se va a modificar para entrar en conflicto
 		original.setCode(conflict.getCode());
 		event.setThemeInspire(original);
 
