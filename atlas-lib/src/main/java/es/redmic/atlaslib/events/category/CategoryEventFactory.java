@@ -97,7 +97,7 @@ public class CategoryEventFactory {
 		throw new InternalException(ExceptionType.INTERNAL_EXCEPTION);
 	}
 
-	public static Event getEvent(Event source, String type, CategoryDTO themeInspire) {
+	public static Event getEvent(Event source, String type, CategoryDTO category) {
 
 		CategoryEvent successfulEvent = null;
 
@@ -112,7 +112,7 @@ public class CategoryEventFactory {
 		}
 
 		if (successfulEvent != null) {
-			successfulEvent.setCategory(themeInspire);
+			successfulEvent.setCategory(category);
 			return successfulEvent;
 		} else {
 			logger.error("Tipo de evento no soportado");
@@ -165,7 +165,7 @@ public class CategoryEventFactory {
 		}
 	}
 
-	public static Event getEvent(Event source, String type, CategoryDTO themeInspire, String exceptionType,
+	public static Event getEvent(Event source, String type, CategoryDTO category, String exceptionType,
 			Map<String, String> exceptionArguments) {
 
 		CategoryCancelledEvent cancelledEvent = null;
@@ -184,7 +184,7 @@ public class CategoryEventFactory {
 
 		if (cancelledEvent != null) {
 
-			cancelledEvent.setCategory(themeInspire);
+			cancelledEvent.setCategory(category);
 			cancelledEvent.setExceptionType(exceptionType);
 			cancelledEvent.setArguments(exceptionArguments);
 			return cancelledEvent;
