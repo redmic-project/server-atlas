@@ -36,7 +36,9 @@ public class KafkaEmbeddedConfig {
 		"atlas-updated",
 		"theme-inspire-snapshot",
 		"atlas-snapshot",
-		"atlas-agg-by-theme-inspire"
+		"atlas-agg-by-theme-inspire",
+		"category",
+		"category-snapshot"
 	};
 	
 	// @formatter:on
