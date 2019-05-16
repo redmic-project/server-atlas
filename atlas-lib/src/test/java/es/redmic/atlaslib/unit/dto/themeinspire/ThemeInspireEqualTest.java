@@ -31,7 +31,7 @@ import es.redmic.atlaslib.unit.utils.ThemeInspireDataUtil;
 public class ThemeInspireEqualTest {
 
 	@Test
-	public void equal_returnTrue_IfThemeInspireTypeIsEqual() {
+	public void equal_returnTrue_IfThemeInspireIsEqual() {
 
 		ThemeInspireDTO dto = ThemeInspireDataUtil.getThemeInspire();
 
@@ -72,7 +72,7 @@ public class ThemeInspireEqualTest {
 	}
 
 	@Test
-	public void equal_returnFalse_IfThemeInspireTypeCodeIsNull() {
+	public void equal_returnFalse_IfThemeInspireCodeIsNull() {
 
 		ThemeInspireDTO dto1 = ThemeInspireDataUtil.getThemeInspire();
 
@@ -83,7 +83,7 @@ public class ThemeInspireEqualTest {
 	}
 
 	@Test
-	public void equal_returnFalse_IfThemeInspireTypeNameIsDifferent() {
+	public void equal_returnFalse_IfThemeInspireNameIsDifferent() {
 
 		ThemeInspireDTO dto1 = ThemeInspireDataUtil.getThemeInspire();
 
@@ -94,7 +94,7 @@ public class ThemeInspireEqualTest {
 	}
 
 	@Test
-	public void equal_returnFalse_IfThemeInspireTypeNameIsNull() {
+	public void equal_returnFalse_IfThemeInspireNameIsNull() {
 
 		ThemeInspireDTO dto1 = ThemeInspireDataUtil.getThemeInspire();
 
@@ -105,7 +105,7 @@ public class ThemeInspireEqualTest {
 	}
 
 	@Test
-	public void equal_returnFalse_IfThemeInspireTypeName_enIsDifferent() {
+	public void equal_returnFalse_IfThemeInspireName_enIsDifferent() {
 
 		ThemeInspireDTO dto1 = ThemeInspireDataUtil.getThemeInspire();
 
@@ -116,7 +116,7 @@ public class ThemeInspireEqualTest {
 	}
 
 	@Test
-	public void equal_returnFalse_IfThemeInspireTypeName_enIsNull() {
+	public void equal_returnFalse_IfThemeInspireName_enIsNull() {
 
 		ThemeInspireDTO dto1 = ThemeInspireDataUtil.getThemeInspire();
 
