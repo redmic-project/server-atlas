@@ -27,12 +27,12 @@ import org.apache.avro.Schema;
 import es.redmic.atlaslib.dto.themeinspire.ThemeInspireDTO;
 import es.redmic.atlaslib.events.themeinspire.common.ThemeInspireEvent;
 
-public class AggregationThemeInspireInAtlasPostUpdateEvent extends ThemeInspireEvent {
+public class AggregationThemeInspireInLayerPostUpdateEvent extends ThemeInspireEvent {
 
 	// @formatter:off
 
 	public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{"
-		+ "\"type\":\"record\",\"name\":\"AggregationThemeInspireInAtlasPostUpdateEvent\","
+		+ "\"type\":\"record\",\"name\":\"AggregationThemeInspireInLayerPostUpdateEvent\","
 				+ "\"namespace\":\"es.redmic.atlaslib.events.atlas.partialupdate.themeinspire\",\"fields\":["
 			+ getThemeInspireEventSchema() + ","
 			+ getEventBaseSchema() + "]}");
@@ -40,20 +40,18 @@ public class AggregationThemeInspireInAtlasPostUpdateEvent extends ThemeInspireE
 
 	static String type = "AGGREGATION";
 
-	public AggregationThemeInspireInAtlasPostUpdateEvent() {
+	public AggregationThemeInspireInLayerPostUpdateEvent() {
+		this(type);
+	}
+
+	public AggregationThemeInspireInLayerPostUpdateEvent(String type) {
 		super(type);
 		setSessionId(UUID.randomUUID().toString());
 	}
 
-	public AggregationThemeInspireInAtlasPostUpdateEvent(String type) {
-		super(type);
-		setSessionId(UUID.randomUUID().toString());
-	}
-
-	public AggregationThemeInspireInAtlasPostUpdateEvent(String type, ThemeInspireDTO themeInspire) {
-		super(type);
+	public AggregationThemeInspireInLayerPostUpdateEvent(String type, ThemeInspireDTO themeInspire) {
+		this(type);
 		this.setThemeInspire(themeInspire);
-		setSessionId(UUID.randomUUID().toString());
 	}
 
 	@Override
