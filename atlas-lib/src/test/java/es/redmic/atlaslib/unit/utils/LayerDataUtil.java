@@ -21,7 +21,10 @@ package es.redmic.atlaslib.unit.utils;
  */
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -34,22 +37,217 @@ import es.redmic.atlaslib.dto.layer.LayerDTO;
 import es.redmic.atlaslib.dto.layer.ProtocolDTO;
 import es.redmic.atlaslib.dto.layer.StyleLayerDTO;
 import es.redmic.atlaslib.dto.layerinfo.LayerInfoDTO;
-import es.redmic.atlaslib.dto.themeinspire.ThemeInspireDTO;
+import es.redmic.atlaslib.events.layer.LayerEventTypes;
+import es.redmic.atlaslib.events.layer.create.CreateLayerCancelledEvent;
+import es.redmic.atlaslib.events.layer.create.CreateLayerConfirmedEvent;
+import es.redmic.atlaslib.events.layer.create.CreateLayerEvent;
+import es.redmic.atlaslib.events.layer.create.CreateLayerFailedEvent;
+import es.redmic.atlaslib.events.layer.create.LayerCreatedEvent;
+import es.redmic.atlaslib.events.layer.delete.CheckDeleteLayerEvent;
+import es.redmic.atlaslib.events.layer.delete.DeleteLayerCancelledEvent;
+import es.redmic.atlaslib.events.layer.delete.DeleteLayerCheckFailedEvent;
+import es.redmic.atlaslib.events.layer.delete.DeleteLayerCheckedEvent;
+import es.redmic.atlaslib.events.layer.delete.DeleteLayerConfirmedEvent;
+import es.redmic.atlaslib.events.layer.delete.DeleteLayerEvent;
+import es.redmic.atlaslib.events.layer.delete.DeleteLayerFailedEvent;
+import es.redmic.atlaslib.events.layer.delete.LayerDeletedEvent;
+import es.redmic.atlaslib.events.layer.update.LayerUpdatedEvent;
+import es.redmic.atlaslib.events.layer.update.UpdateLayerCancelledEvent;
+import es.redmic.atlaslib.events.layer.update.UpdateLayerConfirmedEvent;
+import es.redmic.atlaslib.events.layer.update.UpdateLayerEvent;
+import es.redmic.atlaslib.events.layer.update.UpdateLayerFailedEvent;
 
 public abstract class LayerDataUtil {
+
+	// @formatter:off
+	public final static String PREFIX = "layer-",
+			CODE = UUID.randomUUID().toString(),
+			USER = "1";
+	// @formatter:on
+
+	// Create
+
+	public static CreateLayerEvent getCreateEvent() {
+
+		CreateLayerEvent event = new CreateLayerEvent();
+		event.setAggregateId(PREFIX + CODE);
+		event.setType(LayerEventTypes.CREATE);
+		event.setVersion(1);
+		event.setUserId(USER);
+		event.setLayer(getLayer());
+
+		return event;
+	}
+
+	public static CreateLayerConfirmedEvent getCreateLayerConfirmedEvent() {
+
+		CreateLayerConfirmedEvent event = new CreateLayerConfirmedEvent().buildFrom(getCreateEvent());
+		event.setType(LayerEventTypes.CREATE_CONFIRMED);
+		return event;
+	}
+
+	public static LayerCreatedEvent getLayerCreatedEvent() {
+
+		LayerCreatedEvent event = new LayerCreatedEvent().buildFrom(getCreateEvent());
+		event.setType(LayerEventTypes.CREATED);
+		event.setLayer(getLayer());
+		return event;
+	}
+
+	public static CreateLayerFailedEvent getCreateLayerFailedEvent() {
+
+		CreateLayerFailedEvent event = new CreateLayerFailedEvent().buildFrom(getCreateEvent());
+		event.setType(LayerEventTypes.CREATE_FAILED);
+		event.setExceptionType("ItemAlreadyExist");
+		return event;
+	}
+
+	public static CreateLayerCancelledEvent getCreateLayerCancelledEvent() {
+
+		CreateLayerCancelledEvent event = new CreateLayerCancelledEvent().buildFrom(getCreateEvent());
+		event.setType(LayerEventTypes.CREATE_CANCELLED);
+		event.setExceptionType("ItemAlreadyExist");
+		return event;
+	}
+
+	// Update
+
+	public static UpdateLayerEvent getUpdateEvent() {
+
+		UpdateLayerEvent event = new UpdateLayerEvent();
+		event.setAggregateId(PREFIX + CODE);
+		event.setType(LayerEventTypes.UPDATE);
+		event.setVersion(2);
+		event.setUserId(USER);
+		event.setLayer(getLayer());
+		return event;
+	}
+
+	public static UpdateLayerConfirmedEvent getUpdateLayerConfirmedEvent() {
+
+		UpdateLayerConfirmedEvent event = new UpdateLayerConfirmedEvent().buildFrom(getUpdateEvent());
+		event.setType(LayerEventTypes.UPDATE_CONFIRMED);
+		return event;
+	}
+
+	public static LayerUpdatedEvent getLayerUpdatedEvent() {
+
+		LayerUpdatedEvent event = new LayerUpdatedEvent().buildFrom(getUpdateEvent());
+		event.setType(LayerEventTypes.UPDATED);
+		event.setLayer(getLayer());
+		return event;
+	}
+
+	public static UpdateLayerFailedEvent getUpdateLayerFailedEvent() {
+
+		UpdateLayerFailedEvent event = new UpdateLayerFailedEvent().buildFrom(getUpdateEvent());
+		event.setType(LayerEventTypes.UPDATE_FAILED);
+		event.setExceptionType("ItemNotFound");
+		Map<String, String> arguments = new HashMap<String, String>();
+		arguments.put("a", "b");
+		event.setArguments(arguments);
+		return event;
+	}
+
+	public static UpdateLayerCancelledEvent getUpdateLayerCancelledEvent() {
+
+		UpdateLayerCancelledEvent event = new UpdateLayerCancelledEvent().buildFrom(getUpdateEvent());
+		event.setType(LayerEventTypes.UPDATE_FAILED);
+		event.setLayer(getLayer());
+		event.setExceptionType("ItemNotFound");
+		Map<String, String> arguments = new HashMap<String, String>();
+		arguments.put("a", "b");
+		event.setArguments(arguments);
+		return event;
+	}
+
+	// Delete
+
+	public static DeleteLayerEvent getDeleteEvent() {
+
+		DeleteLayerEvent event = new DeleteLayerEvent();
+		event.setAggregateId(PREFIX + CODE);
+		event.setType(LayerEventTypes.DELETE);
+		event.setVersion(3);
+		event.setUserId(USER);
+		return event;
+	}
+
+	public static CheckDeleteLayerEvent getCheckDeleteLayerEvent() {
+
+		return new CheckDeleteLayerEvent().buildFrom(getDeleteEvent());
+	}
+
+	public static DeleteLayerCheckedEvent getDeleteLayerCheckedEvent() {
+
+		return new DeleteLayerCheckedEvent().buildFrom(getDeleteEvent());
+	}
+
+	public static DeleteLayerCheckFailedEvent getDeleteLayerCheckFailedEvent() {
+
+		DeleteLayerCheckFailedEvent event = new DeleteLayerCheckFailedEvent().buildFrom(getDeleteEvent());
+		event.setExceptionType("ItemIsReferenced");
+		Map<String, String> arguments = new HashMap<String, String>();
+		arguments.put("a", "b");
+		event.setArguments(arguments);
+		return event;
+	}
+
+	public static DeleteLayerConfirmedEvent getDeleteLayerConfirmedEvent() {
+
+		DeleteLayerConfirmedEvent event = new DeleteLayerConfirmedEvent().buildFrom(getDeleteEvent());
+		event.setAggregateId(PREFIX + CODE);
+		event.setType(LayerEventTypes.DELETE_CONFIRMED);
+		event.setVersion(3);
+
+		return event;
+	}
+
+	public static LayerDeletedEvent getLayerDeletedEvent() {
+
+		LayerDeletedEvent event = new LayerDeletedEvent().buildFrom(getDeleteEvent());
+		event.setType(LayerEventTypes.DELETED);
+		return event;
+	}
+
+	public static DeleteLayerFailedEvent getDeleteLayerFailedEvent() {
+
+		DeleteLayerFailedEvent event = new DeleteLayerFailedEvent().buildFrom(getDeleteEvent());
+		event.setType(LayerEventTypes.DELETE_FAILED);
+		event.setExceptionType("ItemNotFound");
+		return event;
+	}
+
+	public static DeleteLayerCancelledEvent getDeleteLayerCancelledEvent() {
+
+		DeleteLayerCancelledEvent event = new DeleteLayerCancelledEvent().buildFrom(getDeleteEvent());
+		event.setType(LayerEventTypes.DELETE_CONFIRMED);
+		event.setLayer(getLayer());
+		event.setExceptionType("ItemNotFound");
+		return event;
+	}
 
 	@SuppressWarnings("serial")
 	public static LayerDTO getLayer() {
 
 		LayerDTO layer = new LayerDTO();
 
+		layer.setId(PREFIX + CODE);
 		layer.setName("Prueba");
-		layer.setId("1");
 		layer.setTitle("title");
+		layer.setAlias("Prueba");
+		layer.setDescription("Prueba");
+
+		layer.setAbstractLayer("Prueba");
+		layer.setImage("Prueba");
 
 		List<String> srs = new ArrayList<>();
 		srs.add("srs");
 		layer.setSrs(srs);
+
+		List<String> keyword = new ArrayList<>();
+		keyword.add("keyword");
+		layer.setKeyword(keyword);
 
 		layer.setUrlSource("http://redmic.es");
 
@@ -94,9 +292,14 @@ public abstract class LayerDataUtil {
 
 		LayerInfoDTO layerInfo = new LayerInfoDTO();
 
-		ThemeInspireDTO themeInspire = ThemeInspireDataUtil.getThemeInspire();
+		layerInfo.setId(PREFIX + CODE);
+		layerInfo.setName("Prueba");
+		layerInfo.setAlias("Prueba");
+		layerInfo.setDescription("Prueba");
 
-		layerInfo.setThemeInspire(themeInspire);
+		layerInfo.setParent(CategoryDataUtil.getCategory());
+
+		layerInfo.setThemeInspire(ThemeInspireDataUtil.getThemeInspire());
 
 		layerInfo.setProtocols(getProtocols());
 
