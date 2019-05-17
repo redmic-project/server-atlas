@@ -29,7 +29,7 @@ import es.redmic.models.es.atlas.Contact;
 import es.redmic.models.es.atlas.LatLonBoundingBox;
 import es.redmic.models.es.atlas.StyleLayer;
 
-public class LayerModel extends LayerModelCompact {
+public class Layer extends LayerModelCompact {
 
 	private String title;
 	private String abstractLayer;
@@ -47,7 +47,7 @@ public class LayerModel extends LayerModelCompact {
 
 	private Geometry geometry;
 
-	public LayerModel() {
+	public Layer() {
 	}
 
 	public Contact getContact() {
