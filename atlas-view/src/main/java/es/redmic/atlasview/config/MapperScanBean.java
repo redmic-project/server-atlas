@@ -21,7 +21,7 @@ package es.redmic.atlasview.config;
  */
 
 import org.joda.time.DateTime;
-import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 import org.springframework.stereotype.Component;
 
 import es.redmic.viewlib.config.MapperScanBeanBase;
@@ -40,7 +40,7 @@ public class MapperScanBean extends MapperScanBeanBase implements MapperScanBean
 	protected void addDefaultActions() {
 
 		addConverter(new PassThroughConverter(DateTime.class));
-		addConverter(new PassThroughConverter(Point.class));
+		addConverter(new PassThroughConverter(Polygon.class));
 
 	}
 

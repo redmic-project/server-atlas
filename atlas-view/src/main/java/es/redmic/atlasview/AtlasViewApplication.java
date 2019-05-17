@@ -30,6 +30,9 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
+import com.fasterxml.jackson.databind.Module;
+
+import es.redmic.jts4jackson.module.JTSModule;
 import es.redmic.restlib.config.ResourceBundleMessageSource;
 import io.micrometer.core.instrument.MeterRegistry;
 
@@ -49,6 +52,11 @@ public class AtlasViewApplication {
 	public MessageSource messageSource() {
 
 		return new ResourceBundleMessageSource();
+	}
+
+	@Bean
+	public Module jtsModule() {
+		return new JTSModule();
 	}
 
 	@PostConstruct
