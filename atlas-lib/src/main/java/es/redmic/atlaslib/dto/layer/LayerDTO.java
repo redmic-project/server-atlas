@@ -29,7 +29,7 @@ import javax.validation.constraints.Size;
 
 import org.apache.avro.Schema;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -321,7 +321,7 @@ public class LayerDTO extends LayerCompactDTO {
 		case 11:
 			try {
 				if (value != null) {
-					setGeometry(mapper.readValue((value.toString()), Point.class));
+					setGeometry(mapper.readValue(value.toString(), Polygon.class));
 				}
 			} catch (IOException e) {
 				e.printStackTrace();

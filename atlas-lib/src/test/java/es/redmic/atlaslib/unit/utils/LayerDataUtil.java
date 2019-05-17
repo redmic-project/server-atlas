@@ -26,9 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Point;
 
 import es.redmic.atlaslib.dto.layer.ActivityDTO;
 import es.redmic.atlaslib.dto.layer.ContactDTO;
@@ -255,10 +254,13 @@ public abstract class LayerDataUtil {
 		formats.add("WMS");
 		layer.setFormats(formats);
 
-		GeometryFactory geometryFactory = new GeometryFactory();
+		Coordinate[] coordinates = new Coordinate[] { new Coordinate(-18.1745567321777, 27.6111183166504),
+				new Coordinate(-18.1745567321777, 29.4221172332764),
+				new Coordinate(-13.3011913299561, 29.4221172332764),
+				new Coordinate(-13.3011913299561, 27.6111183166504),
+				new Coordinate(-18.1745567321777, 27.6111183166504) };
 
-		Point geometry = geometryFactory.createPoint(new Coordinate(44.56433, 37.94388));
-		layer.setGeometry(geometry);
+		layer.setGeometry(JTSFactoryFinder.getGeometryFactory().createPolygon(coordinates));
 
 		ActivityDTO activity = new ActivityDTO();
 		activity.setId("3");
