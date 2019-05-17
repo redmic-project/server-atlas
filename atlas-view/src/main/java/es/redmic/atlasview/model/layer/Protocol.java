@@ -22,13 +22,13 @@ package es.redmic.atlasview.model.layer;
 
 import es.redmic.models.es.common.model.BaseAbstractStringES;
 
-public class Protocols extends BaseAbstractStringES {
+public class Protocol extends BaseAbstractStringES {
 
 	private String type;
 
 	private String url;
 
-	public Protocols() {
+	public Protocol() {
 	}
 
 	public String getType() {

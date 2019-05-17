@@ -22,12 +22,9 @@ package es.redmic.atlasview.model.layer;
 
 import java.util.List;
 
-import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Polygon;
 
-import es.redmic.models.es.administrative.model.ActivityReferences;
-import es.redmic.models.es.atlas.Contact;
-import es.redmic.models.es.atlas.LatLonBoundingBox;
-import es.redmic.models.es.atlas.StyleLayer;
+import es.redmic.models.es.administrative.model.ActivityCompact;
 
 public class Layer extends LayerModelCompact {
 
@@ -37,15 +34,15 @@ public class Layer extends LayerModelCompact {
 	private List<String> srs;
 	private StyleLayer styleLayer;
 	private Contact contact;
-	private List<ActivityReferences> activities;
+	private List<ActivityCompact> activities;
 	private String urlSource;
 	private Boolean queryable;
 	private List<String> formats;
 	private String image;
 	private LatLonBoundingBox latLonBoundsImage;
-	private List<Protocols> protocols;
+	private List<Protocol> protocols;
 
-	private Geometry geometry;
+	private Polygon geometry;
 
 	public Layer() {
 	}
@@ -98,19 +95,19 @@ public class Layer extends LayerModelCompact {
 		this.styleLayer = styleLayer;
 	}
 
-	public Geometry getGeometry() {
+	public Polygon getGeometry() {
 		return geometry;
 	}
 
-	public void setGeometry(Geometry geometry) {
+	public void setGeometry(Polygon geometry) {
 		this.geometry = geometry;
 	}
 
-	public List<ActivityReferences> getActivities() {
+	public List<ActivityCompact> getActivities() {
 		return activities;
 	}
 
-	public void setActivities(List<ActivityReferences> activities) {
+	public void setActivities(List<ActivityCompact> activities) {
 		this.activities = activities;
 	}
 
@@ -154,11 +151,11 @@ public class Layer extends LayerModelCompact {
 		this.latLonBoundsImage = latLonBoundsImage;
 	}
 
-	public List<Protocols> getProtocols() {
+	public List<Protocol> getProtocols() {
 		return protocols;
 	}
 
-	public void setProtocols(List<Protocols> protocols) {
+	public void setProtocols(List<Protocol> protocols) {
 		this.protocols = protocols;
 	}
 }
