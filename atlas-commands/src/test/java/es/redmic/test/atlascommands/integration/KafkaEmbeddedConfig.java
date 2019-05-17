@@ -31,12 +31,12 @@ public class KafkaEmbeddedConfig {
  
 	public final static String[] TOPICS_NAME = new String[] { 
 		"theme-inspire",
-		"atlas",
+		"layer",
 		"theme-inspire-updated",
-		"atlas-updated",
+		"layer-updated",
 		"theme-inspire-snapshot",
-		"atlas-snapshot",
-		"atlas-agg-by-theme-inspire",
+		"layer-snapshot",
+		"layer-agg-by-theme-inspire",
 		"category",
 		"category-snapshot"
 	};
