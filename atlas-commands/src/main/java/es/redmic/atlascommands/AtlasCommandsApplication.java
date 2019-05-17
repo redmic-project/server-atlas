@@ -20,8 +20,6 @@ package es.redmic.atlascommands;
  * #L%
  */
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCustomizer;
@@ -30,7 +28,9 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
-import es.redmic.commandslib.config.GenerateJsonSchemaScanBean;
+import com.fasterxml.jackson.databind.Module;
+
+import es.redmic.jts4jackson.module.JTSModule;
 import es.redmic.restlib.config.ResourceBundleMessageSource;
 import io.micrometer.core.instrument.MeterRegistry;
 
@@ -52,11 +52,10 @@ public class AtlasCommandsApplication {
 	}
 
 	@Bean
-	public GenerateJsonSchemaScanBean generateSchemaScanBean() {
-		return new GenerateJsonSchemaScanBean();
+	public Module jtsModule() {
+		return new JTSModule();
 	}
 
-	@PostConstruct
 	@Bean
 	MeterRegistryCustomizer<MeterRegistry> metricsCommonTags() {
 		return registry -> registry.config().commonTags("application", microserviceName);
