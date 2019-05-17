@@ -23,9 +23,9 @@ package es.redmic.atlaslib.unit.dto.layer;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
 
 import es.redmic.atlaslib.dto.layer.LayerDTO;
 import es.redmic.atlaslib.unit.utils.LayerDataUtil;
@@ -247,7 +247,13 @@ public class LayerEqualTest {
 
 		LayerDTO dto2 = LayerDataUtil.getLayer();
 
-		dto1.setGeometry(new GeometryFactory().createPoint(new Coordinate(45.56433, 37.94388)));
+		Coordinate[] coordinates = new Coordinate[] { new Coordinate(-18.1745567321777, 27.6111183166504),
+				new Coordinate(-18.1745567321777, 29.4221172332764),
+				new Coordinate(-13.5011913299561, 29.4221172332764),
+				new Coordinate(-13.3011913299561, 27.6111183166504),
+				new Coordinate(-18.1745567321777, 27.6111183166504) };
+
+		dto1.setGeometry(JTSFactoryFinder.getGeometryFactory().createPolygon(coordinates));
 
 		assertFalse(dto1.equals(dto2));
 	}

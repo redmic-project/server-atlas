@@ -28,7 +28,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.apache.avro.Schema;
-import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -113,7 +112,7 @@ public class LayerDTO extends LayerCompactDTO {
 	private String image;
 
 	@NotNull
-	private Geometry geometry;
+	private Polygon geometry;
 
 	public String getTitle() {
 		return title;
@@ -203,11 +202,11 @@ public class LayerDTO extends LayerCompactDTO {
 		this.image = image;
 	}
 
-	public Geometry getGeometry() {
+	public Polygon getGeometry() {
 		return geometry;
 	}
 
-	public void setGeometry(Geometry geometry) {
+	public void setGeometry(Polygon geometry) {
 		this.geometry = geometry;
 	}
 
