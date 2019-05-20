@@ -21,9 +21,9 @@ package es.redmic.atlasview.model.layer;
  */
 
 import es.redmic.atlasview.model.themeinspire.ThemeInspire;
-import es.redmic.models.es.common.model.BaseAbstractStringES;
+import es.redmic.models.es.common.model.BaseUpdatableES;
 
-public class LayerModelCompact extends BaseAbstractStringES {
+public class LayerModelCompact extends BaseUpdatableES {
 
 	private String name;
 
