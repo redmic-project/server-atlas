@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.geotools.geometry.jts.JTSFactoryFinder;
+import org.joda.time.DateTime;
 import org.locationtech.jts.geom.Coordinate;
 
 import es.redmic.atlaslib.dto.layer.ActivityDTO;
@@ -231,11 +232,17 @@ public abstract class LayerDataUtil {
 
 		LayerDTO layer = new LayerDTO();
 
+		layer.setParent(CategoryDataUtil.getCategory());
+
 		layer.setId(PREFIX + CODE);
 		layer.setName("Prueba");
 		layer.setTitle("title");
 		layer.setAlias("Prueba");
 		layer.setDescription("Prueba");
+
+		layer.setParent(CategoryDataUtil.getCategory());
+		layer.setInserted(DateTime.now());
+		layer.setUpdated(DateTime.now());
 
 		layer.setAbstractLayer("Prueba");
 		layer.setImage("Prueba");

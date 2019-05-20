@@ -88,22 +88,24 @@ public class LayerInfoDTO extends LayerCompactDTO {
 	public Object get(int field) {
 		switch (field) {
 		case 0:
-			return getThemeInspire();
+			return getParent();
 		case 1:
-			return getLatLonBoundsImage();
+			return getThemeInspire();
 		case 2:
-			return getProtocols();
+			return getLatLonBoundsImage();
 		case 3:
-			return getDescription();
+			return getProtocols();
 		case 4:
-			return getAlias();
+			return getDescription();
 		case 5:
-			return getAtlas();
+			return getAlias();
 		case 6:
-			return getRefresh();
+			return getAtlas();
 		case 7:
-			return getName();
+			return getRefresh();
 		case 8:
+			return getName();
+		case 9:
 			return getId();
 		default:
 			throw new org.apache.avro.AvroRuntimeException("Bad index");
@@ -116,30 +118,33 @@ public class LayerInfoDTO extends LayerCompactDTO {
 	public void put(int field, Object value) {
 		switch (field) {
 		case 0:
-			setThemeInspire(value != null ? (ThemeInspireDTO) value : null);
+			setParent(value != null ? (CategoryDTO) value : null);
 			break;
 		case 1:
-			setLatLonBoundsImage(value != null ? (LatLonBoundingBoxDTO) value : null);
+			setThemeInspire(value != null ? (ThemeInspireDTO) value : null);
 			break;
 		case 2:
-			setProtocols(value != null ? (java.util.List) value : null);
+			setLatLonBoundsImage(value != null ? (LatLonBoundingBoxDTO) value : null);
 			break;
 		case 3:
-			setDescription(value != null ? value.toString() : null);
+			setProtocols(value != null ? (java.util.List) value : null);
 			break;
 		case 4:
-			setAlias(value != null ? value.toString() : null);
+			setDescription(value != null ? value.toString() : null);
 			break;
 		case 5:
-			setAtlas((Boolean) value);
+			setAlias(value != null ? value.toString() : null);
 			break;
 		case 6:
-			setRefresh((int) value);
+			setAtlas((Boolean) value);
 			break;
 		case 7:
-			setName(value.toString());
+			setRefresh((int) value);
 			break;
 		case 8:
+			setName(value.toString());
+			break;
+		case 9:
 			setId(value.toString());
 			break;
 		default:

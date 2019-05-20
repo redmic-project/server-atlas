@@ -28,19 +28,30 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.apache.avro.Schema;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.locationtech.jts.geom.Polygon;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.kjetland.jackson.jsonSchema.annotations.JsonSchemaDefault;
+import com.kjetland.jackson.jsonSchema.annotations.JsonSchemaIgnore;
+import com.kjetland.jackson.jsonSchema.annotations.JsonSchemaUrl;
 
+import es.redmic.atlaslib.dto.category.CategoryDTO;
+import es.redmic.atlaslib.dto.layerinfo.LayerInfoDTO;
 import es.redmic.atlaslib.dto.themeinspire.ThemeInspireDTO;
+import es.redmic.brokerlib.deserializer.CustomRelationDeserializer;
 import es.redmic.jts4jackson.module.JTSModule;
+import es.redmic.models.es.common.deserializer.CustomDateTimeDeserializer;
+import es.redmic.models.es.common.serializer.CustomDateTimeSerializer;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class LayerDTO extends LayerCompactDTO {
+public class LayerDTO extends LayerInfoDTO {
 
 	@JsonIgnore
 	protected ObjectMapper mapper = new ObjectMapper().registerModule(new JTSModule());
@@ -62,6 +73,11 @@ public class LayerDTO extends LayerCompactDTO {
 			+ "{\"name\":\"formats\",\"type\":{\"type\":\"array\",\"items\":\"string\"}},"
 			+ "{\"name\":\"image\",\"type\":[\"string\", \"null\"]},"
 			+ "{\"name\":\"geometry\",\"type\":\"string\"},"
+			+ "{\"name\":\"parent\",\"type\":[" + CategoryDTO.SCHEMA$ + ",\"null\"]},"
+			+ "{\"name\":\"inserted\",\"type\":[\"null\",{\"type\":\"long\",\"logicalType\":\"timestamp-millis\"}],"
+				+ "\"default\": null},"
+			+ "{\"name\":\"updated\",\"type\":[\"null\",{\"type\":\"long\",\"logicalType\":\"timestamp-millis\"}],"
+				+ "\"default\": null},"
 			+ "{\"name\":\"themeInspire\",\"type\":["+ ThemeInspireDTO.SCHEMA$ +", \"null\"]},"
 			+ "{\"name\":\"latLonBoundsImage\",\"type\":[" + LatLonBoundingBoxDTO.SCHEMA$ + ", \"null\"]},"
 			+ "{\"name\": \"protocols\",\"type\": [{\"type\": \"array\",\"items\":" + ProtocolDTO.SCHEMA$ + "},\"null\"]},"
@@ -113,6 +129,21 @@ public class LayerDTO extends LayerCompactDTO {
 
 	@NotNull
 	private Polygon geometry;
+
+	@JsonDeserialize(using = CustomRelationDeserializer.class)
+	@JsonSchemaUrl(value = "controller.mapping.CATEGORY")
+	@Valid
+	CategoryDTO parent;
+
+	@JsonSchemaIgnore
+	@JsonSerialize(using = CustomDateTimeSerializer.class)
+	@JsonDeserialize(using = CustomDateTimeDeserializer.class)
+	private DateTime inserted;
+
+	@JsonSchemaIgnore
+	@JsonSerialize(using = CustomDateTimeSerializer.class)
+	@JsonDeserialize(using = CustomDateTimeDeserializer.class)
+	private DateTime updated;
 
 	public String getTitle() {
 		return title;
@@ -211,6 +242,32 @@ public class LayerDTO extends LayerCompactDTO {
 	}
 
 	@Override
+	public CategoryDTO getParent() {
+		return parent;
+	}
+
+	@Override
+	public void setParent(CategoryDTO parent) {
+		this.parent = parent;
+	}
+
+	public DateTime getInserted() {
+		return inserted;
+	}
+
+	public void setInserted(DateTime inserted) {
+		this.inserted = inserted;
+	}
+
+	public DateTime getUpdated() {
+		return updated;
+	}
+
+	public void setUpdated(DateTime updated) {
+		this.updated = updated;
+	}
+
+	@Override
 	@Size(min = 1, max = 500)
 	@NotNull
 	public String getName() {
@@ -257,22 +314,28 @@ public class LayerDTO extends LayerCompactDTO {
 				return null;
 			}
 		case 12:
-			return getThemeInspire();
+			return getParent();
 		case 13:
-			return getLatLonBoundsImage();
+			return getInserted() != null ? getInserted().getMillis() : null;
 		case 14:
-			return getProtocols();
+			return getUpdated() != null ? getUpdated().getMillis() : null;
 		case 15:
-			return getDescription();
+			return getThemeInspire();
 		case 16:
-			return getAlias();
+			return getLatLonBoundsImage();
 		case 17:
-			return getAtlas();
+			return getProtocols();
 		case 18:
-			return getRefresh();
+			return getDescription();
 		case 19:
-			return getName();
+			return getAlias();
 		case 20:
+			return getAtlas();
+		case 21:
+			return getRefresh();
+		case 22:
+			return getName();
+		case 23:
 			return getId();
 		default:
 			throw new org.apache.avro.AvroRuntimeException("Bad index");
@@ -327,30 +390,39 @@ public class LayerDTO extends LayerCompactDTO {
 			}
 			break;
 		case 12:
-			setThemeInspire(value != null ? (ThemeInspireDTO) value : null);
+			parent = value != null ? (CategoryDTO) value : null;
 			break;
 		case 13:
-			setLatLonBoundsImage(value != null ? (LatLonBoundingBoxDTO) value : null);
+			setInserted(value != null ? new DateTime(value, DateTimeZone.UTC).toDateTime() : null);
 			break;
 		case 14:
-			setProtocols(value != null ? (java.util.List) value : null);
+			setUpdated(value != null ? new DateTime(value, DateTimeZone.UTC).toDateTime() : null);
 			break;
 		case 15:
-			setDescription(value != null ? value.toString() : null);
+			setThemeInspire(value != null ? (ThemeInspireDTO) value : null);
 			break;
 		case 16:
-			setAlias(value != null ? value.toString() : null);
+			setLatLonBoundsImage(value != null ? (LatLonBoundingBoxDTO) value : null);
 			break;
 		case 17:
-			setAtlas((Boolean) value);
+			setProtocols(value != null ? (java.util.List) value : null);
 			break;
 		case 18:
-			setRefresh((int) value);
+			setDescription(value != null ? value.toString() : null);
 			break;
 		case 19:
-			setName(value.toString());
+			setAlias(value != null ? value.toString() : null);
 			break;
 		case 20:
+			setAtlas((Boolean) value);
+			break;
+		case 21:
+			setRefresh((int) value);
+			break;
+		case 22:
+			setName(value.toString());
+			break;
+		case 23:
 			setId(value.toString());
 			break;
 		default:
@@ -367,6 +439,9 @@ public class LayerDTO extends LayerCompactDTO {
 		result = prime * result + ((contact == null) ? 0 : contact.hashCode());
 		result = prime * result + ((formats == null) ? 0 : formats.hashCode());
 		result = prime * result + ((geometry == null) ? 0 : geometry.hashCode());
+		result = prime * result + ((parent == null) ? 0 : parent.hashCode());
+		result = prime * result + ((inserted == null) ? 0 : inserted.hashCode());
+		result = prime * result + ((updated == null) ? 0 : updated.hashCode());
 		result = prime * result + ((image == null) ? 0 : image.hashCode());
 		result = prime * result + ((keyword == null) ? 0 : keyword.hashCode());
 		result = prime * result + ((queryable == null) ? 0 : queryable.hashCode());
@@ -410,6 +485,21 @@ public class LayerDTO extends LayerCompactDTO {
 			if (other.geometry != null)
 				return false;
 		} else if (!geometry.equals(other.geometry))
+			return false;
+		if (parent == null) {
+			if (other.parent != null)
+				return false;
+		} else if (!parent.equals(other.parent))
+			return false;
+		if (inserted == null) {
+			if (other.inserted != null)
+				return false;
+		} else if (!inserted.equals(other.inserted))
+			return false;
+		if (updated == null) {
+			if (other.updated != null)
+				return false;
+		} else if (!updated.equals(other.updated))
 			return false;
 		if (image == null) {
 			if (other.image != null)

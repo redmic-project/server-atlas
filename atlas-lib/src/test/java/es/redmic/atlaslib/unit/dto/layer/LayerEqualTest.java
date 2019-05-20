@@ -24,6 +24,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.geotools.geometry.jts.JTSFactoryFinder;
+import org.joda.time.DateTime;
 import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
 
@@ -237,6 +238,75 @@ public class LayerEqualTest {
 		LayerDTO dto2 = LayerDataUtil.getLayer();
 
 		dto1.setThemeInspire(null);
+		assertFalse(dto1.equals(dto2));
+	}
+
+	@Test
+	public void equal_returnFalse_IfLayerParentIsDifferent() {
+
+		LayerDTO dto1 = LayerDataUtil.getLayer();
+
+		LayerDTO dto2 = LayerDataUtil.getLayer();
+
+		dto1.getParent().setName("aaaa");
+
+		assertFalse(dto1.equals(dto2));
+	}
+
+	@Test
+	public void equal_returnFalse_IfLayerParentIsNull() {
+
+		LayerDTO dto1 = LayerDataUtil.getLayer();
+
+		LayerDTO dto2 = LayerDataUtil.getLayer();
+
+		dto1.setParent(null);
+		assertFalse(dto1.equals(dto2));
+	}
+
+	@Test
+	public void equal_returnFalse_IfLayerInsertedIsDifferent() {
+
+		LayerDTO dto1 = LayerDataUtil.getLayer();
+
+		LayerDTO dto2 = LayerDataUtil.getLayer();
+
+		dto1.setInserted(DateTime.now().plusDays(1));
+
+		assertFalse(dto1.equals(dto2));
+	}
+
+	@Test
+	public void equal_returnFalse_IfLayerInsertedIsNull() {
+
+		LayerDTO dto1 = LayerDataUtil.getLayer();
+
+		LayerDTO dto2 = LayerDataUtil.getLayer();
+
+		dto1.setInserted(null);
+		assertFalse(dto1.equals(dto2));
+	}
+
+	@Test
+	public void equal_returnFalse_IfLayerUpdatedIsDifferent() {
+
+		LayerDTO dto1 = LayerDataUtil.getLayer();
+
+		LayerDTO dto2 = LayerDataUtil.getLayer();
+
+		dto1.setUpdated(DateTime.now().plusDays(1));
+
+		assertFalse(dto1.equals(dto2));
+	}
+
+	@Test
+	public void equal_returnFalse_IfLayerUpdatedIsNull() {
+
+		LayerDTO dto1 = LayerDataUtil.getLayer();
+
+		LayerDTO dto2 = LayerDataUtil.getLayer();
+
+		dto1.setUpdated(null);
 		assertFalse(dto1.equals(dto2));
 	}
 
