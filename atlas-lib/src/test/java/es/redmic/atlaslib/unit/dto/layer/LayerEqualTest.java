@@ -340,6 +340,98 @@ public class LayerEqualTest {
 	}
 
 	@Test
+	public void equal_returnFalse_IfLayerLegendIsDifferent() {
+
+		LayerDTO dto1 = LayerDataUtil.getLayer();
+
+		LayerDTO dto2 = LayerDataUtil.getLayer();
+
+		dto1.setLegend("aaaa");
+
+		assertFalse(dto1.equals(dto2));
+	}
+
+	@Test
+	public void equal_returnFalse_IfLayerLegendIsNull() {
+
+		LayerDTO dto1 = LayerDataUtil.getLayer();
+
+		LayerDTO dto2 = LayerDataUtil.getLayer();
+
+		dto1.setLegend(null);
+		assertFalse(dto1.equals(dto2));
+	}
+
+	@Test
+	public void equal_returnFalse_IfLayerOpaqueIsDifferent() {
+
+		LayerDTO dto1 = LayerDataUtil.getLayer();
+
+		LayerDTO dto2 = LayerDataUtil.getLayer();
+
+		dto1.setOpaque(true);
+
+		assertFalse(dto1.equals(dto2));
+	}
+
+	@Test
+	public void equal_returnFalse_IfLayerOpaqueIsNull() {
+
+		LayerDTO dto1 = LayerDataUtil.getLayer();
+
+		LayerDTO dto2 = LayerDataUtil.getLayer();
+
+		dto1.setOpaque(null);
+		assertFalse(dto1.equals(dto2));
+	}
+
+	@Test
+	public void equal_returnFalse_IfLayerTimeDimensionIsDifferent() {
+
+		LayerDTO dto1 = LayerDataUtil.getLayer();
+
+		LayerDTO dto2 = LayerDataUtil.getLayer();
+
+		dto1.getTimeDimension().setName("aaaa");
+
+		assertFalse(dto1.equals(dto2));
+	}
+
+	@Test
+	public void equal_returnFalse_IfLayerTimeDimensionIsNull() {
+
+		LayerDTO dto1 = LayerDataUtil.getLayer();
+
+		LayerDTO dto2 = LayerDataUtil.getLayer();
+
+		dto1.setTimeDimension(null);
+		assertFalse(dto1.equals(dto2));
+	}
+
+	@Test
+	public void equal_returnFalse_IfLayerElevationDimensionIsDifferent() {
+
+		LayerDTO dto1 = LayerDataUtil.getLayer();
+
+		LayerDTO dto2 = LayerDataUtil.getLayer();
+
+		dto1.getElevationDimension().setName("aaaa");
+
+		assertFalse(dto1.equals(dto2));
+	}
+
+	@Test
+	public void equal_returnFalse_IfLayerElevationDimensionIsNull() {
+
+		LayerDTO dto1 = LayerDataUtil.getLayer();
+
+		LayerDTO dto2 = LayerDataUtil.getLayer();
+
+		dto1.setElevationDimension(null);
+		assertFalse(dto1.equals(dto2));
+	}
+
+	@Test
 	public void equal_returnFalse_IfLayerImageIsDifferent() {
 
 		LayerDTO dto1 = LayerDataUtil.getLayer();

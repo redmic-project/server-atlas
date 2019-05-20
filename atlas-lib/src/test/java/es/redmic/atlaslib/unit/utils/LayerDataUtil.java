@@ -32,6 +32,7 @@ import org.locationtech.jts.geom.Coordinate;
 
 import es.redmic.atlaslib.dto.layer.ActivityDTO;
 import es.redmic.atlaslib.dto.layer.ContactDTO;
+import es.redmic.atlaslib.dto.layer.DimensionDTO;
 import es.redmic.atlaslib.dto.layer.LatLonBoundingBoxDTO;
 import es.redmic.atlaslib.dto.layer.LayerDTO;
 import es.redmic.atlaslib.dto.layer.ProtocolDTO;
@@ -231,6 +232,15 @@ public abstract class LayerDataUtil {
 	public static LayerDTO getLayer() {
 
 		LayerDTO layer = new LayerDTO();
+
+		layer.setLegend("https://redmic.local/ww");
+		layer.setOpaque(false);
+		DimensionDTO dimension = new DimensionDTO();
+		dimension.setName("time");
+		dimension.setUnits("ISO8601");
+		dimension.setDefaultValue("P30M/PRESENT");
+		layer.setTimeDimension(dimension);
+		layer.setElevationDimension(dimension);
 
 		layer.setParent(CategoryDataUtil.getCategory());
 

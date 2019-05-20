@@ -73,6 +73,11 @@ public class LayerDTO extends LayerInfoDTO {
 			+ "{\"name\":\"formats\",\"type\":{\"type\":\"array\",\"items\":\"string\"}},"
 			+ "{\"name\":\"image\",\"type\":[\"string\", \"null\"]},"
 			+ "{\"name\":\"geometry\",\"type\":\"string\"},"
+			+ "{\"name\":\"legend\",\"type\":[\"string\", \"null\"]},"
+			+ "{\"name\":\"opaque\",\"type\":\"boolean\", \"default\": \"false\"},"
+			+ "{\"name\":\"timeDimension\",\"type\":[" + DimensionDTO.SCHEMA$ + ",\"null\"]},"
+			+ "{\"name\":\"elevationDimension\"," + "\"type\":"
+					+ "[\"es.redmic.atlaslib.dto.layer.DimensionDTO\",\"null\"]},"
 			+ "{\"name\":\"parent\",\"type\":[" + CategoryDTO.SCHEMA$ + ",\"null\"]},"
 			+ "{\"name\":\"inserted\",\"type\":[\"null\",{\"type\":\"long\",\"logicalType\":\"timestamp-millis\"}],"
 				+ "\"default\": null},"
@@ -129,6 +134,14 @@ public class LayerDTO extends LayerInfoDTO {
 
 	@NotNull
 	private Polygon geometry;
+
+	private String legend;
+
+	private Boolean opaque = false;
+
+	private DimensionDTO timeDimension;
+
+	private DimensionDTO elevationDimension;
 
 	@JsonDeserialize(using = CustomRelationDeserializer.class)
 	@JsonSchemaUrl(value = "controller.mapping.CATEGORY")
@@ -241,6 +254,38 @@ public class LayerDTO extends LayerInfoDTO {
 		this.geometry = geometry;
 	}
 
+	public String getLegend() {
+		return legend;
+	}
+
+	public void setLegend(String legend) {
+		this.legend = legend;
+	}
+
+	public Boolean getOpaque() {
+		return opaque;
+	}
+
+	public void setOpaque(Boolean opaque) {
+		this.opaque = opaque;
+	}
+
+	public DimensionDTO getTimeDimension() {
+		return timeDimension;
+	}
+
+	public void setTimeDimension(DimensionDTO timeDimension) {
+		this.timeDimension = timeDimension;
+	}
+
+	public DimensionDTO getElevationDimension() {
+		return elevationDimension;
+	}
+
+	public void setElevationDimension(DimensionDTO elevationDimension) {
+		this.elevationDimension = elevationDimension;
+	}
+
 	@Override
 	public CategoryDTO getParent() {
 		return parent;
@@ -314,28 +359,36 @@ public class LayerDTO extends LayerInfoDTO {
 				return null;
 			}
 		case 12:
-			return getParent();
+			return legend;
 		case 13:
-			return getInserted() != null ? getInserted().getMillis() : null;
+			return opaque;
 		case 14:
-			return getUpdated() != null ? getUpdated().getMillis() : null;
+			return timeDimension;
 		case 15:
-			return getThemeInspire();
+			return elevationDimension;
 		case 16:
-			return getLatLonBoundsImage();
+			return getParent();
 		case 17:
-			return getProtocols();
+			return getInserted() != null ? getInserted().getMillis() : null;
 		case 18:
-			return getDescription();
+			return getUpdated() != null ? getUpdated().getMillis() : null;
 		case 19:
-			return getAlias();
+			return getThemeInspire();
 		case 20:
-			return getAtlas();
+			return getLatLonBoundsImage();
 		case 21:
-			return getRefresh();
+			return getProtocols();
 		case 22:
-			return getName();
+			return getDescription();
 		case 23:
+			return getAlias();
+		case 24:
+			return getAtlas();
+		case 25:
+			return getRefresh();
+		case 26:
+			return getName();
+		case 27:
 			return getId();
 		default:
 			throw new org.apache.avro.AvroRuntimeException("Bad index");
@@ -390,39 +443,51 @@ public class LayerDTO extends LayerInfoDTO {
 			}
 			break;
 		case 12:
-			parent = value != null ? (CategoryDTO) value : null;
+			legend = value != null ? value.toString() : null;
 			break;
 		case 13:
-			setInserted(value != null ? new DateTime(value, DateTimeZone.UTC).toDateTime() : null);
+			opaque = value != null ? (Boolean) value : null;
 			break;
 		case 14:
-			setUpdated(value != null ? new DateTime(value, DateTimeZone.UTC).toDateTime() : null);
+			timeDimension = value != null ? (DimensionDTO) value : null;
 			break;
 		case 15:
-			setThemeInspire(value != null ? (ThemeInspireDTO) value : null);
+			elevationDimension = value != null ? (DimensionDTO) value : null;
 			break;
 		case 16:
-			setLatLonBoundsImage(value != null ? (LatLonBoundingBoxDTO) value : null);
+			parent = value != null ? (CategoryDTO) value : null;
 			break;
 		case 17:
-			setProtocols(value != null ? (java.util.List) value : null);
+			setInserted(value != null ? new DateTime(value, DateTimeZone.UTC).toDateTime() : null);
 			break;
 		case 18:
-			setDescription(value != null ? value.toString() : null);
+			setUpdated(value != null ? new DateTime(value, DateTimeZone.UTC).toDateTime() : null);
 			break;
 		case 19:
-			setAlias(value != null ? value.toString() : null);
+			setThemeInspire(value != null ? (ThemeInspireDTO) value : null);
 			break;
 		case 20:
-			setAtlas((Boolean) value);
+			setLatLonBoundsImage(value != null ? (LatLonBoundingBoxDTO) value : null);
 			break;
 		case 21:
-			setRefresh((int) value);
+			setProtocols(value != null ? (java.util.List) value : null);
 			break;
 		case 22:
-			setName(value.toString());
+			setDescription(value != null ? value.toString() : null);
 			break;
 		case 23:
+			setAlias(value != null ? value.toString() : null);
+			break;
+		case 24:
+			setAtlas((Boolean) value);
+			break;
+		case 25:
+			setRefresh((int) value);
+			break;
+		case 26:
+			setName(value.toString());
+			break;
+		case 27:
 			setId(value.toString());
 			break;
 		default:
@@ -439,6 +504,10 @@ public class LayerDTO extends LayerInfoDTO {
 		result = prime * result + ((contact == null) ? 0 : contact.hashCode());
 		result = prime * result + ((formats == null) ? 0 : formats.hashCode());
 		result = prime * result + ((geometry == null) ? 0 : geometry.hashCode());
+		result = prime * result + ((legend == null) ? 0 : legend.hashCode());
+		result = prime * result + ((opaque == null) ? 0 : opaque.hashCode());
+		result = prime * result + ((timeDimension == null) ? 0 : timeDimension.hashCode());
+		result = prime * result + ((elevationDimension == null) ? 0 : elevationDimension.hashCode());
 		result = prime * result + ((parent == null) ? 0 : parent.hashCode());
 		result = prime * result + ((inserted == null) ? 0 : inserted.hashCode());
 		result = prime * result + ((updated == null) ? 0 : updated.hashCode());
@@ -485,6 +554,26 @@ public class LayerDTO extends LayerInfoDTO {
 			if (other.geometry != null)
 				return false;
 		} else if (!geometry.equals(other.geometry))
+			return false;
+		if (legend == null) {
+			if (other.legend != null)
+				return false;
+		} else if (!legend.equals(other.legend))
+			return false;
+		if (opaque == null) {
+			if (other.opaque != null)
+				return false;
+		} else if (!opaque.equals(other.opaque))
+			return false;
+		if (timeDimension == null) {
+			if (other.timeDimension != null)
+				return false;
+		} else if (!timeDimension.equals(other.timeDimension))
+			return false;
+		if (elevationDimension == null) {
+			if (other.elevationDimension != null)
+				return false;
+		} else if (!elevationDimension.equals(other.elevationDimension))
 			return false;
 		if (parent == null) {
 			if (other.parent != null)
