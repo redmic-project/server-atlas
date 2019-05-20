@@ -87,6 +87,18 @@
 			]
 		]
 	},
+	"legend": "https://redmic.local/ww",
+	"opaque": false,
+	"timeDimension": {
+		"name": "time",
+		"units": "ISO8601",
+		"defaultValue": "P30M/PRESENT"
+	},
+	"elevationDimension": {
+		"name": "elevation",
+		"units": "ISO8601",
+		"defaultValue": "z1"
+	},
 	"parent": {
 		"id": "category-333",
 		"name": "Especies"

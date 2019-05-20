@@ -41,8 +41,11 @@ public class Layer extends LayerModelCompact {
 	private String image;
 	private LatLonBoundingBox latLonBoundsImage;
 	private List<Protocol> protocols;
-
 	private Polygon geometry;
+	private String legend;
+	private Boolean opaque = false;
+	private Dimension timeDimension;
+	private Dimension elevationDimension;
 
 	public Layer() {
 	}
@@ -101,6 +104,38 @@ public class Layer extends LayerModelCompact {
 
 	public void setGeometry(Polygon geometry) {
 		this.geometry = geometry;
+	}
+
+	public String getLegend() {
+		return legend;
+	}
+
+	public void setLegend(String legend) {
+		this.legend = legend;
+	}
+
+	public Boolean getOpaque() {
+		return opaque;
+	}
+
+	public void setOpaque(Boolean opaque) {
+		this.opaque = opaque;
+	}
+
+	public Dimension getTimeDimension() {
+		return timeDimension;
+	}
+
+	public void setTimeDimension(Dimension timeDimension) {
+		this.timeDimension = timeDimension;
+	}
+
+	public Dimension getElevationDimension() {
+		return elevationDimension;
+	}
+
+	public void setElevationDimension(Dimension elevationDimension) {
+		this.elevationDimension = elevationDimension;
 	}
 
 	public List<ActivityCompact> getActivities() {

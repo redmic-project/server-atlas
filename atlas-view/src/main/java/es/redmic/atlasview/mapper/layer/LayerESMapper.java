@@ -24,12 +24,14 @@ import org.springframework.stereotype.Component;
 
 import es.redmic.atlaslib.dto.layer.ActivityDTO;
 import es.redmic.atlaslib.dto.layer.ContactDTO;
+import es.redmic.atlaslib.dto.layer.DimensionDTO;
 import es.redmic.atlaslib.dto.layer.LatLonBoundingBoxDTO;
 import es.redmic.atlaslib.dto.layer.LayerDTO;
 import es.redmic.atlaslib.dto.layer.ProtocolDTO;
 import es.redmic.atlaslib.dto.layer.StyleLayerDTO;
 import es.redmic.atlaslib.dto.themeinspire.ThemeInspireDTO;
 import es.redmic.atlasview.model.layer.Contact;
+import es.redmic.atlasview.model.layer.Dimension;
 import es.redmic.atlasview.model.layer.LatLonBoundingBox;
 import es.redmic.atlasview.model.layer.Layer;
 import es.redmic.atlasview.model.layer.Protocol;
@@ -69,6 +71,13 @@ public class LayerESMapper extends CustomMapper<Layer, LayerDTO> {
 			b.setProtocols(mapperFacade.mapAsList(a.getProtocols(), ProtocolDTO.class));
 		}
 
+		if (a.getTimeDimension() != null) {
+			b.setTimeDimension(mapperFacade.map(a.getTimeDimension(), DimensionDTO.class));
+		}
+
+		if (a.getElevationDimension() != null) {
+			b.setElevationDimension(mapperFacade.map(a.getElevationDimension(), DimensionDTO.class));
+		}
 		super.mapAtoB(a, b, context);
 	}
 
@@ -97,6 +106,14 @@ public class LayerESMapper extends CustomMapper<Layer, LayerDTO> {
 
 		if (b.getProtocols() != null) {
 			a.setProtocols(mapperFacade.mapAsList(b.getProtocols(), Protocol.class));
+		}
+
+		if (b.getTimeDimension() != null) {
+			a.setTimeDimension(mapperFacade.map(b.getTimeDimension(), Dimension.class));
+		}
+
+		if (b.getElevationDimension() != null) {
+			a.setElevationDimension(mapperFacade.map(b.getElevationDimension(), Dimension.class));
 		}
 
 		super.mapBtoA(b, a, context);

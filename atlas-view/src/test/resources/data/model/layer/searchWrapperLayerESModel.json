@@ -105,6 +105,18 @@
 							]
 						]
 					},
+					"legend": "https://redmic.local/ww",
+					"opaque": false,
+					"timeDimension": {
+						"name": "time",
+						"units": "ISO8601",
+						"defaultValue": "P30M/PRESENT"
+					},
+					"elevationDimension": {
+						"name": "elevation",
+						"units": "ISO8601",
+						"defaultValue": "z1"
+					},
 					"updated": "2017-05-23T12:35:12.052+00:00",
 					"inserted": "2017-05-23T12:35:12.052+00:00"
 				}
