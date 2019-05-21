@@ -1,7 +1,5 @@
 package es.redmic.atlaslib.dto.layer;
 
-import org.apache.avro.Schema;
-
 /*-
  * #%L
  * Atlas-lib
@@ -22,12 +20,9 @@ import org.apache.avro.Schema;
  * #L%
  */
 
-import org.opengis.metadata.citation.Address;
-import org.opengis.metadata.citation.ResponsibleParty;
-import org.opengis.metadata.citation.Telephone;
+import org.apache.avro.Schema;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonSetter;
 
 public class ContactDTO extends org.apache.avro.specific.SpecificRecordBase
 		implements org.apache.avro.specific.SpecificRecord {
@@ -57,24 +52,6 @@ public class ContactDTO extends org.apache.avro.specific.SpecificRecordBase
 	public ContactDTO() {
 	}
 
-	public ContactDTO(ResponsibleParty contactInfo) {
-
-		setName(contactInfo.getIndividualName());
-
-		if (contactInfo.getOrganisationName() != null)
-			setOrganization(contactInfo.getOrganisationName().toString());
-
-		if (contactInfo.getContactInfo() != null) {
-			setPhone(contactInfo.getContactInfo().getPhone());
-			setFax(contactInfo.getContactInfo().getPhone());
-			setEmail(contactInfo.getContactInfo().getAddress());
-			setAddress(contactInfo.getContactInfo().getAddress());
-		}
-
-		if (contactInfo.getPositionName() != null)
-			setContactPosition(contactInfo.getPositionName().toString());
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -87,14 +64,8 @@ public class ContactDTO extends org.apache.avro.specific.SpecificRecordBase
 		return email;
 	}
 
-	@JsonSetter("email")
 	public void setEmail(String email) {
 		this.email = email;
-	}
-
-	public void setEmail(Address address) {
-		if (address != null && !address.getElectronicMailAddresses().isEmpty())
-			this.email = address.getElectronicMailAddresses().toArray()[0].toString();
 	}
 
 	public String getOrganization() {
@@ -109,57 +80,24 @@ public class ContactDTO extends org.apache.avro.specific.SpecificRecordBase
 		return address;
 	}
 
-	@JsonSetter("address")
 	public void setAddress(String address) {
 		this.address = address;
-	}
-
-	public void setAddress(Address address) {
-		if (address != null) {
-			String addressAux = null;
-			if (!address.getDeliveryPoints().isEmpty())
-				addressAux = address.getDeliveryPoints().toArray()[0].toString() + " ";
-
-			if (address.getCity() != null)
-				addressAux += address.getCity() + " ";
-
-			if (address.getPostalCode() != null)
-				addressAux += address.getPostalCode() + " ";
-
-			if (address.getCountry() != null)
-				addressAux += address.getCountry() + " ";
-
-			if (addressAux != null)
-				this.address = addressAux;
-		}
 	}
 
 	public String getPhone() {
 		return phone;
 	}
 
-	@JsonSetter("phone")
 	public void setPhone(String phone) {
 		this.phone = phone;
-	}
-
-	public void setPhone(Telephone phone) {
-		if (phone != null && !phone.getVoices().isEmpty())
-			this.phone = phone.getVoices().toArray()[0].toString();
 	}
 
 	public String getFax() {
 		return fax;
 	}
 
-	@JsonSetter("fax")
 	public void setFax(String fax) {
 		this.fax = fax;
-	}
-
-	public void setFax(Telephone fax) {
-		if (phone != null && !fax.getFacsimiles().isEmpty())
-			this.fax = fax.getFacsimiles().toArray()[0].toString();
 	}
 
 	public String getContactPosition() {
