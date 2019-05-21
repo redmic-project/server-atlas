@@ -55,7 +55,7 @@ public class StyleLayerDTO extends org.apache.avro.specific.SpecificRecordBase
 	public StyleLayerDTO(StyleImpl style) {
 		setName(style.getName());
 		setTitle(style.getAbstract());
-		setabstractStyle(style.getAbstract());
+		setAbstractStyle(style.getAbstract());
 		if (style.getLegendURLs() != null && style.getLegendURLs().size() > 0)
 			setUrl(style.getLegendURLs().get(0).toString());
 
@@ -101,16 +101,16 @@ public class StyleLayerDTO extends org.apache.avro.specific.SpecificRecordBase
 		this.url = url;
 	}
 
-	public String getabstractStyle() {
+	public String getAbstractStyle() {
 		return abstractStyle;
 	}
 
 	@JsonSetter("abstractStyle")
-	public void setabstractStyle(String abstractStyle) {
+	public void setAbstractStyle(String abstractStyle) {
 		this.abstractStyle = abstractStyle;
 	}
 
-	public void setabstractStyle(InternationalString abstractStyle) {
+	public void setAbstractStyle(InternationalString abstractStyle) {
 		if (abstractStyle != null)
 			this.abstractStyle = abstractStyle.toString();
 	}
@@ -166,7 +166,7 @@ public class StyleLayerDTO extends org.apache.avro.specific.SpecificRecordBase
 
 	@Override
 	public String toString() {
-		return "Name: " + getName() + ", Title: " + getTitle() + ", Abstract: " + getabstractStyle() + ", URL: "
+		return "Name: " + getName() + ", Title: " + getTitle() + ", Abstract: " + getAbstractStyle() + ", URL: "
 				+ getUrl();
 	}
 
