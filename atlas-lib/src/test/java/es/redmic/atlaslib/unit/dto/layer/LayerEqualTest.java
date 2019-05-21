@@ -576,7 +576,7 @@ public class LayerEqualTest {
 
 		LayerDTO dto2 = LayerDataUtil.getLayer();
 
-		dto1.getStyleLayer().setName("aaa");
+		dto1.getStylesLayer().get(0).setName("aaa");
 
 		assertFalse(dto1.equals(dto2));
 	}
@@ -588,7 +588,7 @@ public class LayerEqualTest {
 
 		LayerDTO dto2 = LayerDataUtil.getLayer();
 
-		dto1.setStyleLayer(null);
+		dto1.setStylesLayer(null);
 		assertFalse(dto1.equals(dto2));
 	}
 

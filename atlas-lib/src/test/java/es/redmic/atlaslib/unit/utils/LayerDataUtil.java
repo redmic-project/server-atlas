@@ -302,7 +302,11 @@ public abstract class LayerDataUtil {
 
 		StyleLayerDTO styleLayer = new StyleLayerDTO();
 		styleLayer.setName("styleLayer");
-		layer.setStyleLayer(styleLayer);
+		layer.setStylesLayer(new ArrayList<StyleLayerDTO>() {
+			{
+				add(styleLayer);
+			}
+		});
 
 		return layer;
 	}

@@ -65,7 +65,7 @@ public class LayerDTO extends LayerInfoDTO {
 			+ "{\"name\":\"abstractLayer\",\"type\":[\"string\", \"null\"]},"
 			+ "{\"name\":\"keyword\",\"type\":[{\"type\":\"array\",\"items\":\"string\"},\"null\"]},"
 			+ "{\"name\":\"srs\",\"type\":{\"type\":\"array\",\"items\":\"string\"}},"
-			+ "{\"name\":\"styleLayer\",\"type\":[ " + StyleLayerDTO.SCHEMA$ + ",\"null\"]},"
+			+ "{\"name\":\"stylesLayer\",\"type\":[{\"type\": \"array\",\"items\":" + StyleLayerDTO.SCHEMA$ + "},\"null\"]},"
 			+ "{\"name\":\"contact\",\"type\":[" + ContactDTO.SCHEMA$ + ",\"null\"]},"
 			+ "{\"name\": \"activities\",\"type\": [{\"type\": \"array\",\"items\": "+ ActivityDTO.SCHEMA$ +"},\"null\"]},"
 			+ "{\"name\":\"urlSource\",\"type\":\"string\"},"
@@ -111,7 +111,7 @@ public class LayerDTO extends LayerInfoDTO {
 	private List<String> srs;
 
 	@Valid
-	private StyleLayerDTO styleLayer;
+	private List<StyleLayerDTO> stylesLayer;
 
 	@Valid
 	private ContactDTO contact;
@@ -190,12 +190,12 @@ public class LayerDTO extends LayerInfoDTO {
 		this.srs = srs;
 	}
 
-	public StyleLayerDTO getStyleLayer() {
-		return styleLayer;
+	public List<StyleLayerDTO> getStylesLayer() {
+		return stylesLayer;
 	}
 
-	public void setStyleLayer(StyleLayerDTO styleLayer) {
-		this.styleLayer = styleLayer;
+	public void setStylesLayer(List<StyleLayerDTO> stylesLayer) {
+		this.stylesLayer = stylesLayer;
 	}
 
 	public ContactDTO getContact() {
@@ -338,7 +338,7 @@ public class LayerDTO extends LayerInfoDTO {
 		case 3:
 			return srs;
 		case 4:
-			return styleLayer;
+			return stylesLayer;
 		case 5:
 			return contact;
 		case 6:
@@ -413,7 +413,7 @@ public class LayerDTO extends LayerInfoDTO {
 			srs = value != null ? (java.util.List) value : null;
 			break;
 		case 4:
-			styleLayer = value != null ? (StyleLayerDTO) value : null;
+			stylesLayer = value != null ? (java.util.List) value : null;
 			break;
 		case 5:
 			contact = value != null ? (ContactDTO) value : null;
@@ -515,7 +515,7 @@ public class LayerDTO extends LayerInfoDTO {
 		result = prime * result + ((keyword == null) ? 0 : keyword.hashCode());
 		result = prime * result + ((queryable == null) ? 0 : queryable.hashCode());
 		result = prime * result + ((srs == null) ? 0 : srs.hashCode());
-		result = prime * result + ((styleLayer == null) ? 0 : styleLayer.hashCode());
+		result = prime * result + ((stylesLayer == null) ? 0 : stylesLayer.hashCode());
 		result = prime * result + ((title == null) ? 0 : title.hashCode());
 		result = prime * result + ((urlSource == null) ? 0 : urlSource.hashCode());
 		return result;
@@ -610,10 +610,10 @@ public class LayerDTO extends LayerInfoDTO {
 				return false;
 		} else if (!srs.equals(other.srs))
 			return false;
-		if (styleLayer == null) {
-			if (other.styleLayer != null)
+		if (stylesLayer == null) {
+			if (other.stylesLayer != null)
 				return false;
-		} else if (!styleLayer.equals(other.styleLayer))
+		} else if (!stylesLayer.equals(other.stylesLayer))
 			return false;
 		if (title == null) {
 			if (other.title != null)
