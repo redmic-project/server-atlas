@@ -65,7 +65,7 @@ public class ApplyEventTest {
 	}
 
 	@Test
-	public void applyLayerCreatedEvent_ChangeAggrefateState_IfProcessIsOk() {
+	public void applyLayerCreatedEvent_ChangeAggregateState_IfProcessIsOk() {
 
 		LayerCreatedEvent evt = LayerDataUtil.getLayerCreatedEvent(code);
 
