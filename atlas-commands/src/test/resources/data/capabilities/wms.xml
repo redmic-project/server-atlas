@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?><WMS_Capabilities xmlns:inspire_vs="http://inspire.ec.europa.eu/schemas/inspire_vs/1.0" xmlns:inspire_common="http://inspire.ec.europa.eu/schemas/common/1.0" version="1.3.0" updateSequence="3111" xmlns="http://www.opengis.net/wms" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wms http://atlas.redmic.es:80/schemas/wms/1.3.0/capabilities_1_3_0.xsd http://inspire.ec.europa.eu/schemas/inspire_vs/1.0 http://inspire.ec.europa.eu/schemas/inspire_vs/1.0/inspire_vs.xsd">
+  <Service>
+    <Name>WMS</Name>
+    <Title>GeoServer Web Map Service</Title>
+    <Abstract>A compliant implementation of WMS plus most of the SLD extension (dynamic styling). Can also generate PDF, SVG, KML, GeoRSS</Abstract>
+    <KeywordList>
+      <Keyword>WFS</Keyword>
+      <Keyword>WMS</Keyword>
+      <Keyword>GEOSERVER</Keyword>
+    </KeywordList>
+    <OnlineResource xlink:type="simple" xlink:href="http://geoserver.sourceforge.net/html/index.php"/>
+    <ContactInformation>
+      <ContactPersonPrimary>
+        <ContactPerson>José Andrés Sevilla</ContactPerson>
+        <ContactOrganization>Observatorio Ambiental Granadilla</ContactOrganization>
+      </ContactPersonPrimary>
+      <ContactPosition>GIS</ContactPosition>
+      <ContactAddress>
+        <AddressType>Work</AddressType>
+        <Address>Edf. Puerto-Ciudad, of. 1b,</Address>
+        <City>S/C de Tenerife</City>
+        <StateOrProvince>Santa Cruz de Tenerife</StateOrProvince>
+        <PostCode>38001</PostCode>
+        <Country>Spain</Country>
+      </ContactAddress>
+      <ContactVoiceTelephone>+34922298700</ContactVoiceTelephone>
+      <ContactFacsimileTelephone>+34922298704</ContactFacsimileTelephone>
+      <ContactElectronicMailAddress>gis@oag-fundacion.org</ContactElectronicMailAddress>
+    </ContactInformation>
+    <Fees>NONE</Fees>
+    <AccessConstraints>NONE</AccessConstraints>
+  </Service>
+  <Capability>
+    <Request>
+      <GetCapabilities>
+        <Format>text/xml</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xlink:type="simple" xlink:href="http://atlas.redmic.es:80/el/ows?SERVICE=WMS&amp;"/>
+            </Get>
+            <Post>
+              <OnlineResource xlink:type="simple" xlink:href="http://atlas.redmic.es:80/el/ows?SERVICE=WMS&amp;"/>
+            </Post>
+          </HTTP>
+        </DCPType>
+      </GetCapabilities>
+      <GetMap>
+        <Format>image/png</Format>
+        <Format>application/atom+xml</Format>
+        <Format>application/pdf</Format>
+        <Format>application/rss+xml</Format>
+        <Format>application/vnd.google-earth.kml+xml</Format>
+        <Format>application/vnd.google-earth.kml+xml;mode=networklink</Format>
+        <Format>application/vnd.google-earth.kmz</Format>
+        <Format>image/geotiff</Format>
+        <Format>image/geotiff8</Format>
+        <Format>image/gif</Format>
+        <Format>image/jpeg</Format>
+        <Format>image/png; mode=8bit</Format>
+        <Format>image/svg+xml</Format>
+        <Format>image/tiff</Format>
+        <Format>image/tiff8</Format>
+        <Format>text/html; subtype=openlayers</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xlink:type="simple" xlink:href="http://atlas.redmic.es:80/el/ows?SERVICE=WMS&amp;"/>
+            </Get>
+          </HTTP>
+        </DCPType>
+      </GetMap>
+      <GetFeatureInfo>
+        <Format>text/plain</Format>
+        <Format>application/vnd.ogc.gml</Format>
+        <Format>text/xml</Format>
+        <Format>application/vnd.ogc.gml/3.1.1</Format>
+        <Format>text/xml; subtype=gml/3.1.1</Format>
+        <Format>text/html</Format>
+        <Format>application/json</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xlink:type="simple" xlink:href="http://atlas.redmic.es:80/el/ows?SERVICE=WMS&amp;"/>
+            </Get>
+          </HTTP>
+        </DCPType>
+      </GetFeatureInfo>
+    </Request>
+    <Exception>
+      <Format>XML</Format>
+      <Format>INIMAGE</Format>
+      <Format>BLANK</Format>
+    </Exception>
+    <Layer>
+      <Title>GeoServer Web Map Service</Title>
+      <Abstract>A compliant implementation of WMS plus most of the SLD extension (dynamic styling). Can also generate PDF, SVG, KML, GeoRSS</Abstract>
+      <!--Limited list of EPSG projections:-->
+      <CRS>EPSG:32628</CRS>
+      <CRS>EPSG:3857</CRS>
+      <CRS>EPSG:4326</CRS>
+      <CRS>CRS:84</CRS>
+      <EX_GeographicBoundingBox>
+        <westBoundLongitude>-50.2820053100586</westBoundLongitude>
+        <eastBoundLongitude>-5.36545515060425</eastBoundLongitude>
+        <southBoundLatitude>12.8178520202637</southBoundLatitude>
+        <northBoundLatitude>41.6171493530273</northBoundLatitude>
+      </EX_GeographicBoundingBox>
+      <BoundingBox CRS="CRS:84" minx="-50.2820053100586" miny="12.8178520202637" maxx="-5.36545515060425" maxy="41.6171493530273"/>
+      <BoundingBox CRS="EPSG:4326" minx="12.8178520202637" miny="-50.2820053100586" maxx="41.6171493530273" maxy="-5.36545515060425"/>
+      <BoundingBox CRS="EPSG:32628" minx="-3566912.1649603797" miny="1417527.187789234" maxx="1550038.3477923165" maxy="5254389.1113971835"/>
+      <BoundingBox CRS="EPSG:3857" minx="-5597367.227180402" miny="1438929.891094889" maxx="-597279.735239412" maxy="5103801.682153641"/>
+      <Layer queryable="1">
+        <Name>batimetriaGlobal</Name>
+        <Title>Batimetrías</Title>
+        <Abstract>Isolíneas batimétricas obtenidas por geoprocesamiento a partir del modelo batimétrico del "General Bathymetric Chart of the Oceans (GEBCO), www.gebco.net" con equidistancia de 100 m&#13;ref#817#</Abstract>
+        <CRS>EPSG:4326</CRS>
+        <EX_GeographicBoundingBox>
+          <westBoundLongitude>-19.332800035</westBoundLongitude>
+          <eastBoundLongitude>-12.666811229</eastBoundLongitude>
+          <southBoundLatitude>27.404290052</southBoundLatitude>
+          <northBoundLatitude>29.416379848</northBoundLatitude>
+        </EX_GeographicBoundingBox>
+        <BoundingBox CRS="EPSG:4326" minx="27.404290052" miny="-19.332800035" maxx="29.416379848" maxy="-12.666811229"/>
+        <BoundingBox CRS="EPSG:32628" minx="-3566912.1649603797" miny="1417527.187789234" maxx="1550038.3477923165" maxy="5254389.1113971835"/>
+        <BoundingBox CRS="EPSG:3857" minx="-5597367.227180402" miny="1438929.891094889" maxx="-597279.735239412" maxy="5103801.682153641"/>
+        <Style>
+          <Name>el:batimetria50mCanarias</Name>
+          <Title>Isobatas cada 50 m azules</Title>
+          <Abstract>Apropiado para representar isobatas con 50 m de equidistancia, en varios niveles de escala o zoom, en los que se adapta el etiquetado para mejorar la visualización</Abstract>
+          <LegendURL width="139" height="240">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://atlas.redmic.es:80/el/ows?service=WMS&amp;request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=batimetriaCanarias"/>
+          </LegendURL>
+        </Style>
+        <Style>
+          <Name>el:batimetriaMacaronesia</Name>
+          <LegendURL width="22" height="360">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://atlas.redmic.es:80/el/ows?service=WMS&amp;request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=batimetriaCanarias&amp;style=batimetriaMacaronesia"/>
+          </LegendURL>
+        </Style>
+        <Style>
+          <Name>el:batimetria1mCanarias</Name>
+          <LegendURL width="132" height="240">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://atlas.redmic.es:80/el/ows?service=WMS&amp;request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=batimetriaCanarias&amp;style=batimetria1mCanarias"/>
+          </LegendURL>
+        </Style>
+        <Style>
+          <Name>el:batimetria50mCanariasGroup</Name>
+          <LegendURL width="139" height="240">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://atlas.redmic.es:80/el/ows?service=WMS&amp;request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=batimetriaCanarias&amp;style=batimetria50mCanariasGroup"/>
+          </LegendURL>
+        </Style>
+        <Dimension name="time" default="2017-03-15T08:15:38.742Z" units="ISO8601">2017-03-15T08:15:38.742Z</Dimension>
+		<Dimension name="elevation" default="1" units="EPSG:5030" unitSymbol="m">-3301.0/1600.0/0</Dimension>
+      </Layer>
+    </Layer>
+  </Capability>
+</WMS_Capabilities>
