@@ -14,9 +14,10 @@
 	<packaging>jar</packaging>
 	<name>Atlas-management</name>
 	<description>Atlas management microservice (add/edit/delete atlas layers)</description>
-	
+
 	<properties>
 		<redmic.commands-lib.version>0.9.0-feature-atlasMicroservice</redmic.commands-lib.version>
+		<mapstruct.version>1.3.0.Final</mapstruct.version>
 	</properties>
 
 	<dependencies>
@@ -44,19 +45,25 @@
 
 		<!-- Añadir dependencia de la librería de la unidad funcional -->
 
+		<dependency>
+			<groupId>org.mapstruct</groupId>
+			<artifactId>mapstruct</artifactId>
+			<version>${mapstruct.version}</version>
+		</dependency>
+
 		<!-- REDMIC -->
 		<dependency>
 			<groupId>es.redmic.lib</groupId>
 			<artifactId>commands-lib</artifactId>
 			<version>${redmic.commands-lib.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>es.redmic.atlas</groupId>
 			<artifactId>atlas-lib</artifactId>
 			<version>${redmic.atlas-lib.version}</version>
 		</dependency>
-		
+
 		<!-- tests -->
 		<dependency>
 			<groupId>es.redmic.lib</groupId>
@@ -114,6 +121,20 @@
 						</configuration>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.mapstruct</groupId>
+							<artifactId>mapstruct-processor</artifactId>
+							<version>${mapstruct.version}</version>
+						</path>
+						<!-- other annotation processors -->
+					</annotationProcessorPaths>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
