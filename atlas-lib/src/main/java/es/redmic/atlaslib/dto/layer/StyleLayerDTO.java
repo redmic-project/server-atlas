@@ -1,7 +1,5 @@
 package es.redmic.atlaslib.dto.layer;
 
-import org.apache.avro.Schema;
-
 /*-
  * #%L
  * Atlas-lib
@@ -22,11 +20,9 @@ import org.apache.avro.Schema;
  * #L%
  */
 
-import org.geotools.data.ows.StyleImpl;
-import org.opengis.util.InternationalString;
+import org.apache.avro.Schema;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonSetter;
 
 public class StyleLayerDTO extends org.apache.avro.specific.SpecificRecordBase
 		implements org.apache.avro.specific.SpecificRecord {
@@ -52,17 +48,6 @@ public class StyleLayerDTO extends org.apache.avro.specific.SpecificRecordBase
 	public StyleLayerDTO() {
 	}
 
-	public StyleLayerDTO(StyleImpl style) {
-		setName(style.getName());
-		setTitle(style.getAbstract());
-		setAbstractStyle(style.getAbstract());
-		if (style.getLegendURLs() != null && style.getLegendURLs().size() > 0)
-			setUrl(style.getLegendURLs().get(0).toString());
-
-		if (getUrl() != null)
-			setFormat(getUrl().replaceAll(".*&format=(\\w*)%2F(\\w*)&.*", "$1/$2"));
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -75,14 +60,8 @@ public class StyleLayerDTO extends org.apache.avro.specific.SpecificRecordBase
 		return title;
 	}
 
-	@JsonSetter("title")
 	public void setTitle(String title) {
 		this.title = title;
-	}
-
-	public void setTitle(InternationalString title) {
-		if (title != null)
-			this.title = title.toString();
 	}
 
 	public String getFormat() {
@@ -105,14 +84,8 @@ public class StyleLayerDTO extends org.apache.avro.specific.SpecificRecordBase
 		return abstractStyle;
 	}
 
-	@JsonSetter("abstractStyle")
 	public void setAbstractStyle(String abstractStyle) {
 		this.abstractStyle = abstractStyle;
-	}
-
-	public void setAbstractStyle(InternationalString abstractStyle) {
-		if (abstractStyle != null)
-			this.abstractStyle = abstractStyle.toString();
 	}
 
 	@Override
