@@ -124,6 +124,11 @@
         <BoundingBox CRS="EPSG:4326" minx="27.404290052" miny="-19.332800035" maxx="29.416379848" maxy="-12.666811229"/>
         <BoundingBox CRS="EPSG:32628" minx="-3566912.1649603797" miny="1417527.187789234" maxx="1550038.3477923165" maxy="5254389.1113971835"/>
         <BoundingBox CRS="EPSG:3857" minx="-5597367.227180402" miny="1438929.891094889" maxx="-597279.735239412" maxy="5103801.682153641"/>
+        <KeywordList>
+     		<Keyword>WFS</Keyword>
+      		<Keyword>WMS</Keyword>
+      		<Keyword>GEOSERVER</Keyword>
+    	</KeywordList>
         <Style>
           <Name>el:batimetria50mCanarias</Name>
           <Title>Isobatas cada 50 m azules</Title>

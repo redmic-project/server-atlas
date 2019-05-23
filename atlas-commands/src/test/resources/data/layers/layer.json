@@ -120,5 +120,7 @@
 			"format": "image/jpeg",
 			"onlineResource": "http://www.oag-fundacion.org/content/logos/oag_sinmedusa.jpg"
 		}
-	}
+	},
+	"keywords": ["WFS", "WMS", "GEOSERVER"],
+	"urlSource": "file:/home/REDMIC/redmic_project/server/atlas/atlas-commands/src/test/resources/data/capabilities/wms.xml"
 }
