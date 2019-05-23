@@ -27,6 +27,7 @@ import java.util.List;
 import org.geotools.data.ows.CRSEnvelope;
 import org.geotools.data.ows.Layer;
 import org.geotools.data.ows.StyleImpl;
+import org.geotools.data.wms.xml.Attribution;
 import org.geotools.data.wms.xml.Dimension;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.locationtech.jts.geom.Coordinate;
@@ -37,29 +38,31 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
 import es.redmic.atlaslib.dto.layer.ActivityDTO;
+import es.redmic.atlaslib.dto.layer.AttributionDTO;
 import es.redmic.atlaslib.dto.layer.DimensionDTO;
 import es.redmic.atlaslib.dto.layer.LayerDTO;
+import es.redmic.atlaslib.dto.layer.LogoURLDTO;
 import es.redmic.atlaslib.dto.layer.StyleLayerDTO;
 
 @Mapper
 public interface LayerMapper {
 
-	final String SRS = "EPSG:4326";
-
 	final int SRID = 4326;
 
-	final String refRegex = "ref#((\\d*,?)*)#";
-	final String endLineRegex = "\r?\n|\r";
-	final String refInBracketsRegex = ".*(" + refRegex + ").*";
+	// @formatter:off
+	
+	// TODO: Pasar por contexto
 
-	final String formatRegex = ".*&format=(\\w*)%2F(\\w*)&.*";
-
-	final String host = "atlas.redmic.es";
-
-	final String timeDimensionProperty = "time";
-	final String elevationDimensionProperty = "elevation";
-
-	@Mapping(source = "layer", target = "urlSource", qualifiedByName = "urlSource")
+	final String SRS = "EPSG:4326",
+			refRegex = "ref#((\\d*,?)*)#",
+			endLineRegex = "\r?\n|\r",
+			refInBracketsRegex = ".*(" + refRegex + ").*",
+			formatRegex = ".*&format=(\\w*)%2F(\\w*)&.*",
+			timeDimensionProperty = "time",
+			elevationDimensionProperty = "elevation",
+			legendGraphicUrlParameters = "?request=GetLegendGraphic&version=1.0.0&format=image/png&layer=topp:states";
+	
+	// @formatter:on
 	@Mapping(source = "layer", target = "alias", qualifiedByName = "alias")
 	@Mapping(source = "layer", target = "legend", qualifiedByName = "legend")
 	@Mapping(source = "layer", target = "timeDimension", qualifiedByName = "timeDimension")
@@ -68,14 +71,9 @@ public interface LayerMapper {
 	@Mapping(source = "layer", target = "abstractLayer", qualifiedByName = "abstractLayer")
 	@Mapping(source = "layer", target = "activities", qualifiedByName = "activities")
 	@Mapping(source = "layer", target = "geometry", qualifiedByName = "geometry")
-	@Mapping(source = "layer", target = "keyword", qualifiedByName = "keyword")
+	@Mapping(source = "layer", target = "keywords", qualifiedByName = "keywords")
+	@Mapping(source = "layer", target = "attribution", qualifiedByName = "attribution")
 	LayerDTO map(Layer layer, @Context String urlSource);
-
-	@Named("urlSource")
-	default String getUrlSource(Layer layer, @Context String urlSource) {
-
-		return getNormalizedUrl(urlSource);
-	}
 
 	@Named("alias")
 	default String getAlias(Layer layer, @Context String urlSource) {
@@ -89,7 +87,7 @@ public interface LayerMapper {
 	@Named("legend")
 	default String getLegend(Layer layer, @Context String urlSource) {
 
-		return "";
+		return urlSource + legendGraphicUrlParameters;
 	}
 
 	@Named("timeDimension")
@@ -113,14 +111,15 @@ public interface LayerMapper {
 			StyleLayerDTO styleLayerDTO = new StyleLayerDTO();
 			styleLayerDTO.setName(style.getName());
 
-			if (style.getAbstract() != null) {
-				styleLayerDTO.setTitle(style.getAbstract().toString());
+			if (style.getAbstract() != null)
 				styleLayerDTO.setAbstractStyle(style.getAbstract().toString());
-			}
+
+			if (style.getTitle() != null)
+				styleLayerDTO.setTitle(style.getTitle().toString());
 
 			if (style.getLegendURLs() != null && style.getLegendURLs().size() > 0) {
 
-				String url = getNormalizedUrl(style.getLegendURLs().get(0).toString());
+				String url = style.getLegendURLs().get(0).toString();
 
 				styleLayerDTO.setUrl(url);
 				styleLayerDTO.setFormat(styleLayerDTO.getUrl().replaceAll(formatRegex, "$1/$2"));
@@ -197,8 +196,8 @@ public interface LayerMapper {
 		return polygon;
 	}
 
-	@Named("keyword")
-	default List<String> getKeyword(Layer layer, @Context String urlSource) {
+	@Named("keywords")
+	default List<String> getKeywords(Layer layer, @Context String urlSource) {
 
 		if (layer.getKeywords() == null)
 			return null;
@@ -206,12 +205,30 @@ public interface LayerMapper {
 		return Arrays.asList(layer.getKeywords());
 	}
 
-	default String getNormalizedUrl(String url) {
+	@Named("attribution")
+	default AttributionDTO getAttribution(Layer layer, @Context String urlSource) {
 
-		if (url != null && url.contains(host)) {
-			url.replaceFirst("http:", "https:").replaceFirst(":80", "");
+		if (layer.getAttribution() == null)
+			return null;
+
+		AttributionDTO attribution = new AttributionDTO();
+
+		Attribution source = layer.getAttribution();
+
+		attribution.setTitle(source.getTitle());
+
+		if (source.getOnlineResource() != null)
+			attribution.setOnlineResource(source.getOnlineResource().toString());
+
+		if (source.getLogoURL() != null) {
+
+			LogoURLDTO logoURL = new LogoURLDTO();
+			logoURL.setFormat(source.getLogoURL().getFormat());
+			logoURL.setOnlineResource(source.getLogoURL().getOnlineResource().toString());
+			attribution.setLogoURL(logoURL);
 		}
-		return url;
+
+		return attribution;
 	}
 
 	default DimensionDTO getDimension(Layer layer, String property) {
@@ -225,6 +242,7 @@ public interface LayerMapper {
 
 		dimension.setName(source.getName());
 		dimension.setUnits(source.getUnits());
+		dimension.setUnitSymbol(source.getUnitSymbol());
 		dimension.setDefaultValue(source.getExtent().getDefaultValue());
 
 		return dimension;
