@@ -63,6 +63,8 @@ public interface LayerMapper {
 			legendGraphicUrlParameters = "?request=GetLegendGraphic&version=1.0.0&format=image/png&layer=topp:states";
 	
 	// @formatter:on
+
+	@Mapping(source = "layer", target = "urlSource", qualifiedByName = "urlSource")
 	@Mapping(source = "layer", target = "alias", qualifiedByName = "alias")
 	@Mapping(source = "layer", target = "legend", qualifiedByName = "legend")
 	@Mapping(source = "layer", target = "timeDimension", qualifiedByName = "timeDimension")
@@ -74,6 +76,12 @@ public interface LayerMapper {
 	@Mapping(source = "layer", target = "keywords", qualifiedByName = "keywords")
 	@Mapping(source = "layer", target = "attribution", qualifiedByName = "attribution")
 	LayerDTO map(Layer layer, @Context String urlSource);
+
+	@Named("urlSource")
+	default String getUrlSource(Layer layer, @Context String urlSource) {
+
+		return urlSource;
+	}
 
 	@Named("alias")
 	default String getAlias(Layer layer, @Context String urlSource) {
