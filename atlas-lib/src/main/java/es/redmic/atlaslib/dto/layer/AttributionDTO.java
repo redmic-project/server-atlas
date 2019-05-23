@@ -108,6 +108,7 @@ public class AttributionDTO extends org.apache.avro.specific.SpecificRecordBase
 		return true;
 	}
 
+	@JsonIgnore
 	@Override
 	public Schema getSchema() {
 		return SCHEMA$;
