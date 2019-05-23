@@ -31,6 +31,7 @@ import org.joda.time.DateTime;
 import org.locationtech.jts.geom.Coordinate;
 
 import es.redmic.atlaslib.dto.layer.ActivityDTO;
+import es.redmic.atlaslib.dto.layer.AttributionDTO;
 import es.redmic.atlaslib.dto.layer.ContactDTO;
 import es.redmic.atlaslib.dto.layer.DimensionDTO;
 import es.redmic.atlaslib.dto.layer.LatLonBoundingBoxDTO;
@@ -234,7 +235,11 @@ public abstract class LayerDataUtil {
 		LayerDTO layer = new LayerDTO();
 
 		layer.setLegend("https://redmic.local/ww");
-		layer.setOpaque(false);
+
+		AttributionDTO attribution = new AttributionDTO();
+		attribution.setTitle("title");
+		layer.setAttribution(attribution);
+
 		DimensionDTO dimension = new DimensionDTO();
 		dimension.setName("time");
 		dimension.setUnits("ISO8601");
@@ -261,9 +266,9 @@ public abstract class LayerDataUtil {
 		srs.add("srs");
 		layer.setSrs(srs);
 
-		List<String> keyword = new ArrayList<>();
-		keyword.add("keyword");
-		layer.setKeyword(keyword);
+		List<String> keywords = new ArrayList<>();
+		keywords.add("keywords");
+		layer.setKeywords(keywords);
 
 		layer.setUrlSource("http://redmic.es");
 
@@ -319,6 +324,8 @@ public abstract class LayerDataUtil {
 		layerInfo.setName("Prueba");
 		layerInfo.setAlias("Prueba");
 		layerInfo.setDescription("Prueba");
+
+		layerInfo.setUrlSource("http://redmic.es");
 
 		layerInfo.setParent(CategoryDataUtil.getCategory());
 

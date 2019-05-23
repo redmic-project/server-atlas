@@ -57,6 +57,7 @@ public class LayerInfoDTO extends LayerCompactDTO {
 			+ "{\"name\":\"alias\",\"type\":[\"string\", \"null\"]},"
 			+ "{\"name\":\"atlas\",\"type\":\"boolean\", \"default\": \"false\"},"
 			+ "{\"name\":\"refresh\",\"type\":\"int\", \"default\": \"0\"},"
+			+ "{\"name\":\"urlSource\",\"type\":\"string\"},"
 			+ "{\"name\":\"name\",\"type\":\"string\"},"
 			+ "{\"name\":\"id\",\"type\":\"string\"}]}");
 	// @formatter:on
@@ -104,8 +105,10 @@ public class LayerInfoDTO extends LayerCompactDTO {
 		case 7:
 			return getRefresh();
 		case 8:
-			return getName();
+			return getUrlSource();
 		case 9:
+			return getName();
+		case 10:
 			return getId();
 		default:
 			throw new org.apache.avro.AvroRuntimeException("Bad index");
@@ -142,9 +145,12 @@ public class LayerInfoDTO extends LayerCompactDTO {
 			setRefresh((int) value);
 			break;
 		case 8:
-			setName(value.toString());
+			setUrlSource(value != null ? value.toString() : null);
 			break;
 		case 9:
+			setName(value.toString());
+			break;
+		case 10:
 			setId(value.toString());
 			break;
 		default:

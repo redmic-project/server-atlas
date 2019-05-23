@@ -86,6 +86,29 @@ public class LayerEqualTest {
 	}
 
 	@Test
+	public void equal_returnFalse_IfLayerUrlSourceIsDifferent() {
+
+		LayerDTO dto1 = LayerDataUtil.getLayer();
+
+		LayerDTO dto2 = LayerDataUtil.getLayer();
+
+		dto1.setUrlSource("aaa");
+
+		assertFalse(dto1.equals(dto2));
+	}
+
+	@Test
+	public void equal_returnFalse_IfLayerUrlSourceIsNull() {
+
+		LayerDTO dto1 = LayerDataUtil.getLayer();
+
+		LayerDTO dto2 = LayerDataUtil.getLayer();
+
+		dto1.setUrlSource(null);
+		assertFalse(dto1.equals(dto2));
+	}
+
+	@Test
 	public void equal_returnFalse_IfLayerRefreshIsDifferent() {
 
 		LayerDTO dto1 = LayerDataUtil.getLayer();
@@ -363,13 +386,13 @@ public class LayerEqualTest {
 	}
 
 	@Test
-	public void equal_returnFalse_IfLayerOpaqueIsDifferent() {
+	public void equal_returnFalse_IfLayerAttributionIsDifferent() {
 
 		LayerDTO dto1 = LayerDataUtil.getLayer();
 
 		LayerDTO dto2 = LayerDataUtil.getLayer();
 
-		dto1.setOpaque(true);
+		dto1.getAttribution().setTitle("aaa");
 
 		assertFalse(dto1.equals(dto2));
 	}
@@ -381,7 +404,7 @@ public class LayerEqualTest {
 
 		LayerDTO dto2 = LayerDataUtil.getLayer();
 
-		dto1.setOpaque(null);
+		dto1.setAttribution(null);
 		assertFalse(dto1.equals(dto2));
 	}
 
@@ -501,29 +524,6 @@ public class LayerEqualTest {
 	}
 
 	@Test
-	public void equal_returnFalse_IfLayerUrlSourceIsDifferent() {
-
-		LayerDTO dto1 = LayerDataUtil.getLayer();
-
-		LayerDTO dto2 = LayerDataUtil.getLayer();
-
-		dto1.setUrlSource("aaa");
-
-		assertFalse(dto1.equals(dto2));
-	}
-
-	@Test
-	public void equal_returnFalse_IfLayerUrlSourceIsNull() {
-
-		LayerDTO dto1 = LayerDataUtil.getLayer();
-
-		LayerDTO dto2 = LayerDataUtil.getLayer();
-
-		dto1.setUrlSource(null);
-		assertFalse(dto1.equals(dto2));
-	}
-
-	@Test
 	public void equal_returnFalse_IfLayerActivitiesIsDifferent() {
 
 		LayerDTO dto1 = LayerDataUtil.getLayer();
@@ -622,7 +622,7 @@ public class LayerEqualTest {
 
 		LayerDTO dto2 = LayerDataUtil.getLayer();
 
-		dto1.getKeyword().add(0, "aaa");
+		dto1.getKeywords().add(0, "aaa");
 
 		assertFalse(dto1.equals(dto2));
 	}
@@ -634,7 +634,7 @@ public class LayerEqualTest {
 
 		LayerDTO dto2 = LayerDataUtil.getLayer();
 
-		dto1.setKeyword(null);
+		dto1.setKeywords(null);
 		assertFalse(dto1.equals(dto2));
 	}
 

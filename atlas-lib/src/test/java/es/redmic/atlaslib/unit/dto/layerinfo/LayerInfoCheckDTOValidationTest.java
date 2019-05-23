@@ -48,11 +48,11 @@ public class LayerInfoCheckDTOValidationTest extends DTOBaseTest<LayerInfoDTO> {
 	}
 
 	@Test
-	public void validationDTO_NoReturnError_IfNameIsNull() {
+	public void validationDTO_ReturnError_IfNameIsNull() {
 
 		dto.setName(null);
 
-		checkDTOHasNoError(dto);
+		checkDTOHasError(dto, NOT_NULL_MESSAGE_TEMPLATE);
 	}
 
 	@Test

@@ -63,18 +63,17 @@ public class LayerDTO extends LayerInfoDTO {
 		"{\"type\":\"record\",\"name\":\"LayerDTO\",\"namespace\":\"es.redmic.atlaslib.dto.layer\",\"fields\":["
 			+ "{\"name\":\"title\",\"type\":\"string\"},"
 			+ "{\"name\":\"abstractLayer\",\"type\":[\"string\", \"null\"]},"
-			+ "{\"name\":\"keyword\",\"type\":[{\"type\":\"array\",\"items\":\"string\"},\"null\"]},"
+			+ "{\"name\":\"keywords\",\"type\":[{\"type\":\"array\",\"items\":\"string\"},\"null\"]},"
 			+ "{\"name\":\"srs\",\"type\":{\"type\":\"array\",\"items\":\"string\"}},"
 			+ "{\"name\":\"stylesLayer\",\"type\":[{\"type\": \"array\",\"items\":" + StyleLayerDTO.SCHEMA$ + "},\"null\"]},"
 			+ "{\"name\":\"contact\",\"type\":[" + ContactDTO.SCHEMA$ + ",\"null\"]},"
 			+ "{\"name\": \"activities\",\"type\": [{\"type\": \"array\",\"items\": "+ ActivityDTO.SCHEMA$ +"},\"null\"]},"
-			+ "{\"name\":\"urlSource\",\"type\":\"string\"},"
 			+ "{\"name\":\"queryable\",\"type\":\"boolean\", \"default\": \"true\"},"
 			+ "{\"name\":\"formats\",\"type\":{\"type\":\"array\",\"items\":\"string\"}},"
 			+ "{\"name\":\"image\",\"type\":[\"string\", \"null\"]},"
 			+ "{\"name\":\"geometry\",\"type\":\"string\"},"
 			+ "{\"name\":\"legend\",\"type\":[\"string\", \"null\"]},"
-			+ "{\"name\":\"opaque\",\"type\":\"boolean\", \"default\": \"false\"},"
+			+ "{\"name\":\"attibution\",\"type\":[" + AttributionDTO.SCHEMA$ + ",\"null\"]},"
 			+ "{\"name\":\"timeDimension\",\"type\":[" + DimensionDTO.SCHEMA$ + ",\"null\"]},"
 			+ "{\"name\":\"elevationDimension\"," + "\"type\":"
 					+ "[\"es.redmic.atlaslib.dto.layer.DimensionDTO\",\"null\"]},"
@@ -90,6 +89,7 @@ public class LayerDTO extends LayerInfoDTO {
 			+ "{\"name\":\"alias\",\"type\":[\"string\", \"null\"]},"
 			+ "{\"name\":\"atlas\",\"type\":\"boolean\", \"default\": \"false\"},"
 			+ "{\"name\":\"refresh\",\"type\":\"int\", \"default\": \"0\"},"
+			+ "{\"name\":\"urlSource\",\"type\":\"string\"},"
 			+ "{\"name\":\"name\",\"type\":\"string\"},"
 			+ "{\"name\":\"id\",\"type\":\"string\"}]}");
 	// @formatter:on
@@ -104,7 +104,7 @@ public class LayerDTO extends LayerInfoDTO {
 
 	private String abstractLayer;
 
-	private List<String> keyword;
+	private List<String> keywords;
 
 	@NotNull
 	@Size(min = 1)
@@ -118,9 +118,6 @@ public class LayerDTO extends LayerInfoDTO {
 
 	@Valid
 	private List<ActivityDTO> activities;
-
-	@NotNull
-	private String urlSource;
 
 	@JsonSchemaDefault(value = "true")
 	@NotNull
@@ -137,7 +134,7 @@ public class LayerDTO extends LayerInfoDTO {
 
 	private String legend;
 
-	private Boolean opaque = false;
+	private AttributionDTO attribution;
 
 	private DimensionDTO timeDimension;
 
@@ -174,12 +171,12 @@ public class LayerDTO extends LayerInfoDTO {
 		this.abstractLayer = abstractLayer;
 	}
 
-	public List<String> getKeyword() {
-		return keyword;
+	public List<String> getKeywords() {
+		return keywords;
 	}
 
-	public void setKeyword(List<String> keyword) {
-		this.keyword = keyword;
+	public void setKeywords(List<String> keywords) {
+		this.keywords = keywords;
 	}
 
 	public List<String> getSrs() {
@@ -212,14 +209,6 @@ public class LayerDTO extends LayerInfoDTO {
 
 	public void setActivities(List<ActivityDTO> activities) {
 		this.activities = activities;
-	}
-
-	public String getUrlSource() {
-		return urlSource;
-	}
-
-	public void setUrlSource(String urlSource) {
-		this.urlSource = urlSource;
 	}
 
 	public Boolean getQueryable() {
@@ -262,12 +251,12 @@ public class LayerDTO extends LayerInfoDTO {
 		this.legend = legend;
 	}
 
-	public Boolean getOpaque() {
-		return opaque;
+	public AttributionDTO getAttribution() {
+		return attribution;
 	}
 
-	public void setOpaque(Boolean opaque) {
-		this.opaque = opaque;
+	public void setAttribution(AttributionDTO attribution) {
+		this.attribution = attribution;
 	}
 
 	public DimensionDTO getTimeDimension() {
@@ -313,8 +302,7 @@ public class LayerDTO extends LayerInfoDTO {
 	}
 
 	@Override
-	@Size(min = 1, max = 500)
-	@NotNull
+
 	public String getName() {
 		return super.getName();
 	}
@@ -334,7 +322,7 @@ public class LayerDTO extends LayerInfoDTO {
 		case 1:
 			return abstractLayer;
 		case 2:
-			return keyword;
+			return keywords;
 		case 3:
 			return srs;
 		case 4:
@@ -344,48 +332,48 @@ public class LayerDTO extends LayerInfoDTO {
 		case 6:
 			return activities;
 		case 7:
-			return urlSource;
-		case 8:
 			return queryable;
-		case 9:
+		case 8:
 			return formats;
-		case 10:
+		case 9:
 			return image;
-		case 11:
+		case 10:
 			try {
 				return mapper.writeValueAsString(getGeometry());
 			} catch (JsonProcessingException e) {
 				e.printStackTrace();
 				return null;
 			}
-		case 12:
+		case 11:
 			return legend;
+		case 12:
+			return attribution;
 		case 13:
-			return opaque;
-		case 14:
 			return timeDimension;
-		case 15:
+		case 14:
 			return elevationDimension;
-		case 16:
+		case 15:
 			return getParent();
-		case 17:
+		case 16:
 			return getInserted() != null ? getInserted().getMillis() : null;
-		case 18:
+		case 17:
 			return getUpdated() != null ? getUpdated().getMillis() : null;
-		case 19:
+		case 18:
 			return getThemeInspire();
-		case 20:
+		case 19:
 			return getLatLonBoundsImage();
-		case 21:
+		case 20:
 			return getProtocols();
-		case 22:
+		case 21:
 			return getDescription();
-		case 23:
+		case 22:
 			return getAlias();
-		case 24:
+		case 23:
 			return getAtlas();
-		case 25:
+		case 24:
 			return getRefresh();
+		case 25:
+			return getUrlSource();
 		case 26:
 			return getName();
 		case 27:
@@ -407,7 +395,7 @@ public class LayerDTO extends LayerInfoDTO {
 			abstractLayer = value != null ? value.toString() : null;
 			break;
 		case 2:
-			keyword = value != null ? (java.util.List) value : null;
+			keywords = value != null ? (java.util.List) value : null;
 			break;
 		case 3:
 			srs = value != null ? (java.util.List) value : null;
@@ -422,18 +410,15 @@ public class LayerDTO extends LayerInfoDTO {
 			activities = value != null ? (java.util.List) value : null;
 			break;
 		case 7:
-			urlSource = value != null ? value.toString() : null;
-			break;
-		case 8:
 			queryable = value != null ? (Boolean) value : null;
 			break;
-		case 9:
+		case 8:
 			formats = value != null ? (java.util.List) value : null;
 			break;
-		case 10:
+		case 9:
 			image = value != null ? value.toString() : null;
 			break;
-		case 11:
+		case 10:
 			try {
 				if (value != null) {
 					setGeometry(mapper.readValue(value.toString(), Polygon.class));
@@ -442,47 +427,50 @@ public class LayerDTO extends LayerInfoDTO {
 				e.printStackTrace();
 			}
 			break;
-		case 12:
+		case 11:
 			legend = value != null ? value.toString() : null;
 			break;
-		case 13:
-			opaque = value != null ? (Boolean) value : null;
+		case 12:
+			attribution = value != null ? (AttributionDTO) value : null;
 			break;
-		case 14:
+		case 13:
 			timeDimension = value != null ? (DimensionDTO) value : null;
 			break;
-		case 15:
+		case 14:
 			elevationDimension = value != null ? (DimensionDTO) value : null;
 			break;
-		case 16:
+		case 15:
 			parent = value != null ? (CategoryDTO) value : null;
 			break;
-		case 17:
+		case 16:
 			setInserted(value != null ? new DateTime(value, DateTimeZone.UTC).toDateTime() : null);
 			break;
-		case 18:
+		case 17:
 			setUpdated(value != null ? new DateTime(value, DateTimeZone.UTC).toDateTime() : null);
 			break;
-		case 19:
+		case 18:
 			setThemeInspire(value != null ? (ThemeInspireDTO) value : null);
 			break;
-		case 20:
+		case 19:
 			setLatLonBoundsImage(value != null ? (LatLonBoundingBoxDTO) value : null);
 			break;
-		case 21:
+		case 20:
 			setProtocols(value != null ? (java.util.List) value : null);
 			break;
-		case 22:
+		case 21:
 			setDescription(value != null ? value.toString() : null);
 			break;
-		case 23:
+		case 22:
 			setAlias(value != null ? value.toString() : null);
 			break;
-		case 24:
+		case 23:
 			setAtlas((Boolean) value);
 			break;
-		case 25:
+		case 24:
 			setRefresh((int) value);
+			break;
+		case 25:
+			setUrlSource(value != null ? value.toString() : null);
 			break;
 		case 26:
 			setName(value.toString());
@@ -505,19 +493,18 @@ public class LayerDTO extends LayerInfoDTO {
 		result = prime * result + ((formats == null) ? 0 : formats.hashCode());
 		result = prime * result + ((geometry == null) ? 0 : geometry.hashCode());
 		result = prime * result + ((legend == null) ? 0 : legend.hashCode());
-		result = prime * result + ((opaque == null) ? 0 : opaque.hashCode());
+		result = prime * result + ((attribution == null) ? 0 : attribution.hashCode());
 		result = prime * result + ((timeDimension == null) ? 0 : timeDimension.hashCode());
 		result = prime * result + ((elevationDimension == null) ? 0 : elevationDimension.hashCode());
 		result = prime * result + ((parent == null) ? 0 : parent.hashCode());
 		result = prime * result + ((inserted == null) ? 0 : inserted.hashCode());
 		result = prime * result + ((updated == null) ? 0 : updated.hashCode());
 		result = prime * result + ((image == null) ? 0 : image.hashCode());
-		result = prime * result + ((keyword == null) ? 0 : keyword.hashCode());
+		result = prime * result + ((keywords == null) ? 0 : keywords.hashCode());
 		result = prime * result + ((queryable == null) ? 0 : queryable.hashCode());
 		result = prime * result + ((srs == null) ? 0 : srs.hashCode());
 		result = prime * result + ((stylesLayer == null) ? 0 : stylesLayer.hashCode());
 		result = prime * result + ((title == null) ? 0 : title.hashCode());
-		result = prime * result + ((urlSource == null) ? 0 : urlSource.hashCode());
 		return result;
 	}
 
@@ -560,10 +547,10 @@ public class LayerDTO extends LayerInfoDTO {
 				return false;
 		} else if (!legend.equals(other.legend))
 			return false;
-		if (opaque == null) {
-			if (other.opaque != null)
+		if (attribution == null) {
+			if (other.attribution != null)
 				return false;
-		} else if (!opaque.equals(other.opaque))
+		} else if (!attribution.equals(other.attribution))
 			return false;
 		if (timeDimension == null) {
 			if (other.timeDimension != null)
@@ -595,10 +582,10 @@ public class LayerDTO extends LayerInfoDTO {
 				return false;
 		} else if (!image.equals(other.image))
 			return false;
-		if (keyword == null) {
-			if (other.keyword != null)
+		if (keywords == null) {
+			if (other.keywords != null)
 				return false;
-		} else if (!keyword.equals(other.keyword))
+		} else if (!keywords.equals(other.keywords))
 			return false;
 		if (queryable == null) {
 			if (other.queryable != null)
@@ -619,11 +606,6 @@ public class LayerDTO extends LayerInfoDTO {
 			if (other.title != null)
 				return false;
 		} else if (!title.equals(other.title))
-			return false;
-		if (urlSource == null) {
-			if (other.urlSource != null)
-				return false;
-		} else if (!urlSource.equals(other.urlSource))
 			return false;
 		return true;
 	}

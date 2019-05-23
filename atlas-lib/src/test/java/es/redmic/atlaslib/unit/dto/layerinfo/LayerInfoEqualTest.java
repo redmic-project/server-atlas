@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import es.redmic.atlaslib.dto.layer.LayerDTO;
 import es.redmic.atlaslib.dto.layerinfo.LayerInfoDTO;
 import es.redmic.atlaslib.unit.utils.LayerDataUtil;
 
@@ -79,6 +80,29 @@ public class LayerInfoEqualTest {
 		LayerInfoDTO dto2 = LayerDataUtil.getLayerInfo();
 
 		dto1.setName(null);
+		assertFalse(dto1.equals(dto2));
+	}
+
+	@Test
+	public void equal_returnFalse_IfLayerInfoUrlSourceIsDifferent() {
+
+		LayerDTO dto1 = LayerDataUtil.getLayer();
+
+		LayerDTO dto2 = LayerDataUtil.getLayer();
+
+		dto1.setUrlSource("aaa");
+
+		assertFalse(dto1.equals(dto2));
+	}
+
+	@Test
+	public void equal_returnFalse_IfLayerInfoUrlSourceIsNull() {
+
+		LayerDTO dto1 = LayerDataUtil.getLayer();
+
+		LayerDTO dto2 = LayerDataUtil.getLayer();
+
+		dto1.setUrlSource(null);
 		assertFalse(dto1.equals(dto2));
 	}
 
