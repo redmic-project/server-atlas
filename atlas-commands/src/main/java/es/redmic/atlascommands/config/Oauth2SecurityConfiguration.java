@@ -41,6 +41,9 @@ public class Oauth2SecurityConfiguration {
 			http.cors().and().anonymous().and().authorizeRequests()
 				.antMatchers(HttpMethod.GET, "/actuator/**").permitAll();
 			
+			http.authorizeRequests()
+				.antMatchers(HttpMethod.POST, "/discover-layers/**").permitAll();
+			
 			http.authorizeRequests().antMatchers(HttpMethod.POST, "/**").access(
 					"#oauth2.hasScope('write') and "
 					+ "hasAnyRole('ROLE_ADMINISTRATOR', 'ROLE_OAG', 'ROLE_COLLABORATOR')");
