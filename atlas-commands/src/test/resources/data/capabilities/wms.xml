@@ -110,7 +110,7 @@
       <BoundingBox CRS="EPSG:4326" minx="12.8178520202637" miny="-50.2820053100586" maxx="41.6171493530273" maxy="-5.36545515060425"/>
       <BoundingBox CRS="EPSG:32628" minx="-3566912.1649603797" miny="1417527.187789234" maxx="1550038.3477923165" maxy="5254389.1113971835"/>
       <BoundingBox CRS="EPSG:3857" minx="-5597367.227180402" miny="1438929.891094889" maxx="-597279.735239412" maxy="5103801.682153641"/>
-      <Layer queryable="1">
+      <Layer queryable="1" opaque="1">
         <Name>batimetriaGlobal</Name>
         <Title>Batimetrías</Title>
         <Abstract>Isolíneas batimétricas obtenidas por geoprocesamiento a partir del modelo batimétrico del "General Bathymetric Chart of the Oceans (GEBCO), www.gebco.net" con equidistancia de 100 m&#13;ref#817#</Abstract>
@@ -156,6 +156,14 @@
         </Style>
         <Dimension name="time" default="2017-03-15T08:15:38.742Z" units="ISO8601">2017-03-15T08:15:38.742Z</Dimension>
 		<Dimension name="elevation" default="1" units="EPSG:5030" unitSymbol="m">-3301.0/1600.0/0</Dimension>
+		<Attribution>
+			<Title>Observatorio Ambiental Granadilla</Title>
+			<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.oag-fundacion.org"/>
+			<LogoURL height="215" width="408">
+				<Format>image/jpeg</Format>
+				<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.oag-fundacion.org/content/logos/oag_sinmedusa.jpg"/>
+			</LogoURL>
+		</Attribution>
       </Layer>
     </Layer>
   </Capability>
