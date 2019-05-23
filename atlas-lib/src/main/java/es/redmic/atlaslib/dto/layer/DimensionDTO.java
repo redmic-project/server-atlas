@@ -36,6 +36,7 @@ public class DimensionDTO extends org.apache.avro.specific.SpecificRecordBase
 		"{\"type\":\"record\",\"name\":\"DimensionDTO\",\"namespace\":\"es.redmic.atlaslib.dto.layer\",\"fields\":["
 				+ "{\"name\":\"name\",\"type\":\"string\"},"
 				+ "{\"name\":\"units\",\"type\":\"string\"},"
+				+ "{\"name\":\"unitSymbol\",\"type\":[\"string\", \"null\"]},"
 				+ "{\"name\":\"defaultValue\",\"type\":\"string\"}]}");
 	// @formatter:on
 
@@ -47,6 +48,8 @@ public class DimensionDTO extends org.apache.avro.specific.SpecificRecordBase
 
 	@NotNull
 	private String units;
+
+	private String unitSymbol;
 
 	@NotNull
 	private String defaultValue;
@@ -67,6 +70,14 @@ public class DimensionDTO extends org.apache.avro.specific.SpecificRecordBase
 		this.units = units;
 	}
 
+	public String getUnitSymbol() {
+		return unitSymbol;
+	}
+
+	public void setUnitSymbol(String unitSymbol) {
+		this.unitSymbol = unitSymbol;
+	}
+
 	public String getDefaultValue() {
 		return defaultValue;
 	}
@@ -82,6 +93,7 @@ public class DimensionDTO extends org.apache.avro.specific.SpecificRecordBase
 		result = prime * result + ((defaultValue == null) ? 0 : defaultValue.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((units == null) ? 0 : units.hashCode());
+		result = prime * result + ((unitSymbol == null) ? 0 : unitSymbol.hashCode());
 		return result;
 	}
 
@@ -109,6 +121,11 @@ public class DimensionDTO extends org.apache.avro.specific.SpecificRecordBase
 				return false;
 		} else if (!units.equals(other.units))
 			return false;
+		if (unitSymbol == null) {
+			if (other.unitSymbol != null)
+				return false;
+		} else if (!unitSymbol.equals(other.unitSymbol))
+			return false;
 		return true;
 	}
 
@@ -127,6 +144,8 @@ public class DimensionDTO extends org.apache.avro.specific.SpecificRecordBase
 		case 1:
 			return units;
 		case 2:
+			return unitSymbol;
+		case 3:
 			return defaultValue;
 		default:
 			throw new org.apache.avro.AvroRuntimeException("Bad index");
@@ -144,6 +163,9 @@ public class DimensionDTO extends org.apache.avro.specific.SpecificRecordBase
 			units = value$.toString();
 			break;
 		case 2:
+			unitSymbol = value$ != null ? value$.toString() : null;
+			break;
+		case 3:
 			defaultValue = value$.toString();
 			break;
 		default:
