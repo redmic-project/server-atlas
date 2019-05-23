@@ -70,6 +70,9 @@ public abstract class LayerCompactDTO extends LayerBaseDTO {
 	@JsonSchemaDefault(value = "0")
 	private Integer refresh = 0;
 
+	@NotNull
+	private String urlSource;
+
 	public ThemeInspireDTO getThemeInspire() {
 		return themeInspire;
 	}
@@ -126,6 +129,14 @@ public abstract class LayerCompactDTO extends LayerBaseDTO {
 		this.refresh = refresh;
 	}
 
+	public String getUrlSource() {
+		return urlSource;
+	}
+
+	public void setUrlSource(String urlSource) {
+		this.urlSource = urlSource;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -136,6 +147,7 @@ public abstract class LayerCompactDTO extends LayerBaseDTO {
 		result = prime * result + ((latLonBoundsImage == null) ? 0 : latLonBoundsImage.hashCode());
 		result = prime * result + ((protocols == null) ? 0 : protocols.hashCode());
 		result = prime * result + ((refresh == null) ? 0 : refresh.hashCode());
+		result = prime * result + ((urlSource == null) ? 0 : urlSource.hashCode());
 		result = prime * result + ((themeInspire == null) ? 0 : themeInspire.hashCode());
 		return result;
 	}
@@ -178,6 +190,11 @@ public abstract class LayerCompactDTO extends LayerBaseDTO {
 			if (other.refresh != null)
 				return false;
 		} else if (!refresh.equals(other.refresh))
+			return false;
+		if (urlSource == null) {
+			if (other.urlSource != null)
+				return false;
+		} else if (!urlSource.equals(other.urlSource))
 			return false;
 		if (themeInspire == null) {
 			if (other.themeInspire != null)

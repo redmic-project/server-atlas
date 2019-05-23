@@ -20,13 +20,15 @@ package es.redmic.atlaslib.dto.layer;
  * #L%
  */
 
-import com.kjetland.jackson.jsonSchema.annotations.JsonSchemaIgnore;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import es.redmic.brokerlib.avro.common.CommonDTO;
 
 public abstract class LayerBaseDTO extends CommonDTO {
 
-	@JsonSchemaIgnore
+	@Size(min = 1, max = 500)
+	@NotNull
 	private String name;
 
 	public LayerBaseDTO() {
