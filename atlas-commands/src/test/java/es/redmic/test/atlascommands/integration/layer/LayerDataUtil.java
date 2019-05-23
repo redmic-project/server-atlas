@@ -211,9 +211,9 @@ public abstract class LayerDataUtil {
 		srs.add("srs");
 		layer.setSrs(srs);
 
-		List<String> keyword = new ArrayList<>();
-		keyword.add("keyword");
-		layer.setKeyword(keyword);
+		List<String> keywords = new ArrayList<>();
+		keywords.add("keywords");
+		layer.setKeywords(keywords);
 
 		layer.setUrlSource("http://redmic.es");
 

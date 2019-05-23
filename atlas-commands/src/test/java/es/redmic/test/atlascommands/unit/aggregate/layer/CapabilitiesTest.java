@@ -99,10 +99,10 @@ public class CapabilitiesTest {
 		assertEquals(expectedLayer.getFormats(), layerDTO.getFormats());
 		assertEquals(expectedLayer.getGeometry(), layerDTO.getGeometry());
 
-		assertEquals(expectedLayer.getKeyword(), layerDTO.getKeyword());
+		assertEquals(expectedLayer.getKeywords(), layerDTO.getKeywords());
 		assertEquals(expectedLayer.getLatLonBoundsImage(), layerDTO.getLatLonBoundsImage());
 		assertEquals(expectedLayer.getLegend(), layerDTO.getLegend());
-		assertEquals(expectedLayer.getOpaque(), layerDTO.getOpaque());
+		assertEquals(expectedLayer.getAttribution(), layerDTO.getAttribution());
 		assertEquals(expectedLayer.getProtocols(), layerDTO.getProtocols());
 		assertEquals(expectedLayer.getQueryable(), layerDTO.getQueryable());
 
