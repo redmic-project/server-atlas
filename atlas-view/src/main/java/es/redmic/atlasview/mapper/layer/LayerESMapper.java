@@ -23,6 +23,7 @@ package es.redmic.atlasview.mapper.layer;
 import org.springframework.stereotype.Component;
 
 import es.redmic.atlaslib.dto.layer.ActivityDTO;
+import es.redmic.atlaslib.dto.layer.AttributionDTO;
 import es.redmic.atlaslib.dto.layer.ContactDTO;
 import es.redmic.atlaslib.dto.layer.DimensionDTO;
 import es.redmic.atlaslib.dto.layer.LatLonBoundingBoxDTO;
@@ -30,6 +31,7 @@ import es.redmic.atlaslib.dto.layer.LayerDTO;
 import es.redmic.atlaslib.dto.layer.ProtocolDTO;
 import es.redmic.atlaslib.dto.layer.StyleLayerDTO;
 import es.redmic.atlaslib.dto.themeinspire.ThemeInspireDTO;
+import es.redmic.atlasview.model.layer.Attribution;
 import es.redmic.atlasview.model.layer.Contact;
 import es.redmic.atlasview.model.layer.Dimension;
 import es.redmic.atlasview.model.layer.LatLonBoundingBox;
@@ -47,8 +49,8 @@ public class LayerESMapper extends CustomMapper<Layer, LayerDTO> {
 	@Override
 	public void mapAtoB(Layer a, LayerDTO b, MappingContext context) {
 
-		if (a.getStyleLayer() != null) {
-			b.setStyleLayer(mapperFacade.map(a.getStyleLayer(), StyleLayerDTO.class));
+		if (a.getStylesLayer() != null) {
+			b.setStylesLayer(mapperFacade.mapAsList(a.getStylesLayer(), StyleLayerDTO.class));
 		}
 
 		if (a.getContact() != null) {
@@ -78,14 +80,19 @@ public class LayerESMapper extends CustomMapper<Layer, LayerDTO> {
 		if (a.getElevationDimension() != null) {
 			b.setElevationDimension(mapperFacade.map(a.getElevationDimension(), DimensionDTO.class));
 		}
+
+		if (a.getAttribution() != null) {
+			b.setAttribution(mapperFacade.map(a.getAttribution(), AttributionDTO.class));
+		}
+
 		super.mapAtoB(a, b, context);
 	}
 
 	@Override
 	public void mapBtoA(LayerDTO b, Layer a, MappingContext context) {
 
-		if (b.getStyleLayer() != null) {
-			a.setStyleLayer(mapperFacade.map(b.getStyleLayer(), StyleLayer.class));
+		if (b.getStylesLayer() != null) {
+			a.setStylesLayer(mapperFacade.mapAsList(b.getStylesLayer(), StyleLayer.class));
 		}
 
 		if (b.getContact() != null) {
@@ -114,6 +121,10 @@ public class LayerESMapper extends CustomMapper<Layer, LayerDTO> {
 
 		if (b.getElevationDimension() != null) {
 			a.setElevationDimension(mapperFacade.map(b.getElevationDimension(), Dimension.class));
+		}
+
+		if (b.getAttribution() != null) {
+			a.setAttribution(mapperFacade.map(b.getAttribution(), Attribution.class));
 		}
 
 		super.mapBtoA(b, a, context);

@@ -30,9 +30,9 @@ public class Layer extends LayerModelCompact {
 
 	private String title;
 	private String abstractLayer;
-	private List<String> keyword;
+	private List<String> keywords;
 	private List<String> srs;
-	private StyleLayer styleLayer;
+	private List<StyleLayer> stylesLayer;
 	private Contact contact;
 	private List<ActivityCompact> activities;
 	private String urlSource;
@@ -43,7 +43,7 @@ public class Layer extends LayerModelCompact {
 	private List<Protocol> protocols;
 	private Polygon geometry;
 	private String legend;
-	private Boolean opaque = false;
+	private Attribution attribution;
 	private Dimension timeDimension;
 	private Dimension elevationDimension;
 
@@ -66,12 +66,12 @@ public class Layer extends LayerModelCompact {
 		this.title = title;
 	}
 
-	public List<String> getKeyword() {
-		return keyword;
+	public List<String> getKeywords() {
+		return keywords;
 	}
 
-	public void setKeyword(List<String> keyword) {
-		this.keyword = keyword;
+	public void setKeywords(List<String> keywords) {
+		this.keywords = keywords;
 	}
 
 	public List<String> getSrs() {
@@ -90,12 +90,12 @@ public class Layer extends LayerModelCompact {
 		this.abstractLayer = abstractLayer;
 	}
 
-	public StyleLayer getStyleLayer() {
-		return styleLayer;
+	public List<StyleLayer> getStylesLayer() {
+		return stylesLayer;
 	}
 
-	public void setStyleLayer(StyleLayer styleLayer) {
-		this.styleLayer = styleLayer;
+	public void setStylesLayer(List<StyleLayer> stylesLayer) {
+		this.stylesLayer = stylesLayer;
 	}
 
 	public Polygon getGeometry() {
@@ -114,12 +114,12 @@ public class Layer extends LayerModelCompact {
 		this.legend = legend;
 	}
 
-	public Boolean getOpaque() {
-		return opaque;
+	public Attribution getAttribution() {
+		return attribution;
 	}
 
-	public void setOpaque(Boolean opaque) {
-		this.opaque = opaque;
+	public void setAttribution(Attribution attribution) {
+		this.attribution = attribution;
 	}
 
 	public Dimension getTimeDimension() {
