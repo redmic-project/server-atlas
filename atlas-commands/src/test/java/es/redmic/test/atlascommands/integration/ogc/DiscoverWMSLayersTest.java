@@ -1,5 +1,7 @@
 package es.redmic.test.atlascommands.integration.ogc;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /*-
  * #%L
  * Atlas-management
@@ -39,9 +41,12 @@ import org.springframework.kafka.test.rule.EmbeddedKafkaRule;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import es.redmic.atlascommands.AtlasCommandsApplication;
+import es.redmic.atlascommands.utils.Capabilities;
+import es.redmic.atlaslib.dto.layer.LayerDTO;
 import es.redmic.models.es.common.dto.UrlDTO;
 import es.redmic.test.atlascommands.integration.KafkaEmbeddedConfig;
 import es.redmic.testutils.documentation.DocumentationCommandBaseTest;
@@ -88,33 +93,22 @@ public class DiscoverWMSLayersTest extends DocumentationCommandBaseTest {
 	public void createLayer_SendCreateLayerEvent_IfCommandWasSuccess() throws Exception {
 
 		// @formatter:off
+		
+		LayerDTO layer = (LayerDTO) Capabilities.getCapabilities(url.getUrl()).values().toArray()[0];
 
-		this.mockMvc.perform(post(PATH)
+		MvcResult mvcResult = this.mockMvc.perform(post(PATH)
 					.content(mapper.writeValueAsString(url))
 					.contentType(MediaType.APPLICATION_JSON)
 					.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.success", is(true)))
 				.andExpect(jsonPath("$.body", notNullValue()))
-				.andExpect(jsonPath("$.body.length()", is(1)))
 				.andExpect(jsonPath("$.body[0]", notNullValue()))
-				.andExpect(jsonPath("$.body[0].urlSource", is(url.getUrl())))
-				.andExpect(jsonPath("$.body[0].title", notNullValue()))
-				.andExpect(jsonPath("$.body[0].abstractLayer", notNullValue()))
-				.andExpect(jsonPath("$.body[0].keywords", notNullValue()))
-				.andExpect(jsonPath("$.body[0].srs", notNullValue()))
-				.andExpect(jsonPath("$.body[0].stylesLayer", notNullValue()))
-				.andExpect(jsonPath("$.body[0].contact", notNullValue()))
-				.andExpect(jsonPath("$.body[0].activities", notNullValue()))
-				.andExpect(jsonPath("$.body[0].queryable", notNullValue()))
-				.andExpect(jsonPath("$.body[0].formats", notNullValue()))
-				.andExpect(jsonPath("$.body[0].geometry", notNullValue()))
-				.andExpect(jsonPath("$.body[0].legend", notNullValue()))
-				.andExpect(jsonPath("$.body[0].attibution", notNullValue()))
-				.andExpect(jsonPath("$.body[0].timeDimension", notNullValue()))
-				.andExpect(jsonPath("$.body[0].elevationDimension", notNullValue()));
-
+				.andExpect(jsonPath("$.body.length()", is(1)))
+				.andReturn();
 		// @formatter:on
 
+		assertThat("{\"success\":true,\"body\":[" + mapper.writeValueAsString(layer) + "]}")
+				.isEqualToIgnoringWhitespace(mvcResult.getResponse().getContentAsString());
 	}
 }
