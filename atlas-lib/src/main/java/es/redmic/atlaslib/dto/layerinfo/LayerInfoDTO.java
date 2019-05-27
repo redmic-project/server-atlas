@@ -79,6 +79,7 @@ public class LayerInfoDTO extends LayerCompactDTO {
 		this.parent = parent;
 	}
 
+	@JsonIgnore
 	@Override
 	public Schema getSchema() {
 		return SCHEMA$;
