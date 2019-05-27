@@ -36,4 +36,9 @@ public class OGCLayerService {
 
 		return new ArrayList(Capabilities.getCapabilities(urlSource).values());
 	}
+
+	public LayerDTO getLayerFromWMSService(String urlSource, String name) {
+
+		return Capabilities.getCapabilities(urlSource).get(name);
+	}
 }
