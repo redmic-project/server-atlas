@@ -25,15 +25,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import es.redmic.atlascommands.service.LayerService;
-import es.redmic.atlaslib.dto.layer.LayerDTO;
+import es.redmic.atlaslib.dto.layerinfo.LayerInfoDTO;
 import es.redmic.commandslib.controller.CommandController;
 
 @Controller
 @RequestMapping(value = "${controller.mapping.LAYER}")
-public class LayerController extends CommandController<LayerDTO> {
+public class LayerController extends CommandController<LayerInfoDTO> {
+
+	LayerService service;
 
 	@Autowired
 	public LayerController(LayerService service) {
 		super(service);
+		this.service = service;
 	}
 }

@@ -34,6 +34,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.io.File;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
@@ -68,7 +69,7 @@ import org.springframework.util.concurrent.ListenableFuture;
 import es.redmic.atlascommands.AtlasCommandsApplication;
 import es.redmic.atlascommands.handler.LayerCommandHandler;
 import es.redmic.atlascommands.statestore.LayerStateStore;
-import es.redmic.atlaslib.dto.layer.LayerDTO;
+import es.redmic.atlaslib.dto.layerinfo.LayerInfoDTO;
 import es.redmic.atlaslib.events.layer.create.CreateLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerConfirmedEvent;
@@ -149,7 +150,12 @@ public class LayerRestTest extends DocumentationCommandBaseTest {
 	@Test
 	public void createLayer_SendCreateLayerEvent_IfCommandWasSuccess() throws Exception {
 
-		LayerDTO layerDTO = LayerDataUtil.getLayer(CODE);
+		LayerInfoDTO layerInfoDTO = LayerDataUtil.getLayerInfo(CODE);
+
+		String originalName = "batimetriaGlobal";
+
+		layerInfoDTO.setUrlSource(new File("src/test/resources/data/capabilities/wms.xml").toURI().toString());
+		layerInfoDTO.setName(originalName);
 
 		// @formatter:off
 		
@@ -158,14 +164,14 @@ public class LayerRestTest extends DocumentationCommandBaseTest {
 		this.mockMvc
 				.perform(post(CATEGORY_PATH)
 						.header("Authorization", "Bearer " + getTokenOAGUser())
-						.content(mapper.writeValueAsString(layerDTO))
+						.content(mapper.writeValueAsString(layerInfoDTO))
 						.contentType(MediaType.APPLICATION_JSON)
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.success", is(true)))
 				.andExpect(jsonPath("$.body", notNullValue()))
 				.andExpect(jsonPath("$.body.id", is(id)))
-				.andExpect(jsonPath("$.body.name", is(layerDTO.getName())));
+				.andExpect(jsonPath("$.body.name", is(layerInfoDTO.getName())));
 		
 		// @formatter:on
 
@@ -175,7 +181,7 @@ public class LayerRestTest extends DocumentationCommandBaseTest {
 		assertNotNull(event);
 		assertEquals(event.getType(), expectedEvent.getType());
 		assertEquals(event.getVersion(), expectedEvent.getVersion());
-		assertEquals(event.getLayer().getName(), expectedEvent.getLayer().getName());
+		assertEquals(event.getLayer().getName(), originalName);
 	}
 
 	@Test
@@ -183,7 +189,12 @@ public class LayerRestTest extends DocumentationCommandBaseTest {
 
 		when(layerStateStore.getLayer(anyString())).thenReturn(LayerDataUtil.getLayerCreatedEvent(CODE));
 
-		LayerDTO layerDTO = LayerDataUtil.getLayer(CODE);
+		String originalName = "batimetriaGlobal";
+
+		LayerInfoDTO layerInfoDTO = LayerDataUtil.getLayerInfo(CODE);
+
+		layerInfoDTO.setUrlSource(new File("src/test/resources/data/capabilities/wms.xml").toURI().toString());
+		layerInfoDTO.setName(originalName);
 
 		// @formatter:off
 		
@@ -192,7 +203,7 @@ public class LayerRestTest extends DocumentationCommandBaseTest {
 		this.mockMvc
 				.perform(put(CATEGORY_PATH + "/" + id)
 						.header("Authorization", "Bearer " + getTokenOAGUser())
-						.content(mapper.writeValueAsString(layerDTO))
+						.content(mapper.writeValueAsString(layerInfoDTO))
 						.contentType(MediaType.APPLICATION_JSON)
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -208,7 +219,7 @@ public class LayerRestTest extends DocumentationCommandBaseTest {
 		assertNotNull(event);
 		assertEquals(event.getType(), expectedEvent.getType());
 		assertEquals(event.getVersion(), expectedEvent.getVersion());
-		assertEquals(event.getLayer().getName(), expectedEvent.getLayer().getName());
+		assertEquals(event.getLayer().getName(), originalName);
 		assertEquals(event.getAggregateId(), expectedEvent.getAggregateId());
 	}
 

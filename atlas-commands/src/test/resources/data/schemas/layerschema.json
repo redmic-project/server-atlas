@@ -6,6 +6,11 @@
 		"id": {
 			"type": ["string", "null"]
 		},
+		"name": {
+			"type": "string",
+			"minLength": 1,
+			"maxLength": 500
+		},
 		"themeInspire": {
 			"type": ["integer", "null"],
 			"url": "/api/atlas/commands/themeinspire"
@@ -38,12 +43,15 @@
 			"type": "integer",
 			"default": "0"
 		},
+		"urlSource": {
+			"type": "string"
+		},
 		"parent": {
 			"type": ["integer", "null"],
 			"url": "/api/atlas/commands/category"
 		}
 	},
-	"required": ["protocols", "atlas", "refresh"],
+	"required": ["name", "protocols", "atlas", "refresh", "urlSource"],
 	"definitions": {
 		"LatLonBoundingBoxDTO": {
 			"type": ["object", "null"],

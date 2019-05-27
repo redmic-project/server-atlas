@@ -37,6 +37,7 @@ import es.redmic.atlaslib.dto.layer.LatLonBoundingBoxDTO;
 import es.redmic.atlaslib.dto.layer.LayerDTO;
 import es.redmic.atlaslib.dto.layer.ProtocolDTO;
 import es.redmic.atlaslib.dto.layer.StyleLayerDTO;
+import es.redmic.atlaslib.dto.layerinfo.LayerInfoDTO;
 import es.redmic.atlaslib.events.layer.LayerEventTypes;
 import es.redmic.atlaslib.events.layer.create.CreateLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerEvent;
@@ -52,6 +53,7 @@ import es.redmic.atlaslib.events.layer.update.UpdateLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerFailedEvent;
 import es.redmic.exception.common.ExceptionType;
+import es.redmic.test.atlascommands.integration.category.CategoryDataUtil;
 import es.redmic.test.atlascommands.integration.themeinspire.ThemeInspireDataUtil;
 
 public abstract class LayerDataUtil {
@@ -191,6 +193,28 @@ public abstract class LayerDataUtil {
 		event.setArguments(arguments);
 
 		return event;
+	}
+
+	public static LayerInfoDTO getLayerInfo(String code) {
+
+		LayerInfoDTO layerInfo = new LayerInfoDTO();
+
+		layerInfo.setId(PREFIX + code);
+		layerInfo.setName("Prueba");
+		layerInfo.setAlias("Prueba");
+		layerInfo.setDescription("Prueba");
+
+		layerInfo.setUrlSource("http://redmic.es");
+
+		layerInfo.setParent(CategoryDataUtil.getCategory("3442"));
+
+		layerInfo.setThemeInspire(ThemeInspireDataUtil.getThemeInspire("cc"));
+
+		layerInfo.setProtocols(getProtocols());
+
+		layerInfo.setLatLonBoundsImage(getLatLonBoundingBoxDTO());
+
+		return layerInfo;
 	}
 
 	@SuppressWarnings("serial")
