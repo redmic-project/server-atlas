@@ -40,12 +40,10 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.kjetland.jackson.jsonSchema.annotations.JsonSchemaDefault;
 import com.kjetland.jackson.jsonSchema.annotations.JsonSchemaIgnore;
-import com.kjetland.jackson.jsonSchema.annotations.JsonSchemaUrl;
 
 import es.redmic.atlaslib.dto.category.CategoryDTO;
 import es.redmic.atlaslib.dto.layerinfo.LayerInfoDTO;
 import es.redmic.atlaslib.dto.themeinspire.ThemeInspireDTO;
-import es.redmic.brokerlib.deserializer.CustomRelationDeserializer;
 import es.redmic.jts4jackson.module.JTSModule;
 import es.redmic.models.es.common.deserializer.CustomDateTimeDeserializer;
 import es.redmic.models.es.common.serializer.CustomDateTimeSerializer;
@@ -77,11 +75,11 @@ public class LayerDTO extends LayerInfoDTO {
 			+ "{\"name\":\"timeDimension\",\"type\":[" + DimensionDTO.SCHEMA$ + ",\"null\"]},"
 			+ "{\"name\":\"elevationDimension\"," + "\"type\":"
 					+ "[\"es.redmic.atlaslib.dto.layer.DimensionDTO\",\"null\"]},"
-			+ "{\"name\":\"parent\",\"type\":[" + CategoryDTO.SCHEMA$ + ",\"null\"]},"
 			+ "{\"name\":\"inserted\",\"type\":[\"null\",{\"type\":\"long\",\"logicalType\":\"timestamp-millis\"}],"
 				+ "\"default\": null},"
 			+ "{\"name\":\"updated\",\"type\":[\"null\",{\"type\":\"long\",\"logicalType\":\"timestamp-millis\"}],"
 				+ "\"default\": null},"
+			+ "{\"name\":\"parent\",\"type\":[" + CategoryDTO.SCHEMA$ + ",\"null\"]},"
 			+ "{\"name\":\"themeInspire\",\"type\":["+ ThemeInspireDTO.SCHEMA$ +", \"null\"]},"
 			+ "{\"name\":\"latLonBoundsImage\",\"type\":[" + LatLonBoundingBoxDTO.SCHEMA$ + ", \"null\"]},"
 			+ "{\"name\": \"protocols\",\"type\": [{\"type\": \"array\",\"items\":" + ProtocolDTO.SCHEMA$ + "},\"null\"]},"
@@ -139,11 +137,6 @@ public class LayerDTO extends LayerInfoDTO {
 	private DimensionDTO timeDimension;
 
 	private DimensionDTO elevationDimension;
-
-	@JsonDeserialize(using = CustomRelationDeserializer.class)
-	@JsonSchemaUrl(value = "controller.mapping.CATEGORY")
-	@Valid
-	CategoryDTO parent;
 
 	@JsonSchemaIgnore
 	@JsonSerialize(using = CustomDateTimeSerializer.class)
@@ -275,16 +268,6 @@ public class LayerDTO extends LayerInfoDTO {
 		this.elevationDimension = elevationDimension;
 	}
 
-	@Override
-	public CategoryDTO getParent() {
-		return parent;
-	}
-
-	@Override
-	public void setParent(CategoryDTO parent) {
-		this.parent = parent;
-	}
-
 	public DateTime getInserted() {
 		return inserted;
 	}
@@ -353,11 +336,11 @@ public class LayerDTO extends LayerInfoDTO {
 		case 14:
 			return elevationDimension;
 		case 15:
-			return getParent();
-		case 16:
 			return getInserted() != null ? getInserted().getMillis() : null;
-		case 17:
+		case 16:
 			return getUpdated() != null ? getUpdated().getMillis() : null;
+		case 17:
+			return getParent();
 		case 18:
 			return getThemeInspire();
 		case 19:
@@ -440,13 +423,13 @@ public class LayerDTO extends LayerInfoDTO {
 			elevationDimension = value != null ? (DimensionDTO) value : null;
 			break;
 		case 15:
-			parent = value != null ? (CategoryDTO) value : null;
-			break;
-		case 16:
 			setInserted(value != null ? new DateTime(value, DateTimeZone.UTC).toDateTime() : null);
 			break;
-		case 17:
+		case 16:
 			setUpdated(value != null ? new DateTime(value, DateTimeZone.UTC).toDateTime() : null);
+			break;
+		case 17:
+			setParent(value != null ? (CategoryDTO) value : null);
 			break;
 		case 18:
 			setThemeInspire(value != null ? (ThemeInspireDTO) value : null);
@@ -496,7 +479,6 @@ public class LayerDTO extends LayerInfoDTO {
 		result = prime * result + ((attribution == null) ? 0 : attribution.hashCode());
 		result = prime * result + ((timeDimension == null) ? 0 : timeDimension.hashCode());
 		result = prime * result + ((elevationDimension == null) ? 0 : elevationDimension.hashCode());
-		result = prime * result + ((parent == null) ? 0 : parent.hashCode());
 		result = prime * result + ((inserted == null) ? 0 : inserted.hashCode());
 		result = prime * result + ((updated == null) ? 0 : updated.hashCode());
 		result = prime * result + ((image == null) ? 0 : image.hashCode());
@@ -561,11 +543,6 @@ public class LayerDTO extends LayerInfoDTO {
 			if (other.elevationDimension != null)
 				return false;
 		} else if (!elevationDimension.equals(other.elevationDimension))
-			return false;
-		if (parent == null) {
-			if (other.parent != null)
-				return false;
-		} else if (!parent.equals(other.parent))
 			return false;
 		if (inserted == null) {
 			if (other.inserted != null)
