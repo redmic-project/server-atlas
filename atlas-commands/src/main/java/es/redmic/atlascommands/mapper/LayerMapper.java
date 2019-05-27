@@ -65,7 +65,6 @@ public interface LayerMapper {
 	// @formatter:on
 
 	@Mapping(source = "layer", target = "urlSource", qualifiedByName = "urlSource")
-	@Mapping(source = "layer", target = "alias", qualifiedByName = "alias")
 	@Mapping(source = "layer", target = "legend", qualifiedByName = "legend")
 	@Mapping(source = "layer", target = "timeDimension", qualifiedByName = "timeDimension")
 	@Mapping(source = "layer", target = "elevationDimension", qualifiedByName = "elevationDimension")
@@ -81,15 +80,6 @@ public interface LayerMapper {
 	default String getUrlSource(Layer layer, @Context String urlSource) {
 
 		return urlSource;
-	}
-
-	@Named("alias")
-	default String getAlias(Layer layer, @Context String urlSource) {
-
-		if (layer.getTitle() != null)
-			return layer.getTitle();
-		else
-			return layer.getName();
 	}
 
 	@Named("legend")
