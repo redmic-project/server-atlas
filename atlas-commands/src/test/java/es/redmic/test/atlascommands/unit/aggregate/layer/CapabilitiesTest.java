@@ -64,6 +64,8 @@ public class CapabilitiesTest {
 
 		// Establece urlSource dinámicamente (depende de donde se ejecute)
 		expectedLayer.setUrlSource(URL_CAPABILITIES);
+		expectedLayer.setLegend(
+				URL_CAPABILITIES + "?request=GetLegendGraphic&version=1.0.0&format=image/png&layer=topp:states");
 	}
 
 	// TODO: cambiar excepción
