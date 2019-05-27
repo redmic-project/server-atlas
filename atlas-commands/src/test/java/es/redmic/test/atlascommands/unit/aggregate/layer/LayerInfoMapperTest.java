@@ -52,6 +52,10 @@ public class LayerInfoMapperTest {
 		expectedLayer = (LayerDTO) JsonToBeanTestUtil.getBean("/data/layers/layerDTO.json", LayerDTO.class);
 
 		layerInfo = (LayerInfoDTO) JsonToBeanTestUtil.getBean("/data/layers/layerInfoDTO.json", LayerInfoDTO.class);
+
+		// Establece urlSource dinámicamente (depende de donde se ejecute)
+		expectedLayer.setUrlSource(URL_CAPABILITIES);
+		layerInfo.setUrlSource(URL_CAPABILITIES);
 	}
 
 	@Test

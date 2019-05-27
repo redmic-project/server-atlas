@@ -61,6 +61,9 @@ public class CapabilitiesTest {
 		layers = Capabilities.getCapabilities(URL_CAPABILITIES);
 
 		expectedLayer = (LayerDTO) JsonToBeanTestUtil.getBean("/data/layers/layer.json", LayerDTO.class);
+
+		// Establece urlSource dinámicamente (depende de donde se ejecute)
+		expectedLayer.setUrlSource(URL_CAPABILITIES);
 	}
 
 	// TODO: cambiar excepción
