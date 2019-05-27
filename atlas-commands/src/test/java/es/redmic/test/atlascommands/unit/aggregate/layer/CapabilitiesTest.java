@@ -89,11 +89,10 @@ public class CapabilitiesTest {
 	@Test
 	public void layer_ContaintAllFields_IfMapperIsCorrect() throws IOException, ServiceException {
 
-		LayerDTO layerDTO = layers.get("batimetriaGlobal");
+		LayerDTO layerDTO = (LayerDTO) layers.values().toArray()[0];
 
 		assertEquals(expectedLayer.getAbstractLayer(), layerDTO.getAbstractLayer());
 		assertEquals(expectedLayer.getActivities(), layerDTO.getActivities());
-		assertEquals(expectedLayer.getAlias(), layerDTO.getAlias());
 
 		assertEquals(expectedLayer.getElevationDimension(), layerDTO.getElevationDimension());
 		assertEquals(expectedLayer.getFormats(), layerDTO.getFormats());
