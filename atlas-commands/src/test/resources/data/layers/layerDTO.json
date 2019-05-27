@@ -1,0 +1,149 @@
+{
+	"queryable": true,
+	"name": "batimetriaGlobal",
+	"title": "Batimetrías",
+	"abstractLayer": "Isolíneas batimétricas obtenidas por geoprocesamiento a partir del modelo batimétrico del \"General Bathymetric Chart of the Oceans (GEBCO), www.gebco.net\" con equidistancia de 100 m ",
+	"formats": [
+		"image/png",
+		"application/atom+xml",
+		"application/pdf",
+		"application/rss+xml",
+		"application/vnd.google-earth.kml+xml",
+		"application/vnd.google-earth.kml+xml;mode=networklink",
+		"application/vnd.google-earth.kmz",
+		"image/geotiff",
+		"image/geotiff8",
+		"image/gif",
+		"image/jpeg",
+		"image/png; mode=8bit",
+		"image/svg+xml",
+		"image/tiff",
+		"image/tiff8",
+		"text/html; subtype=openlayers"
+	],
+	"legend": "file:/home/REDMIC/redmic_project/server/atlas/atlas-commands/src/test/resources/data/capabilities/wms.xml?request=GetLegendGraphic&version=1.0.0&format=image/png&layer=topp:states",
+	"geometry": {
+		"coordinates": [
+			[
+				[
+					-19.332800035,
+					27.404290052
+				],
+				[
+					-19.332800035,
+					29.416379848
+				],
+				[
+					-12.666811229,
+					29.416379848
+				],
+				[
+					-12.666811229,
+					27.404290052
+				],
+				[
+					-19.332800035,
+					27.404290052
+				]
+			]
+		],
+		"type": "Polygon"
+	},
+	"srs": [
+		"EPSG:3857",
+		"EPSG:4326",
+		"EPSG:32628",
+		"CRS:84"
+	],
+	"stylesLayer": [
+		{
+			"name": "el:batimetria50mCanarias",
+			"title": "Isobatas cada 50 m azules",
+			"abstractStyle": "Apropiado para representar isobatas con 50 m de equidistancia, en varios niveles de escala o zoom, en los que se adapta el etiquetado para mejorar la visualización",
+			"format": "image/png",
+			"url": "http://atlas.redmic.es:80/el/ows?service=WMS&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=batimetriaCanarias"
+		},
+		{
+			"name": "el:batimetriaMacaronesia",
+			"title": null,
+			"abstractStyle": null,
+			"format": "image/png",
+			"url": "http://atlas.redmic.es:80/el/ows?service=WMS&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=batimetriaCanarias&style=batimetriaMacaronesia"
+		},
+		{
+			"name": "el:batimetria1mCanarias",
+			"title": null,
+			"abstractStyle": null,
+			"format": "image/png",
+			"url": "http://atlas.redmic.es:80/el/ows?service=WMS&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=batimetriaCanarias&style=batimetria1mCanarias"
+		},
+		{
+			"name": "el:batimetria50mCanariasGroup",
+			"title": null,
+			"abstractStyle": null,
+			"format": "image/png",
+			"url": "http://atlas.redmic.es:80/el/ows?service=WMS&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=batimetriaCanarias&style=batimetria50mCanariasGroup"
+		}
+	],
+	"contact": {
+		"name": "José Andrés Sevilla",
+		"contactPosition": "GIS",
+		"organization": "Observatorio Ambiental Granadilla",
+		"phone": "+34922298700",
+		"fax": "+34922298704",
+		"address": "Edf. Puerto-Ciudad, of. 1b, S/C de Tenerife 38001 Spain ",
+		"email": "gis@oag-fundacion.org"
+	},
+	"activities": [
+		{
+			"id": "817",
+			"name": null,
+			"path": null
+		}
+	],
+	"timeDimension": {
+		"name": "time",
+		"units": "ISO8601",
+		"defaultValue": "2017-03-15T08:15:38.742Z"
+	},
+	"elevationDimension": {
+		"name": "elevation",
+		"units": "EPSG:5030",
+		"unitSymbol": "m",
+		"defaultValue": "1"
+	},
+	"attribution": {
+		"title": "Observatorio Ambiental Granadilla",
+		"onlineResource": "http://www.oag-fundacion.org",
+		"logoURL": {
+			"format": "image/jpeg",
+			"onlineResource": "http://www.oag-fundacion.org/content/logos/oag_sinmedusa.jpg"
+		}
+	},
+	"keywords": ["WFS", "WMS", "GEOSERVER"],
+	"urlSource": "file:/home/REDMIC/redmic_project/server/atlas/atlas-commands/src/test/resources/data/capabilities/wms.xml",
+	"parent" : {
+		"id": "category-213423",
+		"name": "Batimetrías"
+	},
+	"themeInspire": {
+		"id": "themeInspire-el",
+		"code": "el",
+		"name": "Elevaciones",
+		"name_en": "Elevation"
+	},
+	
+	"latLonBoundsImage": {
+		"maxX": -15.826663970947266,
+		"maxY": 27.962779998779297,
+		"minX": -15.848636627197266,
+		"minY": 27.940807342529297
+	},
+	"description": "Batimetrías de costera de las Islas Canarias (DGC)",
+	"alias": "Batimetrías by operator",
+	"atlas": true,
+	"refresh": "1",
+	"urlSource": "file:/home/REDMIC/redmic_project/server/atlas/atlas-commands/src/test/resources/data/capabilities/wms.xml",
+	"name": "batimetriaGlobal",
+	"id": "layer-1234"
+}
