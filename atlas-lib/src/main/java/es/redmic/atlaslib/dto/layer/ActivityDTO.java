@@ -35,8 +35,8 @@ public class ActivityDTO extends org.apache.avro.specific.SpecificRecordBase
 	public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse(
 		"{\"type\":\"record\",\"name\":\"ActivityDTO\",\"namespace\":\"es.redmic.atlaslib.dto.layer\",\"fields\":["
 				+ "{\"name\": \"id\",\"type\": \"string\"},"
-				+ "{\"name\": \"name\",\"type\": \"string\"},"
-				+ "{\"name\": \"path\",\"type\": \"string\"}]}");
+				+ "{\"name\": \"name\",\"type\": [\"string\", \"null\"]},"
+				+ "{\"name\": \"path\",\"type\": [\"string\", \"null\"]}]}");
 	// @formatter:on
 
 	public ActivityDTO() {
@@ -45,10 +45,8 @@ public class ActivityDTO extends org.apache.avro.specific.SpecificRecordBase
 	@NotNull
 	String id;
 
-	@NotNull
 	private String name;
 
-	@NotNull
 	private String path;
 
 	public String getId() {
