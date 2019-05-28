@@ -22,6 +22,7 @@ package es.redmic.atlaslib.dto.layer;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -285,7 +286,6 @@ public class LayerDTO extends LayerInfoDTO {
 	}
 
 	@Override
-
 	public String getName() {
 		return super.getName();
 	}
@@ -378,10 +378,10 @@ public class LayerDTO extends LayerInfoDTO {
 			abstractLayer = value != null ? value.toString() : null;
 			break;
 		case 2:
-			keywords = value != null ? (java.util.List) value : null;
+			keywords = value != null ? getStringList((java.util.List) value) : null;
 			break;
 		case 3:
-			srs = value != null ? (java.util.List) value : null;
+			srs = value != null ? getStringList((java.util.List) value) : null;
 			break;
 		case 4:
 			stylesLayer = value != null ? (java.util.List) value : null;
@@ -396,7 +396,7 @@ public class LayerDTO extends LayerInfoDTO {
 			queryable = value != null ? (Boolean) value : null;
 			break;
 		case 8:
-			formats = value != null ? (java.util.List) value : null;
+			formats = value != null ? getStringList((java.util.List) value) : null;
 			break;
 		case 9:
 			image = value != null ? value.toString() : null;
@@ -464,6 +464,12 @@ public class LayerDTO extends LayerInfoDTO {
 		default:
 			throw new org.apache.avro.AvroRuntimeException("Bad index");
 		}
+	}
+
+	@JsonIgnore
+	private List<String> getStringList(List<?> value) {
+
+		return value.stream().map(s -> s.toString()).collect(Collectors.toList());
 	}
 
 	@Override
