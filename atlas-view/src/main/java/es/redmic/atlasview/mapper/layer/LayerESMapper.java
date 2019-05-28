@@ -127,6 +127,12 @@ public class LayerESMapper extends CustomMapper<Layer, LayerDTO> {
 			a.setAttribution(mapperFacade.map(b.getAttribution(), Attribution.class));
 		}
 
+		if (b.getParent() != null && b.getParent().getId() != null) {
+			a.getJoinIndex().setParent(b.getParent().getId());
+		} else {
+			a.setJoinIndex(null);
+		}
+
 		super.mapBtoA(b, a, context);
 	}
 }
