@@ -246,7 +246,7 @@ public class ThemeInspireControllerTest extends DocumentationViewBaseTest {
 	public void getFilterSchema_Return200_WhenSchemaIsAvailable() throws Exception {
 
 		Map<String, Object> schemaExpected = (Map<String, Object>) JsonToBeanTestUtil
-				.getBean("/data/schemas/themeinspirequeryschema.json", Map.class);
+				.getBean("/data/schemas/simplequerydtoschema.json", Map.class);
 
 		// @formatter:off
 		
