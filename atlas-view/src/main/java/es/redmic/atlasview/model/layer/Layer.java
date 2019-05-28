@@ -24,9 +24,12 @@ import java.util.List;
 
 import org.locationtech.jts.geom.Polygon;
 
+import es.redmic.elasticsearchlib.common.model.JoinIndex;
 import es.redmic.models.es.administrative.model.ActivityCompact;
 
 public class Layer extends LayerModelCompact {
+
+	private JoinIndex joinIndex;
 
 	private String title;
 	private String abstractLayer;
@@ -48,6 +51,17 @@ public class Layer extends LayerModelCompact {
 	private Dimension elevationDimension;
 
 	public Layer() {
+
+		joinIndex = new JoinIndex();
+		joinIndex.setName("layer");
+	}
+
+	public JoinIndex getJoinIndex() {
+		return joinIndex;
+	}
+
+	public void setJoinIndex(JoinIndex joinIndex) {
+		this.joinIndex = joinIndex;
 	}
 
 	public Contact getContact() {

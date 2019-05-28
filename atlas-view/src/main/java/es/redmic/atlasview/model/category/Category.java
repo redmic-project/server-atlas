@@ -26,6 +26,8 @@ public class Category extends BaseAbstractStringES {
 
 	private String name;
 
+	private String joinIndex = "category";
+
 	public Category() {
 	}
 
@@ -35,5 +37,13 @@ public class Category extends BaseAbstractStringES {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getJoinIndex() {
+		return joinIndex;
+	}
+
+	public void setJoinIndex(String joinIndex) {
+		this.joinIndex = joinIndex;
 	}
 }
