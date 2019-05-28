@@ -47,7 +47,7 @@ import es.redmic.viewlib.data.repository.IDataRepository;
 public class CategoryESRepository extends RWDataESRepository<Category, SimpleQueryDTO>
 		implements IDataRepository<Category, SimpleQueryDTO> {
 
-	private static String[] INDEX = { "category" };
+	private static String[] INDEX = { "layer" };
 	private static String TYPE = "_doc";
 
 	// @formatter:off
