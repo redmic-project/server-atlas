@@ -20,9 +20,7 @@ package es.redmic.atlasview.model.layer;
  * #L%
  */
 
-import es.redmic.models.es.common.model.BaseAbstractStringES;
-
-public class Protocol extends BaseAbstractStringES {
+public class Protocol {
 
 	private String type;
 
