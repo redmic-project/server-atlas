@@ -27,7 +27,10 @@ import es.redmic.atlaslib.dto.layer.LayerDTO;
 import es.redmic.atlasview.model.layer.Layer;
 import es.redmic.atlasview.repository.layer.LayerESRepository;
 import es.redmic.models.es.common.dto.EventApplicationResult;
+import es.redmic.models.es.common.dto.JSONCollectionDTO;
+import es.redmic.models.es.common.query.dto.MgetDTO;
 import es.redmic.models.es.common.query.dto.SimpleQueryDTO;
+import es.redmic.viewlib.data.dto.MetaDTO;
 import es.redmic.viewlib.data.service.RDataService;
 
 @Service
@@ -51,5 +54,27 @@ public class LayerESService extends RDataService<Layer, LayerDTO, SimpleQueryDTO
 
 	public EventApplicationResult delete(String id, String parentId) {
 		return repository.delete(id, parentId);
+	}
+
+	/**
+	 * Sobrescribe findById para realizar una query en lugar de un get. En caso
+	 * contrario sería necesario pasarle el id del padre
+	 */
+	@Override
+	public MetaDTO<?> findById(String id) {
+
+		return mapper.getMapperFacade().map(repository.queryById(id), MetaDTO.class, getMappingContext());
+	}
+
+	/**
+	 * Sobrescribe mget para realizar una query en lugar de un mget. En caso
+	 * contrario sería necesario pasarle el id del padre
+	 */
+	@Override
+	public JSONCollectionDTO mget(MgetDTO dto) {
+
+		return mapper.getMapperFacade().map(
+				repository.searchByIds(dto.getIds().stream().toArray(String[]::new)).getHits(),
+				JSONCollectionDTO.class);
 	}
 }
