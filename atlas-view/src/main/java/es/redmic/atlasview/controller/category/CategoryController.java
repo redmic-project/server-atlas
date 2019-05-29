@@ -70,6 +70,7 @@ public class CategoryController extends DataController<Category, CategoryDTO, Si
 		try {
 			result = service.save(mapper.getMapperFacade().map(event.getCategory(), Category.class));
 		} catch (Exception e) {
+			e.printStackTrace();
 			publishFailedEvent(CategoryEventFactory.getEvent(event, CategoryEventTypes.CREATE_FAILED,
 					ExceptionType.INTERNAL_EXCEPTION.name(), null), category_topic);
 			return;
@@ -91,6 +92,7 @@ public class CategoryController extends DataController<Category, CategoryDTO, Si
 		try {
 			result = service.update(mapper.getMapperFacade().map(event.getCategory(), Category.class));
 		} catch (Exception e) {
+			e.printStackTrace();
 			publishFailedEvent(CategoryEventFactory.getEvent(event, CategoryEventTypes.UPDATE_FAILED,
 					ExceptionType.INTERNAL_EXCEPTION.name(), null), category_topic);
 			return;
@@ -112,6 +114,7 @@ public class CategoryController extends DataController<Category, CategoryDTO, Si
 		try {
 			result = service.delete(event.getAggregateId());
 		} catch (Exception e) {
+			e.printStackTrace();
 			publishFailedEvent(CategoryEventFactory.getEvent(event, CategoryEventTypes.DELETE_FAILED,
 					ExceptionType.INTERNAL_EXCEPTION.name(), null), category_topic);
 			return;

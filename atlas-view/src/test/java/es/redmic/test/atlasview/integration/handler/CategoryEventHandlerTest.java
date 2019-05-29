@@ -22,7 +22,6 @@ package es.redmic.test.atlasview.integration.handler;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
 import java.util.UUID;
@@ -64,12 +63,15 @@ import es.redmic.atlaslib.events.category.update.UpdateCategoryEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryFailedEvent;
 import es.redmic.atlasview.AtlasViewApplication;
 import es.redmic.atlasview.model.category.Category;
+import es.redmic.atlasview.model.layer.Layer;
 import es.redmic.atlasview.repository.category.CategoryESRepository;
+import es.redmic.atlasview.repository.layer.LayerESRepository;
 import es.redmic.brokerlib.avro.common.Event;
 import es.redmic.brokerlib.listener.SendListener;
 import es.redmic.exception.data.ItemNotFoundException;
 import es.redmic.models.es.data.common.model.DataHitWrapper;
 import es.redmic.testutils.documentation.DocumentationViewBaseTest;
+import es.redmic.testutils.utils.JsonToBeanTestUtil;
 import es.redmic.viewlib.config.MapperScanBeanItfc;
 
 @SpringBootTest(classes = { AtlasViewApplication.class })
@@ -87,6 +89,9 @@ public class CategoryEventHandlerTest extends DocumentationViewBaseTest {
 
 	@Autowired
 	CategoryESRepository repository;
+
+	@Autowired
+	LayerESRepository layerRepository;
 
 	protected static BlockingQueue<Object> blockingQueue;
 
@@ -259,8 +264,29 @@ public class CategoryEventHandlerTest extends DocumentationViewBaseTest {
 	@Test
 	public void sendCategoryDeleteEvent_PublishDeleteCategoryFailedEvent_IfNoConstraintsFulfilled() throws Exception {
 
-		// TODO: Implementar cuando se metan las referencias en la vista.
-		assertTrue(true);
+		CategoryDTO category = getCategory();
+
+		// Guarda el que se va a borrar
+		repository.save(mapper.getMapperFacade().map(category, Category.class));
+
+		Layer layer = (Layer) JsonToBeanTestUtil.getBean("/data/model/layer/layer.json", Layer.class);
+		layer.getJoinIndex().setParent(category.getId());
+
+		// guarda un hijo
+		layerRepository.save(layer, category.getId());
+
+		DeleteCategoryEvent event = getDeleteCategoryEvent();
+
+		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(CATEGORY_TOPIC, event.getAggregateId(),
+				event);
+		future.addCallback(new SendListener());
+
+		Event failed = (Event) blockingQueue.poll(50, TimeUnit.SECONDS);
+		assertNotNull(failed);
+		assertEquals(CategoryEventTypes.DELETE_FAILED.toString(), failed.getType());
+
+		layerRepository.delete(layer.getId(), category.getId());
+		repository.delete(category.getId());
 	}
 
 	@KafkaHandler

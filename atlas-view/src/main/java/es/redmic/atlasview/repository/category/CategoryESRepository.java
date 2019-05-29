@@ -33,6 +33,7 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.join.query.HasChildQueryBuilder;
 import org.elasticsearch.join.query.JoinQueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.stereotype.Repository;
@@ -139,7 +140,38 @@ public class CategoryESRepository extends RWDataESRepository<Category, SimpleQue
 	@Override
 	protected EventApplicationResult checkDeleteConstraintsFulfilled(String modelToIndexId) {
 
-		// TODO: mirar si tiene hijos
+		HasChildQueryBuilder hasChildTerm = JoinQueryBuilders.hasChildQuery(Layer.JOIN_INDEX_NAME,
+				QueryBuilders.matchAllQuery(), ScoreMode.None);
+
+		MultiSearchRequest request = new MultiSearchRequest();
+
+		SearchSourceBuilder requestBuilderHasChild = new SearchSourceBuilder().query(hasChildTerm).size(1);
+
+		request.add(new SearchRequest().indices(getIndex()).source(requestBuilderHasChild));
+
+		// @formatter:on
+
+		MultiSearchResponse sr;
+		try {
+			sr = ESProvider.getClient().msearch(request, RequestOptions.DEFAULT);
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new ESQueryException();
+		}
+
+		Map<String, String> arguments = new HashMap<>();
+
+		Item[] responses = sr.getResponses();
+
+		if (responses != null && responses[0].getResponse().getHits().getTotalHits() > 0) {
+			arguments.put(ID_PROPERTY, modelToIndexId);
+		}
+
+		if (arguments.size() > 0) {
+			// TODO: crear excepción propia
+			return new EventApplicationResult(ExceptionType.ES_UPDATE_DOCUMENT.toString(), arguments);
+		}
+
 		return new EventApplicationResult(true);
 	}
 
