@@ -80,7 +80,7 @@ public class LayerDTO extends LayerInfoDTO {
 				+ "\"default\": null},"
 			+ "{\"name\":\"updated\",\"type\":[\"null\",{\"type\":\"long\",\"logicalType\":\"timestamp-millis\"}],"
 				+ "\"default\": null},"
-			+ "{\"name\":\"parent\",\"type\":[" + CategoryDTO.SCHEMA$ + ",\"null\"]},"
+			+ "{\"name\":\"parent\",\"type\":" + CategoryDTO.SCHEMA$ + "},"
 			+ "{\"name\":\"themeInspire\",\"type\":["+ ThemeInspireDTO.SCHEMA$ +", \"null\"]},"
 			+ "{\"name\":\"latLonBoundsImage\",\"type\":[" + LatLonBoundingBoxDTO.SCHEMA$ + ", \"null\"]},"
 			+ "{\"name\": \"protocols\",\"type\": [{\"type\": \"array\",\"items\":" + ProtocolDTO.SCHEMA$ + "},\"null\"]},"
@@ -429,7 +429,7 @@ public class LayerDTO extends LayerInfoDTO {
 			setUpdated(value != null ? new DateTime(value, DateTimeZone.UTC).toDateTime() : null);
 			break;
 		case 17:
-			setParent(value != null ? (CategoryDTO) value : null);
+			setParent((CategoryDTO) value);
 			break;
 		case 18:
 			setThemeInspire(value != null ? (ThemeInspireDTO) value : null);

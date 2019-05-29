@@ -47,11 +47,11 @@
 			"type": "string"
 		},
 		"parent": {
-			"type": ["integer", "null"],
+			"type": "integer",
 			"url": "/api/atlas/commands/category"
 		}
 	},
-	"required": ["name", "protocols", "atlas", "refresh", "urlSource"],
+	"required": ["name", "protocols", "atlas", "refresh", "urlSource", "parent"],
 	"definitions": {
 		"LatLonBoundingBoxDTO": {
 			"type": ["object", "null"],

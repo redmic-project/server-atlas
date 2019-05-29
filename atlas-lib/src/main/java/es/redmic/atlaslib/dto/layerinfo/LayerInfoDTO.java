@@ -21,6 +21,7 @@ package es.redmic.atlaslib.dto.layerinfo;
  */
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import org.apache.avro.Schema;
 
@@ -49,7 +50,7 @@ public class LayerInfoDTO extends LayerCompactDTO {
 	@JsonIgnore
 	public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse(
 		"{\"type\":\"record\",\"name\":\"LayerDTO\",\"namespace\":\"es.redmic.atlaslib.dto.layerinfo\",\"fields\":["
-			+ "{\"name\":\"parent\",\"type\":[" + CategoryDTO.SCHEMA$ + ",\"null\"]},"
+			+ "{\"name\":\"parent\",\"type\":" + CategoryDTO.SCHEMA$ + "},"
 			+ "{\"name\":\"themeInspire\",\"type\":["+ ThemeInspireDTO.SCHEMA$ +", \"null\"]},"
 			+ "{\"name\":\"latLonBoundsImage\",\"type\":[" + LatLonBoundingBoxDTO.SCHEMA$ + ", \"null\"]},"
 			+ "{\"name\": \"protocols\",\"type\": [{\"type\": \"array\",\"items\":" + ProtocolDTO.SCHEMA$ + "},\"null\"]},"
@@ -66,6 +67,7 @@ public class LayerInfoDTO extends LayerCompactDTO {
 		super();
 	}
 
+	@NotNull
 	@JsonDeserialize(using = CustomRelationDeserializer.class)
 	@JsonSchemaUrl(value = "controller.mapping.CATEGORY")
 	@Valid
@@ -122,7 +124,7 @@ public class LayerInfoDTO extends LayerCompactDTO {
 	public void put(int field, Object value) {
 		switch (field) {
 		case 0:
-			setParent(value != null ? (CategoryDTO) value : null);
+			setParent((CategoryDTO) value);
 			break;
 		case 1:
 			setThemeInspire(value != null ? (ThemeInspireDTO) value : null);

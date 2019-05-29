@@ -127,4 +127,12 @@ public class LayerInfoCheckDTOValidationTest extends DTOBaseTest<LayerInfoDTO> {
 
 		checkDTOHasError(dto, NOT_NULL_MESSAGE_TEMPLATE);
 	}
+
+	@Test
+	public void validationDTO_ReturnNotNullError_IfParentFieldIsNull() {
+
+		dto.setParent(null);
+
+		checkDTOHasError(dto, NOT_NULL_MESSAGE_TEMPLATE);
+	}
 }

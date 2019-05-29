@@ -268,6 +268,8 @@ public abstract class LayerDataUtil {
 		contact.setName("Pepe");
 		layer.setContact(contact);
 
+		layer.setParent(CategoryDataUtil.getCategory("3442"));
+
 		layer.setThemeInspire(ThemeInspireDataUtil.getThemeInspire("cc"));
 
 		layer.setProtocols(getProtocols());
