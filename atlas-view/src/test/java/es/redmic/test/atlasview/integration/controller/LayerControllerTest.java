@@ -105,6 +105,7 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 
 		try {
 			layer = (Layer) JsonToBeanTestUtil.getBean("/data/model/layer/layer.json", Layer.class);
+			layer.setAtlas(false);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -164,6 +165,57 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 					.andDo(getSimpleQueryFieldsDescriptor());
 		
 		// @formatter:on
+	}
+
+	@Test
+	public void searchLayersPost_NoReturnResult_WhenSearchLayersWithAtlasEqualToTrue() throws Exception {
+
+		SimpleQueryDTO dataQuery = new SimpleQueryDTO();
+		dataQuery.setSize(1);
+
+		dataQuery.addTerm("atlas", true);
+
+		// @formatter:off
+		
+		this.mockMvc
+				.perform(post(LAYER_PATH + "/_search").content(mapper.writeValueAsString(dataQuery))
+					.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.success", is(true)))
+				.andExpect(jsonPath("$.body.data", notNullValue()))
+				.andExpect(jsonPath("$.body.data.length()", is(0)));
+		
+		// @formatter:on
+	}
+
+	@Test
+	public void searchLayersPost_ReturnResult_WhenSearchLayersWithAtlasEqualToTrue() throws Exception {
+
+		SimpleQueryDTO dataQuery = new SimpleQueryDTO();
+		dataQuery.setSize(1);
+
+		dataQuery.addTerm("atlas", true);
+
+		Layer layerAtlas = (Layer) JsonToBeanTestUtil.getBean("/data/model/layer/layer.json", Layer.class);
+		layerAtlas.setId("layer-1234");
+		layerAtlas.setName("atlas");
+		layerAtlas.getJoinIndex().setParent(PARENT_ID);
+		repository.save(layerAtlas, PARENT_ID);
+
+		// @formatter:off
+		
+		this.mockMvc
+				.perform(post(LAYER_PATH + "/_search").content(mapper.writeValueAsString(dataQuery))
+					.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.success", is(true)))
+				.andExpect(jsonPath("$.body.data", notNullValue()))
+				.andExpect(jsonPath("$.body.data[0]", notNullValue()))
+				.andExpect(jsonPath("$.body.data.length()", is(1)));
+		
+		// @formatter:on
+
+		repository.delete(layerAtlas.getId(), PARENT_ID);
 	}
 
 	@Test

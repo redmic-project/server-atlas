@@ -171,6 +171,28 @@ public class LayerESRepository extends RWDataESRepository<Layer, SimpleQueryDTO>
 		return result.getHits().getHits().get(0);
 	}
 
+	/**
+	 * Sobrescribe a la función base por incompatibilidad de query. Función que dado
+	 * un conjunto de términos, nos devuelve una query de elasticsearch. Debe estar
+	 * implementado en cada repositorio para darle una funcionalidad específica y
+	 * aquí estarán las funcionalidades que comparten todos los repositorios.
+	 * 
+	 * @param terms
+	 *            Map de términos pasados por la query.
+	 * @param query
+	 *            QueryBuilder con la query de los términos acumulados en los
+	 *            repositorios específicos.
+	 * @return query de tipo terms de elasticsearch.
+	 */
+	@Override
+	public QueryBuilder getTermQuery(Map<String, Object> terms, BoolQueryBuilder query) {
+
+		if (terms.containsKey("atlas")) {
+			query.must(QueryBuilders.termQuery("atlas", Boolean.valueOf(terms.get("atlas").toString())));
+		}
+		return super.getTermQuery(terms, query);
+	}
+
 	private QueryBuilder getLayerQuery() {
 		return QueryBuilders.existsQuery(URL_SOURCE_PROPERTY);
 	}
