@@ -38,9 +38,12 @@ import org.springframework.stereotype.Repository;
 import es.redmic.atlasview.model.layer.Layer;
 import es.redmic.elasticsearchlib.data.repository.RWDataESRepository;
 import es.redmic.exception.common.ExceptionType;
+import es.redmic.exception.data.ItemNotFoundException;
 import es.redmic.exception.elasticsearch.ESQueryException;
 import es.redmic.models.es.common.dto.EventApplicationResult;
 import es.redmic.models.es.common.query.dto.SimpleQueryDTO;
+import es.redmic.models.es.data.common.model.DataHitWrapper;
+import es.redmic.models.es.data.common.model.DataSearchWrapper;
 import es.redmic.viewlib.data.repository.IDataRepository;
 
 @Repository
@@ -59,6 +62,7 @@ public class LayerESRepository extends RWDataESRepository<Layer, SimpleQueryDTO>
 
 	public LayerESRepository() {
 		super(INDEX, TYPE);
+		setInternalQuery(getLayerQuery());
 	}
 
 	@Override
@@ -156,5 +160,18 @@ public class LayerESRepository extends RWDataESRepository<Layer, SimpleQueryDTO>
 	protected EventApplicationResult checkDeleteConstraintsFulfilled(String modelToIndexId) {
 
 		return new EventApplicationResult(true);
+	}
+
+	public DataHitWrapper<?> queryById(String id) {
+		DataSearchWrapper<?> result = findBy(QueryBuilders.termQuery(ID_PROPERTY, id));
+
+		if (result.getHits() == null || result.getHits().getTotal() == 0)
+			throw new ItemNotFoundException("id", id + " en el servicio " + getIndex()[0] + " - " + getType());
+
+		return result.getHits().getHits().get(0);
+	}
+
+	private QueryBuilder getLayerQuery() {
+		return QueryBuilders.existsQuery(URL_SOURCE_PROPERTY);
 	}
 }

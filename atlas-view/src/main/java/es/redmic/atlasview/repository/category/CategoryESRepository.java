@@ -52,11 +52,13 @@ public class CategoryESRepository extends RWDataESRepository<Category, SimpleQue
 
 	// @formatter:off
 	
-	private final String ID_PROPERTY = "id";
+	private final String ID_PROPERTY = "id",
+			URL_SOURCE_PROPERTY = "urlSource";
 	// @formatter:on
 
 	public CategoryESRepository() {
 		super(INDEX, TYPE);
+		setInternalQuery(getCategoryQuery());
 	}
 
 	@Override
@@ -136,5 +138,10 @@ public class CategoryESRepository extends RWDataESRepository<Category, SimpleQue
 
 		// TODO: mirar si tiene hijos
 		return new EventApplicationResult(true);
+	}
+
+	private QueryBuilder getCategoryQuery() {
+
+		return QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery(URL_SOURCE_PROPERTY));
 	}
 }
