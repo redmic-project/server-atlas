@@ -53,7 +53,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import es.redmic.atlasview.AtlasViewApplication;
 import es.redmic.atlasview.model.category.Category;
+import es.redmic.atlasview.model.layer.Layer;
 import es.redmic.atlasview.repository.category.CategoryESRepository;
+import es.redmic.atlasview.repository.layer.LayerESRepository;
 import es.redmic.models.es.common.query.dto.MgetDTO;
 import es.redmic.models.es.common.query.dto.SimpleQueryDTO;
 import es.redmic.testutils.documentation.DocumentationViewBaseTest;
@@ -73,6 +75,9 @@ public class CategoryControllerTest extends DocumentationViewBaseTest {
 
 	@Autowired
 	CategoryESRepository repository;
+
+	@Autowired
+	LayerESRepository layerRepository;
 
 	Category category = new Category();
 
@@ -129,7 +134,7 @@ public class CategoryControllerTest extends DocumentationViewBaseTest {
 	}
 
 	@Test
-	public void searchCategorysPost_Return200_WhenSearchIsCorrect() throws Exception {
+	public void searchCategoriesPost_Return200_WhenSearchIsCorrect() throws Exception {
 
 		SimpleQueryDTO dataQuery = new SimpleQueryDTO();
 		dataQuery.setSize(1);
@@ -147,6 +152,88 @@ public class CategoryControllerTest extends DocumentationViewBaseTest {
 					.andDo(getSimpleQueryFieldsDescriptor());
 		
 		// @formatter:on
+	}
+
+	@Test
+	public void searchCategories_NoReturnResult_WhenSearchCategoryWithChildrenAndHasNot() throws Exception {
+
+		SimpleQueryDTO dataQuery = new SimpleQueryDTO();
+		dataQuery.setSize(1);
+
+		dataQuery.addTerm("atlas", true);
+
+		// @formatter:off
+		
+		this.mockMvc
+				.perform(post(CATEGORY_PATH + "/_search").content(mapper.writeValueAsString(dataQuery))
+					.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.success", is(true)))
+				.andExpect(jsonPath("$.body.data", notNullValue()))
+				.andExpect(jsonPath("$.body.data.length()", is(0)));
+		
+		// @formatter:on
+	}
+
+	@Test
+	public void searchCategories_NoReturnResult_WhenSearchCategoryWithChildrenAndHasButWithAtlasEqualToFalse()
+			throws Exception {
+
+		Layer layer = (Layer) JsonToBeanTestUtil.getBean("/data/model/layer/layer.json", Layer.class);
+		layer.getJoinIndex().setParent(category.getId());
+		layer.setAtlas(false);
+
+		layerRepository.save(layer, category.getId());
+
+		SimpleQueryDTO dataQuery = new SimpleQueryDTO();
+		dataQuery.setSize(1);
+
+		dataQuery.addTerm("atlas", true);
+
+		// @formatter:off
+		
+		this.mockMvc
+				.perform(post(CATEGORY_PATH + "/_search").content(mapper.writeValueAsString(dataQuery))
+					.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.success", is(true)))
+				.andExpect(jsonPath("$.body.data", notNullValue()))
+				.andExpect(jsonPath("$.body.data.length()", is(0)));
+		
+		// @formatter:on
+
+		layerRepository.delete(layer.getId(), category.getId());
+	}
+
+	@Test
+	public void searchCategories_ReturnResult_WhenSearchCategoryWithChildrenAndAtlas() throws Exception {
+
+		Layer layer = (Layer) JsonToBeanTestUtil.getBean("/data/model/layer/layer.json", Layer.class);
+		layer.getJoinIndex().setParent(category.getId());
+		layer.setAtlas(true);
+
+		layerRepository.save(layer, category.getId());
+
+		SimpleQueryDTO dataQuery = new SimpleQueryDTO();
+		dataQuery.setSize(1);
+
+		dataQuery.addTerm("atlas", true);
+
+		// @formatter:off
+		
+		this.mockMvc
+				.perform(post(CATEGORY_PATH + "/_search").content(mapper.writeValueAsString(dataQuery))
+					.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.success", is(true)))
+				.andExpect(jsonPath("$.body.data", notNullValue()))
+				.andExpect(jsonPath("$.body.data[0]", notNullValue()))
+				.andExpect(jsonPath("$.body.data.length()", is(1)));
+					//.andDo(getSimpleQueryFieldsDescriptor());
+		
+		// @formatter:on
+
+		layerRepository.delete(layer.getId(), category.getId());
 	}
 
 	@Test
@@ -235,7 +322,6 @@ public class CategoryControllerTest extends DocumentationViewBaseTest {
 				.andExpect(jsonPath("$.body[0]", endsWith("</b>")))
 					.andDo(getSimpleQueryFieldsDescriptor());;
 				
-		
 		// @formatter:on
 	}
 
