@@ -1,5 +1,9 @@
 package es.redmic.atlasview.model.category;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import es.redmic.elasticsearchlib.common.model.JoinIndex;
+
 /*-
  * #%L
  * Atlas-query-endpoint
@@ -24,11 +28,16 @@ import es.redmic.models.es.common.model.BaseAbstractStringES;
 
 public class Category extends BaseAbstractStringES {
 
+	@JsonIgnore
+	public static final String JOIN_INDEX_NAME = "category";
+
 	private String name;
 
-	private String joinIndex = "category";
+	private JoinIndex joinIndex;
 
 	public Category() {
+		joinIndex = new JoinIndex();
+		joinIndex.setName(JOIN_INDEX_NAME);
 	}
 
 	public String getName() {
@@ -39,11 +48,11 @@ public class Category extends BaseAbstractStringES {
 		this.name = name;
 	}
 
-	public String getJoinIndex() {
+	public JoinIndex getJoinIndex() {
 		return joinIndex;
 	}
 
-	public void setJoinIndex(String joinIndex) {
+	public void setJoinIndex(JoinIndex joinIndex) {
 		this.joinIndex = joinIndex;
 	}
 }
