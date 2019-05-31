@@ -29,6 +29,7 @@ import java.util.UUID;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.joda.time.DateTime;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Polygon;
 
 import es.redmic.atlaslib.dto.layer.ActivityDTO;
 import es.redmic.atlaslib.dto.layer.AttributionDTO;
@@ -39,6 +40,7 @@ import es.redmic.atlaslib.dto.layer.LayerDTO;
 import es.redmic.atlaslib.dto.layer.ProtocolDTO;
 import es.redmic.atlaslib.dto.layer.StyleLayerDTO;
 import es.redmic.atlaslib.dto.layerinfo.LayerInfoDTO;
+import es.redmic.atlaslib.dto.layerwms.LayerWMSDTO;
 import es.redmic.atlaslib.events.layer.LayerEventTypes;
 import es.redmic.atlaslib.events.layer.create.CreateLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerConfirmedEvent;
@@ -229,36 +231,22 @@ public abstract class LayerDataUtil {
 		return event;
 	}
 
-	@SuppressWarnings("serial")
 	public static LayerDTO getLayer() {
 
 		LayerDTO layer = new LayerDTO();
 
 		layer.setLegend("https://redmic.local/ww");
-
-		AttributionDTO attribution = new AttributionDTO();
-		attribution.setTitle("title");
-		layer.setAttribution(attribution);
-
-		DimensionDTO dimension = new DimensionDTO();
-		dimension.setName("time");
-		dimension.setUnits("ISO8601");
-		dimension.setDefaultValue("P30M/PRESENT");
-		layer.setTimeDimension(dimension);
-		layer.setElevationDimension(dimension);
-
+		layer.setAttribution(getAttribution());
+		layer.setTimeDimension(getDimension());
+		layer.setElevationDimension(getDimension());
 		layer.setParent(CategoryDataUtil.getCategory());
-
 		layer.setId(PREFIX + CODE);
 		layer.setName("Prueba");
 		layer.setTitle("title");
 		layer.setAlias("Prueba");
 		layer.setDescription("Prueba");
-
-		layer.setParent(CategoryDataUtil.getCategory());
 		layer.setInserted(DateTime.now());
 		layer.setUpdated(DateTime.now());
-
 		layer.setAbstractLayer("Prueba");
 		layer.setImage("Prueba");
 
@@ -276,44 +264,64 @@ public abstract class LayerDataUtil {
 		formats.add("WMS");
 		layer.setFormats(formats);
 
-		Coordinate[] coordinates = new Coordinate[] { new Coordinate(-18.1745567321777, 27.6111183166504),
-				new Coordinate(-18.1745567321777, 29.4221172332764),
-				new Coordinate(-13.3011913299561, 29.4221172332764),
-				new Coordinate(-13.3011913299561, 27.6111183166504),
-				new Coordinate(-18.1745567321777, 27.6111183166504) };
+		layer.setGeometry(getGeometry());
+		layer.setActivities(getActivities());
+		layer.setContact(getContact());
+		layer.setThemeInspire(ThemeInspireDataUtil.getThemeInspire());
+		layer.setProtocols(getProtocols());
+		layer.setLatLonBoundsImage(getLatLonBoundingBoxDTO());
+		layer.setStylesLayer(getStylesLayer());
 
-		layer.setGeometry(JTSFactoryFinder.getGeometryFactory().createPolygon(coordinates));
+		return layer;
+	}
 
-		ActivityDTO activity = new ActivityDTO();
-		activity.setId("3");
-		activity.setName("AIS");
-		activity.setPath("r.1.2.3");
+	public static LayerWMSDTO getLayerWMS() {
 
-		layer.setActivities(new ArrayList<ActivityDTO>() {
-			{
-				add(activity);
-			}
-		});
+		LayerWMSDTO layer = new LayerWMSDTO();
+
+		layer.setLegend("https://redmic.local/ww");
+		layer.setAttribution(getAttribution());
+		layer.setTimeDimension(getDimension());
+		layer.setElevationDimension(getDimension());
+		layer.setId(PREFIX + CODE);
+		layer.setName("Prueba");
+		layer.setTitle("title");
+		layer.setAbstractLayer("Prueba");
+		layer.setImage("Prueba");
+
+		List<String> srs = new ArrayList<>();
+		srs.add("srs");
+		layer.setSrs(srs);
+
+		List<String> keywords = new ArrayList<>();
+		keywords.add("keywords");
+		layer.setKeywords(keywords);
+
+		List<String> formats = new ArrayList<>();
+		formats.add("WMS");
+		layer.setFormats(formats);
+
+		layer.setGeometry(getGeometry());
+		layer.setActivities(getActivities());
+		layer.setContact(getContact());
+		layer.setStylesLayer(getStylesLayer());
+
+		return layer;
+	}
+
+	private static AttributionDTO getAttribution() {
+
+		AttributionDTO attribution = new AttributionDTO();
+		attribution.setTitle("title");
+		return attribution;
+	}
+
+	private static ContactDTO getContact() {
 
 		ContactDTO contact = new ContactDTO();
 		contact.setName("Pepe");
-		layer.setContact(contact);
 
-		layer.setThemeInspire(ThemeInspireDataUtil.getThemeInspire());
-
-		layer.setProtocols(getProtocols());
-
-		layer.setLatLonBoundsImage(getLatLonBoundingBoxDTO());
-
-		StyleLayerDTO styleLayer = new StyleLayerDTO();
-		styleLayer.setName("styleLayer");
-		layer.setStylesLayer(new ArrayList<StyleLayerDTO>() {
-			{
-				add(styleLayer);
-			}
-		});
-
-		return layer;
+		return contact;
 	}
 
 	public static LayerInfoDTO getLayerInfo() {
@@ -324,18 +332,49 @@ public abstract class LayerDataUtil {
 		layerInfo.setName("Prueba");
 		layerInfo.setAlias("Prueba");
 		layerInfo.setDescription("Prueba");
-
 		layerInfo.setUrlSource("http://redmic.es");
-
 		layerInfo.setParent(CategoryDataUtil.getCategory());
-
 		layerInfo.setThemeInspire(ThemeInspireDataUtil.getThemeInspire());
-
 		layerInfo.setProtocols(getProtocols());
-
 		layerInfo.setLatLonBoundsImage(getLatLonBoundingBoxDTO());
 
 		return layerInfo;
+	}
+
+	public static DimensionDTO getDimension() {
+
+		DimensionDTO dimension = new DimensionDTO();
+		dimension.setName("time");
+		dimension.setUnits("ISO8601");
+		dimension.setDefaultValue("P30M/PRESENT");
+
+		return dimension;
+	}
+
+	public static Polygon getGeometry() {
+
+		Coordinate[] coordinates = new Coordinate[] { new Coordinate(-18.1745567321777, 27.6111183166504),
+				new Coordinate(-18.1745567321777, 29.4221172332764),
+				new Coordinate(-13.3011913299561, 29.4221172332764),
+				new Coordinate(-13.3011913299561, 27.6111183166504),
+				new Coordinate(-18.1745567321777, 27.6111183166504) };
+
+		return JTSFactoryFinder.getGeometryFactory().createPolygon(coordinates);
+	}
+
+	@SuppressWarnings("serial")
+	public static List<ActivityDTO> getActivities() {
+
+		ActivityDTO activity = new ActivityDTO();
+		activity.setId("3");
+		activity.setName("AIS");
+		activity.setPath("r.1.2.3");
+
+		return new ArrayList<ActivityDTO>() {
+			{
+				add(activity);
+			}
+		};
 	}
 
 	@SuppressWarnings("serial")
@@ -362,5 +401,18 @@ public abstract class LayerDataUtil {
 		latLonBoundingBoxDTO.setMinY(1.0);
 
 		return latLonBoundingBoxDTO;
+	}
+
+	@SuppressWarnings("serial")
+	public static List<StyleLayerDTO> getStylesLayer() {
+
+		StyleLayerDTO styleLayer = new StyleLayerDTO();
+		styleLayer.setName("styleLayer");
+
+		return new ArrayList<StyleLayerDTO>() {
+			{
+				add(styleLayer);
+			}
+		};
 	}
 }

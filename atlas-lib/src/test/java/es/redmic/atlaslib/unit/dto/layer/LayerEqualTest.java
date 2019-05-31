@@ -398,7 +398,7 @@ public class LayerEqualTest {
 	}
 
 	@Test
-	public void equal_returnFalse_IfLayerOpaqueIsNull() {
+	public void equal_returnFalse_IfLayerAttributionIsNull() {
 
 		LayerDTO dto1 = LayerDataUtil.getLayer();
 
