@@ -199,7 +199,9 @@ public class LayerEventHandlerTest extends DocumentationViewBaseTest {
 
 		LayerDTO original = getUpdateLayerEvent().getLayer();
 
-		repository.save(mapper.getMapperFacade().map(original, Layer.class), original.getParent().getId());
+		String parentId = original.getParent().getId();
+
+		repository.save(mapper.getMapperFacade().map(original, Layer.class), parentId);
 
 		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(LAYER_TOPIC, event.getAggregateId(),
 				event);
@@ -209,7 +211,7 @@ public class LayerEventHandlerTest extends DocumentationViewBaseTest {
 		assertNotNull(confirm);
 		assertEquals(LayerEventTypes.DELETE_CONFIRMED.toString(), confirm.getType());
 
-		repository.findById(event.getAggregateId());
+		repository.findById(event.getAggregateId(), parentId);
 	}
 
 	@Test
@@ -385,7 +387,6 @@ public class LayerEventHandlerTest extends DocumentationViewBaseTest {
 		deletedEvent.setVersion(3);
 		deletedEvent.setSessionId(UUID.randomUUID().toString());
 		deletedEvent.setUserId(USER_ID);
-		deletedEvent.setParentId(PARENT_ID);
 		return deletedEvent;
 	}
 }

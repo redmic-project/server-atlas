@@ -116,7 +116,7 @@ public class LayerController extends DataController<Layer, LayerDTO, SimpleQuery
 		EventApplicationResult result = null;
 
 		try {
-			result = service.delete(event.getAggregateId(), event.getParentId());
+			result = service.delete(event.getAggregateId());
 		} catch (Exception e) {
 			e.printStackTrace();
 			publishFailedEvent(LayerEventFactory.getEvent(event, LayerEventTypes.DELETE_FAILED,

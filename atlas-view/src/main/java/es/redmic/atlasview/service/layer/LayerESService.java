@@ -52,8 +52,8 @@ public class LayerESService extends RDataService<Layer, LayerDTO, SimpleQueryDTO
 		return repository.update(model, parentId);
 	}
 
-	public EventApplicationResult delete(String id, String parentId) {
-		return repository.delete(id, parentId);
+	public EventApplicationResult delete(String id) {
+		return repository.delete(id);
 	}
 
 	/**

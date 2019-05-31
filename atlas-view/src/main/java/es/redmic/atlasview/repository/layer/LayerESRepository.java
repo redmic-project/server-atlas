@@ -33,9 +33,11 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import es.redmic.atlasview.model.layer.Layer;
+import es.redmic.elasticsearchlib.common.utils.ElasticPersistenceUtils;
 import es.redmic.elasticsearchlib.data.repository.RWDataESRepository;
 import es.redmic.exception.common.ExceptionType;
 import es.redmic.exception.data.ItemNotFoundException;
@@ -59,6 +61,9 @@ public class LayerESRepository extends RWDataESRepository<Layer, SimpleQueryDTO>
 			NAME_PROPERTY = "name",
 			URL_SOURCE_PROPERTY = "urlSource";
 	// @formatter:on
+
+	@Autowired
+	ElasticPersistenceUtils<Layer> elasticPersistenceUtils;
 
 	public LayerESRepository() {
 		super(INDEX, TYPE);
@@ -160,6 +165,20 @@ public class LayerESRepository extends RWDataESRepository<Layer, SimpleQueryDTO>
 	protected EventApplicationResult checkDeleteConstraintsFulfilled(String modelToIndexId) {
 
 		return new EventApplicationResult(true);
+	}
+
+	@Override
+	public EventApplicationResult delete(String id) {
+
+		EventApplicationResult checkDelete = checkDeleteConstraintsFulfilled(id);
+
+		if (!checkDelete.isSuccess()) {
+			return checkDelete;
+		}
+
+		Layer result = (Layer) queryById(id).get_source();
+
+		return elasticPersistenceUtils.delete(getIndex()[0], getType(), id, result.getJoinIndex().getParent());
 	}
 
 	public DataHitWrapper<?> queryById(String id) {
