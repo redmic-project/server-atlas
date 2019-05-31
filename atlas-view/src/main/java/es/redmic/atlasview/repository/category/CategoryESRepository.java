@@ -57,6 +57,7 @@ public class CategoryESRepository extends RWDataESRepository<Category, SimpleQue
 	// @formatter:off
 	
 	private final String ID_PROPERTY = "id",
+			NAME_PROPERTY = "name",
 			URL_SOURCE_PROPERTY = "urlSource";
 	// @formatter:on
 
@@ -68,13 +69,13 @@ public class CategoryESRepository extends RWDataESRepository<Category, SimpleQue
 	@Override
 	protected EventApplicationResult checkInsertConstraintsFulfilled(Category modelToIndex) {
 
-		QueryBuilder idTerm = QueryBuilders.termQuery(ID_PROPERTY, modelToIndex.getId());
+		QueryBuilder idTerm = QueryBuilders.termQuery(ID_PROPERTY, modelToIndex.getId()),
+				nameTerm = QueryBuilders.termQuery(NAME_PROPERTY, modelToIndex.getName());
 
 		MultiSearchRequest request = new MultiSearchRequest();
 
-		SearchSourceBuilder requestBuilderId = new SearchSourceBuilder().query(idTerm).size(1);
-
-		request.add(new SearchRequest().indices(getIndex()).source(requestBuilderId));
+		request.add(new SearchRequest().indices(getIndex()).source(new SearchSourceBuilder().query(idTerm).size(1)));
+		request.add(new SearchRequest().indices(getIndex()).source(new SearchSourceBuilder().query(nameTerm).size(1)));
 
 		MultiSearchResponse sr;
 		try {
@@ -91,6 +92,9 @@ public class CategoryESRepository extends RWDataESRepository<Category, SimpleQue
 		if (responses != null && responses[0].getResponse().getHits().getTotalHits() > 0) {
 			arguments.put(ID_PROPERTY, modelToIndex.getId());
 		}
+		if (responses != null && responses[1].getResponse().getHits().getTotalHits() > 0) {
+			arguments.put(NAME_PROPERTY, modelToIndex.getName());
+		}
 
 		if (arguments.size() > 0) {
 			return new EventApplicationResult(ExceptionType.ES_INSERT_DOCUMENT.toString(), arguments);
@@ -104,13 +108,12 @@ public class CategoryESRepository extends RWDataESRepository<Category, SimpleQue
 		// @formatter:off
 		
 		BoolQueryBuilder idTerm = QueryBuilders.boolQuery()
+				.must(QueryBuilders.termQuery(NAME_PROPERTY, modelToIndex.getName()))
 				.mustNot(QueryBuilders.termQuery(ID_PROPERTY, modelToIndex.getId()));
 		
 		MultiSearchRequest request = new MultiSearchRequest();
 		
-		SearchSourceBuilder requestBuilderId = new SearchSourceBuilder().query(idTerm).size(1);
-		
-		request.add(new SearchRequest().indices(getIndex()).source(requestBuilderId));
+		request.add(new SearchRequest().indices(getIndex()).source(new SearchSourceBuilder().query(idTerm).size(1)));
 		
 		// @formatter:on
 
@@ -127,7 +130,7 @@ public class CategoryESRepository extends RWDataESRepository<Category, SimpleQue
 		Item[] responses = sr.getResponses();
 
 		if (responses != null && responses[0].getResponse().getHits().getTotalHits() > 0) {
-			arguments.put(ID_PROPERTY, modelToIndex.getId().toString());
+			arguments.put(NAME_PROPERTY, modelToIndex.getName());
 		}
 
 		if (arguments.size() > 0) {

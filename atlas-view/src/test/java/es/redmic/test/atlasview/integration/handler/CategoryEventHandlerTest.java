@@ -211,10 +211,10 @@ public class CategoryEventHandlerTest extends DocumentationViewBaseTest {
 		Map<String, String> arguments = createCategoryFailedEvent.getArguments();
 		assertNotNull(arguments);
 
-		assertEquals(1, arguments.size());
+		assertEquals(2, arguments.size());
 
 		assertNotNull(arguments.get("id"));
-
+		assertNotNull(arguments.get("name"));
 	}
 
 	@Test
@@ -227,6 +227,7 @@ public class CategoryEventHandlerTest extends DocumentationViewBaseTest {
 					original = event.getCategory();
 			// @formatter:on
 		conflict.setId(original.getId() + "cpy");
+		conflict.setName(original.getName() + "cpy");
 
 		// Guarda el que se va a modificar
 		repository.save(mapper.getMapperFacade().map(original, Category.class));
@@ -234,8 +235,8 @@ public class CategoryEventHandlerTest extends DocumentationViewBaseTest {
 		// Guarda el que va a entrar en conflicto
 		repository.save(mapper.getMapperFacade().map(conflict, Category.class));
 
-		// Edita el id del que se va a modificar para entrar en conflicto
-		original.setId(conflict.getId());
+		// Edita el nombre del que se va a modificar para entrar en conflicto
+		original.setName(conflict.getName());
 		event.setCategory(original);
 
 		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(CATEGORY_TOPIC, event.getAggregateId(),
@@ -258,7 +259,7 @@ public class CategoryEventHandlerTest extends DocumentationViewBaseTest {
 
 		assertEquals(arguments.size(), 1);
 
-		assertNotNull(arguments.get("id"));
+		assertNotNull(arguments.get("name"));
 	}
 
 	@Test
