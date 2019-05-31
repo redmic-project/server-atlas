@@ -36,7 +36,7 @@ public class DeleteLayerEvent extends SimpleEvent {
 	public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{"
 		+ "\"type\":\"record\",\"name\":\"DeleteLayerEvent\","
 				+ "\"namespace\":\"es.redmic.atlaslib.events.layer.delete\",\"fields\":["
-			+ "{\"name\":\"parentId\",\"type\":[\"string\", \"null\"]},"
+			+ "{\"name\":\"parentId\",\"type\":\"string\"},"
 			+ getEventBaseSchema() + "]}");
 	// @formatter:on
 
@@ -90,7 +90,7 @@ public class DeleteLayerEvent extends SimpleEvent {
 	public void put(int field$, Object value$) {
 		switch (field$) {
 		case 0:
-			setParentId(value$ != null ? value$.toString() : null);
+			setParentId(value$.toString());
 			break;
 		case 1:
 			setAggregateId(value$.toString());
