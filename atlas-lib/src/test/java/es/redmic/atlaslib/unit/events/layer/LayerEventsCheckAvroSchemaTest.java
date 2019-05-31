@@ -189,8 +189,6 @@ public class LayerEventsCheckAvroSchemaTest extends AtlasAvroBaseTest {
 
 		DeleteLayerEvent event = LayerDataUtil.getDeleteEvent();
 
-		event.setParentId("category-1234");
-
 		Object result = serializerAndDeserializer(event);
 
 		assertTrue("El objeto obtenido debe ser una instancia de DeleteLayerEvent",
