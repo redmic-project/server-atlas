@@ -46,7 +46,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import es.redmic.atlascommands.AtlasCommandsApplication;
 import es.redmic.atlascommands.utils.Capabilities;
-import es.redmic.atlaslib.dto.layer.LayerDTO;
+import es.redmic.atlaslib.dto.layerwms.LayerWMSDTO;
 import es.redmic.models.es.common.dto.UrlDTO;
 import es.redmic.test.atlascommands.integration.KafkaEmbeddedConfig;
 import es.redmic.testutils.documentation.DocumentationCommandBaseTest;
@@ -94,7 +94,7 @@ public class DiscoverWMSLayersTest extends DocumentationCommandBaseTest {
 
 		// @formatter:off
 		
-		LayerDTO layer = (LayerDTO) Capabilities.getCapabilities(url.getUrl()).values().toArray()[0];
+		LayerWMSDTO layer = (LayerWMSDTO) Capabilities.getCapabilities(url.getUrl()).values().toArray()[0];
 
 		MvcResult mvcResult = this.mockMvc.perform(post(PATH)
 					.content(mapper.writeValueAsString(url))

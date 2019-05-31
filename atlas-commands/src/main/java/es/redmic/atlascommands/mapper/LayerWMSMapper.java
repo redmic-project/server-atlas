@@ -40,12 +40,12 @@ import org.mapstruct.Named;
 import es.redmic.atlaslib.dto.layer.ActivityDTO;
 import es.redmic.atlaslib.dto.layer.AttributionDTO;
 import es.redmic.atlaslib.dto.layer.DimensionDTO;
-import es.redmic.atlaslib.dto.layer.LayerDTO;
 import es.redmic.atlaslib.dto.layer.LogoURLDTO;
 import es.redmic.atlaslib.dto.layer.StyleLayerDTO;
+import es.redmic.atlaslib.dto.layerwms.LayerWMSDTO;
 
 @Mapper
-public interface LayerMapper {
+public interface LayerWMSMapper {
 
 	final int SRID = 4326;
 
@@ -63,8 +63,6 @@ public interface LayerMapper {
 			legendGraphicUrlParameters = "?request=GetLegendGraphic&version=1.0.0&format=image/png&layer=topp:states";
 	
 	// @formatter:on
-
-	@Mapping(source = "layer", target = "urlSource", qualifiedByName = "urlSource")
 	@Mapping(source = "layer", target = "legend", qualifiedByName = "legend")
 	@Mapping(source = "layer", target = "timeDimension", qualifiedByName = "timeDimension")
 	@Mapping(source = "layer", target = "elevationDimension", qualifiedByName = "elevationDimension")
@@ -74,13 +72,7 @@ public interface LayerMapper {
 	@Mapping(source = "layer", target = "geometry", qualifiedByName = "geometry")
 	@Mapping(source = "layer", target = "keywords", qualifiedByName = "keywords")
 	@Mapping(source = "layer", target = "attribution", qualifiedByName = "attribution")
-	LayerDTO map(Layer layer, @Context String urlSource);
-
-	@Named("urlSource")
-	default String getUrlSource(Layer layer, @Context String urlSource) {
-
-		return urlSource;
-	}
+	LayerWMSDTO map(Layer layer, @Context String urlSource);
 
 	@Named("legend")
 	default String getLegend(Layer layer, @Context String urlSource) {

@@ -33,13 +33,14 @@ import es.redmic.atlascommands.mapper.LayerInfoDTOMapper;
 import es.redmic.atlascommands.utils.Capabilities;
 import es.redmic.atlaslib.dto.layer.LayerDTO;
 import es.redmic.atlaslib.dto.layerinfo.LayerInfoDTO;
+import es.redmic.atlaslib.dto.layerwms.LayerWMSDTO;
 import es.redmic.testutils.utils.JsonToBeanTestUtil;
 
 public class LayerInfoMapperTest {
 
 	final String URL_CAPABILITIES = new File("src/test/resources/data/capabilities/wms.xml").toURI().toString();
 
-	private HashMap<String, LayerDTO> layers;
+	private HashMap<String, LayerWMSDTO> layers;
 
 	private LayerDTO expectedLayer;
 
@@ -64,7 +65,7 @@ public class LayerInfoMapperTest {
 	public void layerInfoMapper_ReturnLayerDTO_IfLayerInfoAndCapabilitiesDataMergeCorrectly() {
 
 		LayerDTO layer = Mappers.getMapper(LayerInfoDTOMapper.class).map(layerInfo,
-				(LayerDTO) layers.values().toArray()[0]);
+				(LayerWMSDTO) layers.values().toArray()[0]);
 
 		assertEquals(expectedLayer, layer);
 	}

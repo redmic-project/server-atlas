@@ -33,6 +33,7 @@ import es.redmic.atlascommands.handler.LayerCommandHandler;
 import es.redmic.atlascommands.mapper.LayerInfoDTOMapper;
 import es.redmic.atlaslib.dto.layer.LayerDTO;
 import es.redmic.atlaslib.dto.layerinfo.LayerInfoDTO;
+import es.redmic.atlaslib.dto.layerwms.LayerWMSDTO;
 import es.redmic.commandslib.service.CommandServiceItfc;
 
 @Service
@@ -55,10 +56,10 @@ public class LayerService implements CommandServiceItfc<LayerInfoDTO> {
 
 		logger.debug("Create Layer");
 
-		LayerDTO layerDTO = ogcService.getLayerFromWMSService(layerInfo.getUrlSource(), layerInfo.getName());
+		LayerWMSDTO layerWMSDTO = ogcService.getLayerFromWMSService(layerInfo.getUrlSource(), layerInfo.getName());
 
 		return commandHandler
-				.save(new CreateLayerCommand(Mappers.getMapper(LayerInfoDTOMapper.class).map(layerInfo, layerDTO)));
+				.save(new CreateLayerCommand(Mappers.getMapper(LayerInfoDTOMapper.class).map(layerInfo, layerWMSDTO)));
 	}
 
 	@Override
@@ -66,7 +67,7 @@ public class LayerService implements CommandServiceItfc<LayerInfoDTO> {
 
 		logger.debug("Update Layer");
 
-		LayerDTO layerDTO = ogcService.getLayerFromWMSService(layerInfo.getUrlSource(), layerInfo.getName());
+		LayerWMSDTO layerDTO = ogcService.getLayerFromWMSService(layerInfo.getUrlSource(), layerInfo.getName());
 
 		return commandHandler.update(id,
 				new UpdateLayerCommand(Mappers.getMapper(LayerInfoDTOMapper.class).map(layerInfo, layerDTO)));

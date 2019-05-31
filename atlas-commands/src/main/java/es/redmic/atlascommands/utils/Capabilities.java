@@ -34,14 +34,14 @@ import org.mapstruct.factory.Mappers;
 import org.opengis.metadata.citation.ResponsibleParty;
 
 import es.redmic.atlascommands.mapper.ContactMapper;
-import es.redmic.atlascommands.mapper.LayerMapper;
+import es.redmic.atlascommands.mapper.LayerWMSMapper;
 import es.redmic.atlaslib.dto.layer.ContactDTO;
-import es.redmic.atlaslib.dto.layer.LayerDTO;
+import es.redmic.atlaslib.dto.layerwms.LayerWMSDTO;
 import es.redmic.exception.custom.ResourceNotFoundException;
 
 public abstract class Capabilities {
 
-	public static HashMap<String, LayerDTO> getCapabilities(String url) {
+	public static HashMap<String, LayerWMSDTO> getCapabilities(String url) {
 
 		URL serverURL;
 
@@ -66,9 +66,9 @@ public abstract class Capabilities {
 		return getLayers(url, wms.getCapabilities());
 	}
 
-	private static HashMap<String, LayerDTO> getLayers(String url, WMSCapabilities capabilities) {
+	private static HashMap<String, LayerWMSDTO> getLayers(String url, WMSCapabilities capabilities) {
 
-		HashMap<String, LayerDTO> layers = new HashMap<String, LayerDTO>();
+		HashMap<String, LayerWMSDTO> layers = new HashMap<String, LayerWMSDTO>();
 
 		List<Layer> layerList = capabilities.getLayerList();
 
@@ -76,7 +76,7 @@ public abstract class Capabilities {
 
 			if (layerList.get(i).getName() != null) {
 
-				LayerDTO layerAux = Mappers.getMapper(LayerMapper.class).map(layerList.get(i), url);
+				LayerWMSDTO layerAux = Mappers.getMapper(LayerWMSMapper.class).map(layerList.get(i), url);
 				layerAux.setContact(getContact(capabilities.getService().getContactInformation()));
 				layerAux.setFormats(capabilities.getRequest().getGetMap().getFormats());
 				layers.put(layerAux.getName(), layerAux);

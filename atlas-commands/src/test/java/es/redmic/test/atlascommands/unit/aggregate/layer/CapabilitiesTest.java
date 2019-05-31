@@ -38,9 +38,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import es.redmic.atlascommands.mapper.ContactMapper;
-import es.redmic.atlascommands.mapper.LayerMapper;
+import es.redmic.atlascommands.mapper.LayerWMSMapper;
 import es.redmic.atlascommands.utils.Capabilities;
-import es.redmic.atlaslib.dto.layer.LayerDTO;
+import es.redmic.atlaslib.dto.layerwms.LayerWMSDTO;
 import es.redmic.exception.custom.ResourceNotFoundException;
 import es.redmic.jts4jackson.module.JTSModule;
 import es.redmic.testutils.utils.JsonToBeanTestUtil;
@@ -50,20 +50,19 @@ public class CapabilitiesTest {
 
 	protected ObjectMapper mapper = new ObjectMapper().registerModule(new JTSModule());
 
-	private LayerDTO expectedLayer;
+	private LayerWMSDTO expectedLayer;
 
 	final String URL_CAPABILITIES = new File("src/test/resources/data/capabilities/wms.xml").toURI().toString();
 
-	private HashMap<String, LayerDTO> layers;
+	private HashMap<String, LayerWMSDTO> layers;
 
 	public CapabilitiesTest() throws IOException {
 		// Obtiene las capas mediante la utilidad, ya transformada a dto
 		layers = Capabilities.getCapabilities(URL_CAPABILITIES);
 
-		expectedLayer = (LayerDTO) JsonToBeanTestUtil.getBean("/data/layers/layer.json", LayerDTO.class);
+		expectedLayer = (LayerWMSDTO) JsonToBeanTestUtil.getBean("/data/layers/layer.json", LayerWMSDTO.class);
 
 		// Establece urlSource dinámicamente (depende de donde se ejecute)
-		expectedLayer.setUrlSource(URL_CAPABILITIES);
 		expectedLayer.setLegend(
 				URL_CAPABILITIES + "?request=GetLegendGraphic&version=1.0.0&format=image/png&layer=topp:states");
 	}
@@ -94,7 +93,7 @@ public class CapabilitiesTest {
 	@Test
 	public void layer_ContaintAllFields_IfMapperIsCorrect() throws IOException, ServiceException {
 
-		LayerDTO layerDTO = (LayerDTO) layers.values().toArray()[0];
+		LayerWMSDTO layerDTO = (LayerWMSDTO) layers.values().toArray()[0];
 
 		assertEquals(expectedLayer.getAbstractLayer(), layerDTO.getAbstractLayer());
 		assertEquals(expectedLayer.getActivities(), layerDTO.getActivities());
@@ -104,24 +103,21 @@ public class CapabilitiesTest {
 		assertEquals(expectedLayer.getGeometry(), layerDTO.getGeometry());
 
 		assertEquals(expectedLayer.getKeywords(), layerDTO.getKeywords());
-		assertEquals(expectedLayer.getLatLonBoundsImage(), layerDTO.getLatLonBoundsImage());
 		assertEquals(expectedLayer.getLegend(), layerDTO.getLegend());
 		assertEquals(expectedLayer.getAttribution(), layerDTO.getAttribution());
-		assertEquals(expectedLayer.getProtocols(), layerDTO.getProtocols());
 		assertEquals(expectedLayer.getQueryable(), layerDTO.getQueryable());
 
 		assertEquals(expectedLayer.getStylesLayer(), layerDTO.getStylesLayer());
 
 		assertEquals(expectedLayer.getTimeDimension(), layerDTO.getTimeDimension());
 		assertEquals(expectedLayer.getTitle(), layerDTO.getTitle());
-		assertEquals(expectedLayer.getUrlSource(), layerDTO.getUrlSource());
 		assertEquals(expectedLayer.getName(), layerDTO.getName());
 	}
 
 	@Test
 	public void allLayers_ContaintContact_IfContactCapabilitiesIsNotNull() throws IOException, ServiceException {
 
-		for (LayerDTO item : layers.values()) {
+		for (LayerWMSDTO item : layers.values()) {
 			assertEquals(expectedLayer.getContact(), item.getContact());
 		}
 	}
@@ -140,24 +136,24 @@ public class CapabilitiesTest {
 		String urlSource = "";
 
 		layer.set_abstract("Isolíneas batimétricas " + "\n(Batimetría de las Islas Canarias)\nref#817#");
-		LayerDTO layerDTO = Mappers.getMapper(LayerMapper.class).map(layer, urlSource);
+		LayerWMSDTO layerDTO = Mappers.getMapper(LayerWMSMapper.class).map(layer, urlSource);
 		assertEquals(layerDTO.getAbstractLayer(), "Isolíneas batimétricas (Batimetría de las Islas Canarias) ");
 
 		layer.set_abstract("Isolíneas batimétricas ref#817,201,54556# (Batimetría de las Islas Canarias)");
-		layerDTO = Mappers.getMapper(LayerMapper.class).map(layer, urlSource);
+		layerDTO = Mappers.getMapper(LayerWMSMapper.class).map(layer, urlSource);
 		assertEquals(layerDTO.getAbstractLayer(), "Isolíneas batimétricas (Batimetría de las Islas Canarias)");
 
 		layer.set_abstract("Isolíneas batimétricas " + "\n(Batimetría de las Islas Canarias)\nref#155,# aaaaaaaaaa");
-		layerDTO = Mappers.getMapper(LayerMapper.class).map(layer, urlSource);
+		layerDTO = Mappers.getMapper(LayerWMSMapper.class).map(layer, urlSource);
 		assertEquals(layerDTO.getAbstractLayer(),
 				"Isolíneas batimétricas (Batimetría de las Islas Canarias) aaaaaaaaaa");
 
 		layer.set_abstract("ref#155,#\nIsolíneas batimétricas (Batimetría de las Islas Canarias)\n");
-		layerDTO = Mappers.getMapper(LayerMapper.class).map(layer, urlSource);
+		layerDTO = Mappers.getMapper(LayerWMSMapper.class).map(layer, urlSource);
 		assertEquals(layerDTO.getAbstractLayer(), " Isolíneas batimétricas (Batimetría de las Islas Canarias) ");
 
 		layer.set_abstract("ref#155#");
-		layerDTO = Mappers.getMapper(LayerMapper.class).map(layer, urlSource);
+		layerDTO = Mappers.getMapper(LayerWMSMapper.class).map(layer, urlSource);
 		assertEquals(layerDTO.getAbstractLayer(), "");
 	}
 
@@ -169,34 +165,34 @@ public class CapabilitiesTest {
 		String urlSource = "";
 
 		layer.set_abstract("Isolíneas batimétricas " + "\n(Batimetría de las Islas Canarias)\nref#817#");
-		LayerDTO layerDTO = Mappers.getMapper(LayerMapper.class).map(layer, urlSource);
+		LayerWMSDTO layerDTO = Mappers.getMapper(LayerWMSMapper.class).map(layer, urlSource);
 		assertEquals(layerDTO.getActivities().size(), 1);
 		assertEquals(layerDTO.getActivities().get(0).getId(), "817");
 
 		layer.set_abstract("Isolíneas batimétricas ref#817,201,54556# (Batimetría de las Islas Canarias)");
-		layerDTO = Mappers.getMapper(LayerMapper.class).map(layer, urlSource);
+		layerDTO = Mappers.getMapper(LayerWMSMapper.class).map(layer, urlSource);
 		assertEquals(layerDTO.getActivities().size(), 3);
 		assertEquals(layerDTO.getActivities().get(0).getId(), "817");
 		assertEquals(layerDTO.getActivities().get(1).getId(), "201");
 		assertEquals(layerDTO.getActivities().get(2).getId(), "54556");
 
 		layer.set_abstract("Isolíneas batimétricas " + "\n(Batimetría de las Islas Canarias)\nref#155,# aaaaaaaaaa");
-		layerDTO = Mappers.getMapper(LayerMapper.class).map(layer, urlSource);
+		layerDTO = Mappers.getMapper(LayerWMSMapper.class).map(layer, urlSource);
 		assertEquals(layerDTO.getActivities().size(), 1);
 		assertEquals(layerDTO.getActivities().get(0).getId(), "155");
 
 		layer.set_abstract("ref#155,#\nIsolíneas batimétricas (Batimetría de las Islas Canarias)\n");
-		layerDTO = Mappers.getMapper(LayerMapper.class).map(layer, urlSource);
+		layerDTO = Mappers.getMapper(LayerWMSMapper.class).map(layer, urlSource);
 		assertEquals(layerDTO.getActivities().size(), 1);
 		assertEquals(layerDTO.getActivities().get(0).getId(), "155");
 
 		layer.set_abstract("ref#155#");
-		layerDTO = Mappers.getMapper(LayerMapper.class).map(layer, urlSource);
+		layerDTO = Mappers.getMapper(LayerWMSMapper.class).map(layer, urlSource);
 		assertEquals(layerDTO.getActivities().size(), 1);
 		assertEquals(layerDTO.getActivities().get(0).getId(), "155");
 
 		layer.set_abstract("Isolíneas batimétricas " + "\n(Batimetría de las Islas Canarias)\n");
-		layerDTO = Mappers.getMapper(LayerMapper.class).map(layer, urlSource);
+		layerDTO = Mappers.getMapper(LayerWMSMapper.class).map(layer, urlSource);
 		assertNull(layerDTO.getActivities());
 	}
 }

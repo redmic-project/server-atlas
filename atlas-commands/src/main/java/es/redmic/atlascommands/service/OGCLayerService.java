@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import es.redmic.atlascommands.utils.Capabilities;
 import es.redmic.atlaslib.dto.layer.LayerDTO;
+import es.redmic.atlaslib.dto.layerwms.LayerWMSDTO;
 
 @Service
 public class OGCLayerService {
@@ -37,7 +38,7 @@ public class OGCLayerService {
 		return new ArrayList(Capabilities.getCapabilities(urlSource).values());
 	}
 
-	public LayerDTO getLayerFromWMSService(String urlSource, String name) {
+	public LayerWMSDTO getLayerFromWMSService(String urlSource, String name) {
 
 		return Capabilities.getCapabilities(urlSource).get(name);
 	}

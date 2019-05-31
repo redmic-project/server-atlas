@@ -26,26 +26,18 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import es.redmic.atlaslib.dto.layer.LayerDTO;
 import es.redmic.atlaslib.dto.layerinfo.LayerInfoDTO;
+import es.redmic.atlaslib.dto.layerwms.LayerWMSDTO;
 
 @Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface LayerInfoDTOMapper {
 
 	// @formatter:off
-
 	@Mapping(source = "layerInfoDTO.id", target = "id")
-	@Mapping(source = "layerDTO.name", target = "name")
-	@Mapping(source = "layerInfoDTO.themeInspire", target = "themeInspire")
-	@Mapping(source = "layerInfoDTO.latLonBoundsImage", target = "latLonBoundsImage")
-	@Mapping(source = "layerInfoDTO.protocols", target = "protocols")
-	@Mapping(source = "layerInfoDTO.description", target = "description")
+	@Mapping(source = "layerWMSDTO.name", target = "name")
 	@Mapping(target = "alias",
 		expression = "java(layerInfoDTO.getAlias() != null ? "
 				+ "layerInfoDTO.getAlias() : (layerDTO.getTitle() != null ? layerDTO.getTitle() : layerDTO.getName()))")
-	@Mapping(source = "layerInfoDTO.atlas", target = "atlas", defaultValue = "false")
-	@Mapping(source = "layerInfoDTO.refresh", target = "refresh", defaultValue = "0")
-	@Mapping(source = "layerDTO.urlSource", target = "urlSource")
-	@Mapping(source = "layerInfoDTO.parent", target = "parent")
-	LayerDTO map(LayerInfoDTO layerInfoDTO, LayerDTO layerDTO);
+	LayerDTO map(LayerInfoDTO layerInfoDTO, LayerWMSDTO layerWMSDTO);
 	
 	// @formatter:on
 }
