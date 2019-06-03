@@ -26,11 +26,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import es.redmic.atlaslib.dto.layer.LayerDTO;
-import es.redmic.atlaslib.dto.layerwms.LayerWMSDTO;
 import es.redmic.atlaslib.events.layer.common.LayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.common.LayerEvent;
-import es.redmic.atlaslib.events.layer.common.LayerRefreshCancelledEvent;
-import es.redmic.atlaslib.events.layer.common.LayerRefreshEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerFailedEvent;
@@ -127,21 +124,6 @@ public class LayerEventFactory {
 			successfulEvent = new LayerUpdatedEvent().buildFrom(source);
 		}
 
-		if (successfulEvent != null) {
-
-			successfulEvent.setLayer(layer);
-			return successfulEvent;
-		} else {
-
-			logger.error("Tipo de evento no soportado");
-			throw new InternalException(ExceptionType.INTERNAL_EXCEPTION);
-		}
-	}
-
-	public static Event getEvent(Event source, String type, LayerWMSDTO layer) {
-
-		LayerRefreshEvent successfulEvent = null;
-
 		if (type.equals(LayerEventTypes.REFRESHED)) {
 
 			logger.debug("Creando evento LayerRefreshedEvent para: " + source.getAggregateId());
@@ -226,25 +208,6 @@ public class LayerEventFactory {
 			logger.debug("Creando evento DeleteLayerCancelledEvent para: " + source.getAggregateId());
 			cancelledEvent = new DeleteLayerCancelledEvent().buildFrom(source);
 		}
-
-		if (cancelledEvent != null) {
-
-			cancelledEvent.setLayer(layer);
-			cancelledEvent.setExceptionType(exceptionType);
-			cancelledEvent.setArguments(exceptionArguments);
-			return cancelledEvent;
-
-		} else {
-
-			logger.error("Tipo de evento no soportado");
-			throw new InternalException(ExceptionType.INTERNAL_EXCEPTION);
-		}
-	}
-
-	public static Event getEvent(Event source, String type, LayerWMSDTO layer, String exceptionType,
-			Map<String, String> exceptionArguments) {
-
-		LayerRefreshCancelledEvent cancelledEvent = null;
 
 		if (type.equals(LayerEventTypes.REFRESH_CANCELLED)) {
 

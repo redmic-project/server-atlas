@@ -22,11 +22,11 @@ package es.redmic.atlaslib.events.layer.refresh;
 
 import org.apache.avro.Schema;
 
-import es.redmic.atlaslib.dto.layerwms.LayerWMSDTO;
+import es.redmic.atlaslib.dto.layer.LayerDTO;
 import es.redmic.atlaslib.events.layer.LayerEventTypes;
-import es.redmic.atlaslib.events.layer.common.LayerRefreshEvent;
+import es.redmic.atlaslib.events.layer.common.LayerEvent;
 
-public class LayerRefreshedEvent extends LayerRefreshEvent {
+public class LayerRefreshedEvent extends LayerEvent {
 
 	// @formatter:off
 
@@ -42,7 +42,7 @@ public class LayerRefreshedEvent extends LayerRefreshEvent {
 		super(type);
 	}
 
-	public LayerRefreshedEvent(LayerWMSDTO layer) {
+	public LayerRefreshedEvent(LayerDTO layer) {
 		super(type);
 		this.setLayer(layer);
 	}

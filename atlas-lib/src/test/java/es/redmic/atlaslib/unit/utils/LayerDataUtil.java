@@ -261,7 +261,7 @@ public abstract class LayerDataUtil {
 
 		LayerRefreshedEvent event = new LayerRefreshedEvent().buildFrom(getRefreshEvent());
 		event.setType(LayerEventTypes.REFRESHED);
-		event.setLayer(getLayerWMS());
+		event.setLayer(getLayer());
 		return event;
 	}
 
@@ -278,7 +278,7 @@ public abstract class LayerDataUtil {
 		RefreshLayerCancelledEvent event = new RefreshLayerCancelledEvent().buildFrom(getRefreshEvent());
 		event.setType(LayerEventTypes.REFRESH_CANCELLED);
 		event.setExceptionType("ItemAlreadyExist");
-		event.setLayer(getLayerWMS());
+		event.setLayer(getLayer());
 		return event;
 	}
 

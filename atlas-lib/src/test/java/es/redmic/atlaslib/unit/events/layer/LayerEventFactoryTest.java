@@ -167,7 +167,7 @@ public class LayerEventFactoryTest {
 
 		Event source = LayerDataUtil.getLayerRefreshedEvent();
 		LayerRefreshedEvent event = (LayerRefreshedEvent) LayerEventFactory.getEvent(source, LayerEventTypes.REFRESHED,
-				LayerDataUtil.getLayerWMS());
+				LayerDataUtil.getLayer());
 
 		assertEquals(LayerEventTypes.REFRESHED, event.getType());
 		assertNotNull(event.getLayer());
@@ -319,7 +319,7 @@ public class LayerEventFactoryTest {
 		Event source = LayerDataUtil.getRefreshEvent();
 
 		RefreshLayerCancelledEvent event = (RefreshLayerCancelledEvent) LayerEventFactory.getEvent(source,
-				LayerEventTypes.REFRESH_CANCELLED, LayerDataUtil.getLayerWMS(), exception.getExceptionType(),
+				LayerEventTypes.REFRESH_CANCELLED, LayerDataUtil.getLayer(), exception.getExceptionType(),
 				exception.getArguments());
 
 		assertEquals(LayerEventTypes.REFRESH_CANCELLED, event.getType());
