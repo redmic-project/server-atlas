@@ -1,4 +1,4 @@
-package es.redmic.test.atlascommands.unit.aggregate.layer;
+package es.redmic.test.atlascommands.unit.aggregate.layerinfo;
 
 /*-
  * #%L
