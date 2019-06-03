@@ -28,12 +28,14 @@ import org.springframework.stereotype.Service;
 
 import es.redmic.atlascommands.commands.layer.CreateLayerCommand;
 import es.redmic.atlascommands.commands.layer.DeleteLayerCommand;
+import es.redmic.atlascommands.commands.layer.RefreshLayerCommand;
 import es.redmic.atlascommands.commands.layer.UpdateLayerCommand;
 import es.redmic.atlascommands.handler.LayerCommandHandler;
 import es.redmic.atlascommands.mapper.LayerInfoDTOMapper;
 import es.redmic.atlaslib.dto.layer.LayerDTO;
 import es.redmic.atlaslib.dto.layerinfo.LayerInfoDTO;
 import es.redmic.atlaslib.dto.layerwms.LayerWMSDTO;
+import es.redmic.atlaslib.dto.refresh.RefreshRequestDTO;
 import es.redmic.commandslib.service.CommandServiceItfc;
 
 @Service
@@ -79,5 +81,15 @@ public class LayerService implements CommandServiceItfc<LayerInfoDTO> {
 		logger.debug("Delete Layer");
 
 		return commandHandler.update(id, new DeleteLayerCommand(id));
+	}
+
+	public LayerDTO refresh(String id, RefreshRequestDTO refreshRequestDTO) {
+
+		logger.debug("Refresh Layer");
+
+		LayerWMSDTO layerWMSDTO = ogcService.getLayerFromWMSService(refreshRequestDTO.getUrlSource(),
+				refreshRequestDTO.getName());
+
+		return commandHandler.refresh(new RefreshLayerCommand(id, layerWMSDTO));
 	}
 }

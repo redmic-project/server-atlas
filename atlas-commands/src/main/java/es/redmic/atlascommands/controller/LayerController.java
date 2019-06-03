@@ -1,5 +1,7 @@
 package es.redmic.atlascommands.controller;
 
+import javax.validation.Valid;
+
 /*-
  * #%L
  * Atlas-management
@@ -21,12 +23,22 @@ package es.redmic.atlascommands.controller;
  */
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.redmic.atlascommands.service.LayerService;
+import es.redmic.atlaslib.dto.layer.LayerDTO;
 import es.redmic.atlaslib.dto.layerinfo.LayerInfoDTO;
+import es.redmic.atlaslib.dto.refresh.RefreshRequestDTO;
 import es.redmic.commandslib.controller.CommandController;
+import es.redmic.models.es.common.dto.BodyItemDTO;
+import es.redmic.models.es.common.dto.SuperDTO;
 
 @Controller
 @RequestMapping(value = "${controller.mapping.LAYER}")
@@ -38,5 +50,13 @@ public class LayerController extends CommandController<LayerInfoDTO> {
 	public LayerController(LayerService service) {
 		super(service);
 		this.service = service;
+	}
+
+	@PutMapping(value = "/refresh/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public SuperDTO refresh(@Valid @RequestBody RefreshRequestDTO dto, BindingResult errorDto,
+			@PathVariable("id") String id) {
+
+		return new BodyItemDTO<LayerDTO>(service.refresh(id, dto));
 	}
 }
