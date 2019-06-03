@@ -35,6 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
@@ -69,11 +70,16 @@ import org.springframework.util.concurrent.ListenableFuture;
 import es.redmic.atlascommands.AtlasCommandsApplication;
 import es.redmic.atlascommands.handler.LayerCommandHandler;
 import es.redmic.atlascommands.statestore.LayerStateStore;
+import es.redmic.atlaslib.dto.layer.LayerDTO;
 import es.redmic.atlaslib.dto.layerinfo.LayerInfoDTO;
+import es.redmic.atlaslib.dto.refresh.RefreshRequestDTO;
 import es.redmic.atlaslib.events.layer.create.CreateLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerEvent;
+import es.redmic.atlaslib.events.layer.create.LayerCreatedEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerEvent;
+import es.redmic.atlaslib.events.layer.refresh.RefreshLayerConfirmedEvent;
+import es.redmic.atlaslib.events.layer.refresh.RefreshLayerEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEvent;
 import es.redmic.brokerlib.avro.common.Event;
@@ -224,6 +230,46 @@ public class LayerRestTest extends DocumentationCommandBaseTest {
 	}
 
 	@Test
+	public void refreshLayer_SendRefreshLayerEvent_IfCommandWasSuccess() throws Exception {
+
+		LayerCreatedEvent source = LayerDataUtil.getLayerCreatedEvent(CODE);
+
+		when(layerStateStore.getLayer(anyString())).thenReturn(source);
+
+		String originalName = "batimetriaGlobal";
+
+		RefreshRequestDTO request = new RefreshRequestDTO();
+		request.setUrlSource(new File("src/test/resources/data/capabilities/wms.xml").toURI().toString());
+		request.setName(originalName);
+
+		// @formatter:off
+		
+		String id = source.getAggregateId();
+		
+		this.mockMvc
+				.perform(put(CATEGORY_PATH + "/refresh/" + id)
+						.header("Authorization", "Bearer " + getTokenOAGUser())
+						.content(mapper.writeValueAsString(request))
+						.contentType(MediaType.APPLICATION_JSON)
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.success", is(true)))
+				.andExpect(jsonPath("$.body", notNullValue()))
+				.andExpect(jsonPath("$.body.id", is(id)));
+		
+		// @formatter:on
+
+		RefreshLayerEvent event = (RefreshLayerEvent) blockingQueue.poll(50, TimeUnit.SECONDS);
+
+		RefreshLayerEvent expectedEvent = LayerDataUtil.getRefreshEvent(CODE);
+		assertNotNull(event);
+		assertEquals(event.getType(), expectedEvent.getType());
+		assertEquals(event.getVersion(), expectedEvent.getVersion());
+		assertEquals(event.getLayer().getName(), originalName);
+		assertEquals(event.getAggregateId(), expectedEvent.getAggregateId());
+	}
+
+	@Test
 	public void deleteLayer_SendDeleteLayerEvent_IfCommandWasSuccess() throws Exception {
 
 		when(layerStateStore.getLayer(anyString())).thenReturn(LayerDataUtil.getLayerUpdatedEvent(CODE));
@@ -289,6 +335,21 @@ public class LayerRestTest extends DocumentationCommandBaseTest {
 		future.addCallback(new SendListener());
 
 		blockingQueue.offer(updateLayerEvent);
+	}
+
+	@KafkaHandler
+	public void refreshLayer(RefreshLayerEvent refreshLayerEvent) throws IOException {
+
+		LayerDTO layerExpected = (LayerDTO) JsonToBeanTestUtil.getBean("/data/layers/layerDTO.json", LayerDTO.class);
+
+		RefreshLayerConfirmedEvent refreshConfirmEvent = new RefreshLayerConfirmedEvent().buildFrom(refreshLayerEvent);
+		refreshConfirmEvent.setLayer(layerExpected);
+
+		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(layer_topic,
+				refreshConfirmEvent.getAggregateId(), refreshConfirmEvent);
+		future.addCallback(new SendListener());
+
+		blockingQueue.offer(refreshLayerEvent);
 	}
 
 	@KafkaHandler

@@ -41,6 +41,8 @@ import es.redmic.atlaslib.events.layer.create.CreateLayerEvent;
 import es.redmic.atlaslib.events.layer.create.LayerCreatedEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerEvent;
 import es.redmic.atlaslib.events.layer.delete.LayerDeletedEvent;
+import es.redmic.atlaslib.events.layer.refresh.LayerRefreshedEvent;
+import es.redmic.atlaslib.events.layer.refresh.RefreshLayerEvent;
 import es.redmic.atlaslib.events.layer.update.LayerUpdatedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEvent;
 import es.redmic.brokerlib.avro.common.Event;
@@ -71,7 +73,7 @@ public class ApplyEventTest {
 
 		agg.apply(evt);
 
-		checkCreatedOrUpdatedState(evt);
+		checkCreatedUpdatedOrRefreshedState(evt);
 	}
 
 	@Test
@@ -81,7 +83,17 @@ public class ApplyEventTest {
 
 		agg.apply(evt);
 
-		checkCreatedOrUpdatedState(evt);
+		checkCreatedUpdatedOrRefreshedState(evt);
+	}
+
+	@Test
+	public void applyLayerRefreshedEvent_ChangeAggregateState_IfProcessIsOk() {
+
+		LayerRefreshedEvent evt = LayerDataUtil.getLayerRefreshedEvent(code);
+
+		agg.apply(evt);
+
+		checkCreatedUpdatedOrRefreshedState(evt);
 	}
 
 	@Test
@@ -101,7 +113,7 @@ public class ApplyEventTest {
 
 		agg.loadFromHistory(evt);
 
-		checkCreatedOrUpdatedState(evt);
+		checkCreatedUpdatedOrRefreshedState(evt);
 	}
 
 	@Test(expected = ItemLockedException.class)
@@ -119,13 +131,31 @@ public class ApplyEventTest {
 
 		agg.loadFromHistory(evt);
 
-		checkCreatedOrUpdatedState(evt);
+		checkCreatedUpdatedOrRefreshedState(evt);
 	}
 
 	@Test(expected = ItemLockedException.class)
 	public void loadFromHistory_ThrowItemLockedException_IfEventIsUpdate() {
 
 		UpdateLayerEvent evt = LayerDataUtil.getUpdateEvent(code);
+
+		agg.loadFromHistory(evt);
+	}
+
+	@Test
+	public void loadFromHistory_ChangeAggregateStateToRefreshed_IfEventIsUpdated() {
+
+		LayerRefreshedEvent evt = LayerDataUtil.getLayerRefreshedEvent(code);
+
+		agg.loadFromHistory(evt);
+
+		checkCreatedUpdatedOrRefreshedState(evt);
+	}
+
+	@Test(expected = ItemLockedException.class)
+	public void loadFromHistory_ThrowItemLockedException_IfEventIsRefresh() {
+
+		RefreshLayerEvent evt = LayerDataUtil.getRefreshEvent(code);
 
 		agg.loadFromHistory(evt);
 	}
@@ -153,7 +183,7 @@ public class ApplyEventTest {
 		agg.loadFromHistory(evt);
 	}
 
-	private void checkCreatedOrUpdatedState(LayerEvent evt) {
+	private void checkCreatedUpdatedOrRefreshedState(LayerEvent evt) {
 
 		assertEquals(agg.getVersion(), evt.getVersion());
 		assertEquals(agg.getAggregateId(), evt.getAggregateId());

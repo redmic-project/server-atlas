@@ -37,12 +37,15 @@ import org.mockito.junit.MockitoJUnitRunner;
 import es.redmic.atlascommands.aggregate.LayerAggregate;
 import es.redmic.atlascommands.commands.layer.CreateLayerCommand;
 import es.redmic.atlascommands.commands.layer.DeleteLayerCommand;
+import es.redmic.atlascommands.commands.layer.RefreshLayerCommand;
 import es.redmic.atlascommands.commands.layer.UpdateLayerCommand;
 import es.redmic.atlascommands.statestore.LayerStateStore;
 import es.redmic.atlaslib.dto.layer.LayerDTO;
+import es.redmic.atlaslib.dto.layerwms.LayerWMSDTO;
 import es.redmic.atlaslib.events.layer.LayerEventTypes;
 import es.redmic.atlaslib.events.layer.create.CreateLayerEvent;
 import es.redmic.atlaslib.events.layer.delete.CheckDeleteLayerEvent;
+import es.redmic.atlaslib.events.layer.refresh.RefreshLayerEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEvent;
 import es.redmic.commandslib.exceptions.ItemLockedException;
 import es.redmic.exception.data.ItemNotFoundException;
@@ -168,5 +171,48 @@ public class ProcessEventTest {
 		LayerDTO layer = LayerDataUtil.getLayer(code);
 
 		agg.process(new DeleteLayerCommand(layer.getId()));
+	}
+
+	@Test
+	public void processRefreshLayerCommand_ReturnLayerRefreshedEvent_IfProcessIsOk() {
+
+		when(layerStateStore.getLayer(any())).thenReturn(LayerDataUtil.getLayerCreatedEvent(code));
+
+		LayerWMSDTO layer = LayerDataUtil.getLayerWMS(code);
+
+		RefreshLayerCommand command = new RefreshLayerCommand(layer.getId(), layer);
+
+		RefreshLayerEvent evt = agg.process(command);
+
+		assertNotNull(evt);
+		assertNotNull(evt.getDate());
+		assertNotNull(evt.getLayer());
+		assertEquals(evt.getLayer(), layer);
+		assertNotNull(evt.getId());
+		assertEquals(evt.getAggregateId(), layer.getId());
+		assertEquals(evt.getType(), LayerEventTypes.REFRESH);
+		assertTrue(evt.getVersion().equals(2));
+	}
+
+	// Refrescar un elemento ya borrado
+	@Test(expected = ItemNotFoundException.class)
+	public void processRefreshLayerCommand_ThrowItemNotFoundException_IfItemIsDeleted() {
+
+		when(layerStateStore.getLayer(any())).thenReturn(LayerDataUtil.getLayerDeletedEvent(code));
+
+		LayerWMSDTO layer = LayerDataUtil.getLayerWMS(code);
+
+		agg.process(new RefreshLayerCommand(layer.getId(), layer));
+	}
+
+	// Refrescar un elemento bloqueado
+	@Test(expected = ItemLockedException.class)
+	public void processRefreshLayerCommand_ThrowItemLockedException_IfItemIsLocked() {
+
+		when(layerStateStore.getLayer(any())).thenReturn(LayerDataUtil.getUpdateEvent(code));
+
+		LayerWMSDTO layer = LayerDataUtil.getLayerWMS(code);
+
+		agg.process(new RefreshLayerCommand(layer.getId(), layer));
 	}
 }

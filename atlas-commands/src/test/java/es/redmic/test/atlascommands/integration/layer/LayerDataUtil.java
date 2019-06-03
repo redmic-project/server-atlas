@@ -30,14 +30,18 @@ import java.util.UUID;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.joda.time.DateTime;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Polygon;
 
 import es.redmic.atlaslib.dto.layer.ActivityDTO;
+import es.redmic.atlaslib.dto.layer.AttributionDTO;
 import es.redmic.atlaslib.dto.layer.ContactDTO;
+import es.redmic.atlaslib.dto.layer.DimensionDTO;
 import es.redmic.atlaslib.dto.layer.LatLonBoundingBoxDTO;
 import es.redmic.atlaslib.dto.layer.LayerDTO;
 import es.redmic.atlaslib.dto.layer.ProtocolDTO;
 import es.redmic.atlaslib.dto.layer.StyleLayerDTO;
 import es.redmic.atlaslib.dto.layerinfo.LayerInfoDTO;
+import es.redmic.atlaslib.dto.layerwms.LayerWMSDTO;
 import es.redmic.atlaslib.events.layer.LayerEventTypes;
 import es.redmic.atlaslib.events.layer.create.CreateLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerEvent;
@@ -48,6 +52,11 @@ import es.redmic.atlaslib.events.layer.delete.DeleteLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerFailedEvent;
 import es.redmic.atlaslib.events.layer.delete.LayerDeletedEvent;
+import es.redmic.atlaslib.events.layer.refresh.LayerRefreshedEvent;
+import es.redmic.atlaslib.events.layer.refresh.RefreshLayerCancelledEvent;
+import es.redmic.atlaslib.events.layer.refresh.RefreshLayerConfirmedEvent;
+import es.redmic.atlaslib.events.layer.refresh.RefreshLayerEvent;
+import es.redmic.atlaslib.events.layer.refresh.RefreshLayerFailedEvent;
 import es.redmic.atlaslib.events.layer.update.LayerUpdatedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEvent;
@@ -195,6 +204,66 @@ public abstract class LayerDataUtil {
 		return event;
 	}
 
+	// Refresh
+
+	public static RefreshLayerEvent getRefreshEvent(String code) {
+
+		RefreshLayerEvent event = new RefreshLayerEvent();
+		event.setAggregateId(PREFIX + code);
+		event.setType(LayerEventTypes.REFRESH);
+		event.setVersion(2);
+		event.setUserId(USER);
+		event.setSessionId("sessionIdD");
+		event.setLayer(getLayerWMS(code));
+
+		return event;
+	}
+
+	public static RefreshLayerConfirmedEvent getRefreshLayerConfirmedEvent(String code) {
+
+		RefreshLayerConfirmedEvent event = new RefreshLayerConfirmedEvent().buildFrom(getRefreshEvent(code));
+		event.setType(LayerEventTypes.REFRESH_CONFIRMED);
+		event.setLayer(getLayer(code));
+		return event;
+	}
+
+	public static LayerRefreshedEvent getLayerRefreshedEvent(String code) {
+
+		LayerRefreshedEvent event = new LayerRefreshedEvent().buildFrom(getRefreshEvent(code));
+		event.setType(LayerEventTypes.REFRESHED);
+		event.setLayer(getLayer(code));
+		return event;
+	}
+
+	public static RefreshLayerFailedEvent getRefreshLayerFailedEvent(String code) {
+
+		RefreshLayerFailedEvent event = new RefreshLayerFailedEvent().buildFrom(getRefreshEvent(code));
+		event.setType(LayerEventTypes.REFRESH_FAILED);
+
+		event.setExceptionType(ExceptionType.ITEM_NOT_FOUND.name());
+
+		Map<String, String> arguments = new HashMap<String, String>();
+		arguments.put("a", "b");
+		event.setArguments(arguments);
+
+		return event;
+	}
+
+	public static RefreshLayerCancelledEvent getRefreshLayerCancelledEvent(String code) {
+
+		RefreshLayerCancelledEvent event = new RefreshLayerCancelledEvent().buildFrom(getRefreshEvent(code));
+		event.setType(LayerEventTypes.REFRESH_CANCELLED);
+
+		event.setExceptionType(ExceptionType.ITEM_NOT_FOUND.name());
+
+		Map<String, String> arguments = new HashMap<String, String>();
+		arguments.put("a", "b");
+		event.setArguments(arguments);
+
+		event.setLayer(getLayer(code));
+		return event;
+	}
+
 	public static LayerInfoDTO getLayerInfo(String code) {
 
 		LayerInfoDTO layerInfo = new LayerInfoDTO();
@@ -217,10 +286,14 @@ public abstract class LayerDataUtil {
 		return layerInfo;
 	}
 
-	@SuppressWarnings("serial")
 	public static LayerDTO getLayer(String code) {
 
 		LayerDTO layer = new LayerDTO();
+
+		layer.setLegend("https://redmic.local/ww");
+		layer.setAttribution(getAttribution());
+		layer.setTimeDimension(getDimension());
+		layer.setElevationDimension(getDimension());
 
 		layer.setId(PREFIX + code);
 		layer.setName("Prueba");
@@ -245,46 +318,101 @@ public abstract class LayerDataUtil {
 		formats.add("WMS");
 		layer.setFormats(formats);
 
+		layer.setGeometry(getGeometry());
+		layer.setActivities(getActivities());
+		layer.setContact(getContact());
+		layer.setParent(CategoryDataUtil.getCategory("3442"));
+		layer.setThemeInspire(ThemeInspireDataUtil.getThemeInspire("cc"));
+		layer.setProtocols(getProtocols());
+		layer.setLatLonBoundsImage(getLatLonBoundingBoxDTO());
+		layer.setStylesLayer(getStylesLayer());
+
+		return layer;
+	}
+
+	public static LayerWMSDTO getLayerWMS(String code) {
+
+		LayerWMSDTO layer = new LayerWMSDTO();
+
+		layer.setLegend("https://redmic.local/ww");
+		layer.setAttribution(getAttribution());
+		layer.setTimeDimension(getDimension());
+		layer.setElevationDimension(getDimension());
+		layer.setId(PREFIX + code);
+		layer.setName("Prueba");
+		layer.setTitle("title");
+		layer.setAbstractLayer("Prueba");
+		layer.setImage("Prueba");
+
+		List<String> srs = new ArrayList<>();
+		srs.add("srs");
+		layer.setSrs(srs);
+
+		List<String> keywords = new ArrayList<>();
+		keywords.add("keywords");
+		layer.setKeywords(keywords);
+
+		List<String> formats = new ArrayList<>();
+		formats.add("WMS");
+		layer.setFormats(formats);
+
+		layer.setGeometry(getGeometry());
+		layer.setActivities(getActivities());
+		layer.setContact(getContact());
+		layer.setStylesLayer(getStylesLayer());
+
+		return layer;
+	}
+
+	private static AttributionDTO getAttribution() {
+
+		AttributionDTO attribution = new AttributionDTO();
+		attribution.setTitle("title");
+		return attribution;
+	}
+
+	private static ContactDTO getContact() {
+
+		ContactDTO contact = new ContactDTO();
+		contact.setName("Pepe");
+
+		return contact;
+	}
+
+	public static DimensionDTO getDimension() {
+
+		DimensionDTO dimension = new DimensionDTO();
+		dimension.setName("time");
+		dimension.setUnits("ISO8601");
+		dimension.setDefaultValue("P30M/PRESENT");
+
+		return dimension;
+	}
+
+	public static Polygon getGeometry() {
+
 		Coordinate[] coordinates = new Coordinate[] { new Coordinate(-18.1745567321777, 27.6111183166504),
 				new Coordinate(-18.1745567321777, 29.4221172332764),
 				new Coordinate(-13.3011913299561, 29.4221172332764),
 				new Coordinate(-13.3011913299561, 27.6111183166504),
 				new Coordinate(-18.1745567321777, 27.6111183166504) };
 
-		layer.setGeometry(JTSFactoryFinder.getGeometryFactory().createPolygon(coordinates));
+		return JTSFactoryFinder.getGeometryFactory().createPolygon(coordinates);
+	}
+
+	@SuppressWarnings("serial")
+	public static List<ActivityDTO> getActivities() {
 
 		ActivityDTO activity = new ActivityDTO();
 		activity.setId("3");
 		activity.setName("AIS");
 		activity.setPath("r.1.2.3");
 
-		layer.setActivities(new ArrayList<ActivityDTO>() {
+		return new ArrayList<ActivityDTO>() {
 			{
 				add(activity);
 			}
-		});
-
-		ContactDTO contact = new ContactDTO();
-		contact.setName("Pepe");
-		layer.setContact(contact);
-
-		layer.setParent(CategoryDataUtil.getCategory("3442"));
-
-		layer.setThemeInspire(ThemeInspireDataUtil.getThemeInspire("cc"));
-
-		layer.setProtocols(getProtocols());
-
-		layer.setLatLonBoundsImage(getLatLonBoundingBoxDTO());
-
-		StyleLayerDTO styleLayer = new StyleLayerDTO();
-		styleLayer.setName("styleLayer");
-		layer.setStylesLayer(new ArrayList<StyleLayerDTO>() {
-			{
-				add(styleLayer);
-			}
-		});
-
-		return layer;
+		};
 	}
 
 	@SuppressWarnings("serial")
@@ -311,5 +439,18 @@ public abstract class LayerDataUtil {
 		latLonBoundingBoxDTO.setMinY(1.0);
 
 		return latLonBoundingBoxDTO;
+	}
+
+	@SuppressWarnings("serial")
+	public static List<StyleLayerDTO> getStylesLayer() {
+
+		StyleLayerDTO styleLayer = new StyleLayerDTO();
+		styleLayer.setName("styleLayer");
+
+		return new ArrayList<StyleLayerDTO>() {
+			{
+				add(styleLayer);
+			}
+		};
 	}
 }

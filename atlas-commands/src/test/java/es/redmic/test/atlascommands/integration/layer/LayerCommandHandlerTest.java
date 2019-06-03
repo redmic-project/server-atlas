@@ -70,6 +70,11 @@ import es.redmic.atlaslib.events.layer.delete.DeleteLayerCheckedEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerFailedEvent;
 import es.redmic.atlaslib.events.layer.delete.LayerDeletedEvent;
+import es.redmic.atlaslib.events.layer.refresh.LayerRefreshedEvent;
+import es.redmic.atlaslib.events.layer.refresh.RefreshLayerCancelledEvent;
+import es.redmic.atlaslib.events.layer.refresh.RefreshLayerConfirmedEvent;
+import es.redmic.atlaslib.events.layer.refresh.RefreshLayerEvent;
+import es.redmic.atlaslib.events.layer.refresh.RefreshLayerFailedEvent;
 import es.redmic.atlaslib.events.layer.update.LayerUpdatedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerConfirmedEvent;
@@ -170,6 +175,30 @@ public class LayerCommandHandlerTest extends KafkaBaseIntegrationTest {
 		assertEquals(LayerEventTypes.UPDATED, confirm.getType());
 		JSONAssert.assertEquals(updateLayerEvent.getLayer().toString(),
 				((LayerUpdatedEvent) confirm).getLayer().toString(), false);
+	}
+
+	// Envía un evento de confirmación de refrescado y debe provocar un evento
+	// Refreshed con el item dentro
+	@Test
+	public void refreshLayerConfirmedEvent_SendLayerRefreshedEvent_IfReceivesSuccess()
+			throws InterruptedException, JSONException {
+
+		logger.debug("----> refreshLayerConfirmedEvent");
+
+		// Envía refresh para meterlo en el stream
+		RefreshLayerEvent refreshLayerEvent = LayerDataUtil.getRefreshEvent(code + "2a");
+		kafkaTemplate.send(layer_topic, refreshLayerEvent.getAggregateId(), refreshLayerEvent);
+
+		// Envía confirmed y espera un evento de refreshed con el layer refrescado
+		// dentro
+		RefreshLayerConfirmedEvent event = LayerDataUtil.getRefreshLayerConfirmedEvent(code + "2a");
+		kafkaTemplate.send(layer_topic, event.getAggregateId(), event);
+		Event confirm = (Event) blockingQueue.poll(60, TimeUnit.SECONDS);
+
+		assertNotNull(confirm);
+		assertEquals(LayerEventTypes.REFRESHED, confirm.getType());
+		JSONAssert.assertEquals(refreshLayerEvent.getLayer().toString(),
+				((LayerRefreshedEvent) confirm).getLayer().toString(), false);
 	}
 
 	// Envía un evento de comprobación de que el elemento puede ser borrado y debe
@@ -281,6 +310,46 @@ public class LayerCommandHandlerTest extends KafkaBaseIntegrationTest {
 		assertEquals(layerUpdateEvent.getLayer(), ((UpdateLayerCancelledEvent) confirm).getLayer());
 	}
 
+	// Envía un evento de error de refrescado y debe provocar un evento Cancelled
+	// con el item dentro
+	@Test(expected = ItemNotFoundException.class)
+	public void refreshLayerFailedEvent_SendLayerCancelledEvent_IfReceivesSuccess() throws Exception {
+
+		logger.debug("----> refreshLayerFailedEvent");
+
+		// Envía created para meterlo en el stream y lo saca de la cola
+		LayerCreatedEvent layerCreatedEvent = LayerDataUtil.getLayerCreatedEvent(code + "5a");
+		layerCreatedEvent.getLayer().setName("Nombre erroneo al crearlo");
+		layerCreatedEvent.setSessionId(UUID.randomUUID().toString());
+		kafkaTemplate.send(layer_topic, layerCreatedEvent.getAggregateId(), layerCreatedEvent);
+		blockingQueue.poll(10, TimeUnit.SECONDS);
+
+		// Envía refresh para meterlo en el stream y lo saca de la cola
+		RefreshLayerEvent refreshLayerEvent = LayerDataUtil.getRefreshEvent(code + "5a");
+		refreshLayerEvent.setSessionId(UUID.randomUUID().toString());
+		kafkaTemplate.send(layer_topic, refreshLayerEvent.getAggregateId(), refreshLayerEvent);
+		blockingQueue.poll(20, TimeUnit.SECONDS);
+
+		Thread.sleep(3000);
+
+		// Envía failed y espera un evento de cancelled con el layer original dentro
+		RefreshLayerFailedEvent event = LayerDataUtil.getRefreshLayerFailedEvent(code + "5a");
+
+		// Añade completableFeature para que se resuelva al recibir el mensaje.
+		CompletableFuture<LayerDTO> completableFuture = Whitebox.invokeMethod(layerCommandHandler,
+				"getCompletableFeature", event.getSessionId(), LayerDataUtil.getLayer(code + "5a"));
+
+		kafkaTemplate.send(layer_topic, event.getAggregateId(), event);
+		Event confirm = (Event) blockingQueue.poll(30, TimeUnit.SECONDS);
+
+		// Obtiene el resultado
+		Whitebox.invokeMethod(layerCommandHandler, "getResult", event.getSessionId(), completableFuture);
+
+		assertNotNull(confirm);
+		assertEquals(LayerEventTypes.REFRESH_CANCELLED, confirm.getType());
+		assertEquals(layerCreatedEvent.getLayer(), ((RefreshLayerCancelledEvent) confirm).getLayer());
+	}
+
 	// Envía un evento de error de borrado y debe provocar un evento Cancelled con
 	// el item dentro
 	@Test(expected = DeleteItemException.class)
@@ -338,6 +407,12 @@ public class LayerCommandHandlerTest extends KafkaBaseIntegrationTest {
 	public void layerUpdatedEvent(LayerUpdatedEvent layerUpdatedEvent) {
 
 		blockingQueue.offer(layerUpdatedEvent);
+	}
+
+	@KafkaHandler
+	public void layerRefreshedEvent(LayerRefreshedEvent layerRefreshedEvent) {
+
+		blockingQueue.offer(layerRefreshedEvent);
 	}
 
 	@KafkaHandler
