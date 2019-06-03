@@ -97,13 +97,6 @@ public class LayerEventFactory {
 			return new LayerDeletedEvent().buildFrom(source);
 		}
 
-		if (type.equals(LayerEventTypes.REFRESH_CONFIRMED)) {
-
-			logger.debug("Creando evento RefreshLayerConfirmedEvent para: " + source.getAggregateId());
-
-			return new RefreshLayerConfirmedEvent().buildFrom(source);
-		}
-
 		logger.error("Tipo de evento no soportado");
 		throw new InternalException(ExceptionType.INTERNAL_EXCEPTION);
 	}
@@ -122,6 +115,13 @@ public class LayerEventFactory {
 
 			logger.debug("Creando evento LayerUpdatedEvent para: " + source.getAggregateId());
 			successfulEvent = new LayerUpdatedEvent().buildFrom(source);
+		}
+
+		if (type.equals(LayerEventTypes.REFRESH_CONFIRMED)) {
+
+			logger.debug("Creando evento RefreshLayerConfirmedEvent para: " + source.getAggregateId());
+
+			successfulEvent = new RefreshLayerConfirmedEvent().buildFrom(source);
 		}
 
 		if (type.equals(LayerEventTypes.REFRESHED)) {

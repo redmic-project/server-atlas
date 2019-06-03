@@ -254,6 +254,7 @@ public abstract class LayerDataUtil {
 
 		RefreshLayerConfirmedEvent event = new RefreshLayerConfirmedEvent().buildFrom(getRefreshEvent());
 		event.setType(LayerEventTypes.REFRESH_CONFIRMED);
+		event.setLayer(getLayer());
 		return event;
 	}
 

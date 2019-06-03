@@ -22,23 +22,29 @@ package es.redmic.atlaslib.events.layer.refresh;
 
 import org.apache.avro.Schema;
 
+import es.redmic.atlaslib.dto.layer.LayerDTO;
 import es.redmic.atlaslib.events.layer.LayerEventTypes;
-import es.redmic.brokerlib.avro.common.SimpleEvent;
+import es.redmic.atlaslib.events.layer.common.LayerEvent;
 
-public class RefreshLayerConfirmedEvent extends SimpleEvent {
+public class RefreshLayerConfirmedEvent extends LayerEvent {
 
 	// @formatter:off
 
 	public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{"
 		+ "\"type\":\"record\",\"name\":\"RefreshLayerConfirmedEvent\","
 				+ "\"namespace\":\"es.redmic.atlaslib.events.layer.refresh\",\"fields\":["
-			+ getEventBaseSchema() + "]}");
+			+ getLayerEventSchema() + "," + getEventBaseSchema() + "]}");
 	// @formatter:on
 
 	static String type = LayerEventTypes.REFRESH_CONFIRMED;
 
 	public RefreshLayerConfirmedEvent() {
 		super(type);
+	}
+
+	public RefreshLayerConfirmedEvent(LayerDTO layer) {
+		super(type);
+		this.setLayer(layer);
 	}
 
 	@Override

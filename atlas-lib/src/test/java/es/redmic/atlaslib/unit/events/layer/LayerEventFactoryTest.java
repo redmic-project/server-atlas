@@ -122,18 +122,6 @@ public class LayerEventFactoryTest {
 		checkMetadataFields(source, event);
 	}
 
-	@Test
-	public void GetEvent_ReturnRefreshLayerConfirmedEvent_IfTypeIsRefreshConfirmed() {
-
-		Event source = LayerDataUtil.getRefreshLayerConfirmedEvent();
-		RefreshLayerConfirmedEvent event = (RefreshLayerConfirmedEvent) LayerEventFactory.getEvent(source,
-				LayerEventTypes.REFRESH_CONFIRMED);
-
-		assertEquals(LayerEventTypes.REFRESH_CONFIRMED, event.getType());
-
-		checkMetadataFields(source, event);
-	}
-
 	/////////////////////////
 
 	@Test
@@ -171,6 +159,18 @@ public class LayerEventFactoryTest {
 
 		assertEquals(LayerEventTypes.REFRESHED, event.getType());
 		assertNotNull(event.getLayer());
+
+		checkMetadataFields(source, event);
+	}
+
+	@Test
+	public void GetEvent_ReturnRefreshLayerConfirmedEvent_IfTypeIsRefreshConfirmed() {
+
+		Event source = LayerDataUtil.getRefreshLayerConfirmedEvent();
+		RefreshLayerConfirmedEvent event = (RefreshLayerConfirmedEvent) LayerEventFactory.getEvent(source,
+				LayerEventTypes.REFRESH_CONFIRMED, LayerDataUtil.getLayer());
+
+		assertEquals(LayerEventTypes.REFRESH_CONFIRMED, event.getType());
 
 		checkMetadataFields(source, event);
 	}
