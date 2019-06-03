@@ -26,8 +26,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import es.redmic.atlaslib.dto.layer.LayerDTO;
+import es.redmic.atlaslib.dto.layerwms.LayerWMSDTO;
 import es.redmic.atlaslib.events.layer.common.LayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.common.LayerEvent;
+import es.redmic.atlaslib.events.layer.common.LayerRefreshCancelledEvent;
+import es.redmic.atlaslib.events.layer.common.LayerRefreshEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerFailedEvent;
@@ -39,6 +42,10 @@ import es.redmic.atlaslib.events.layer.delete.DeleteLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerFailedEvent;
 import es.redmic.atlaslib.events.layer.delete.LayerDeletedEvent;
+import es.redmic.atlaslib.events.layer.refresh.LayerRefreshedEvent;
+import es.redmic.atlaslib.events.layer.refresh.RefreshLayerCancelledEvent;
+import es.redmic.atlaslib.events.layer.refresh.RefreshLayerConfirmedEvent;
+import es.redmic.atlaslib.events.layer.refresh.RefreshLayerFailedEvent;
 import es.redmic.atlaslib.events.layer.update.LayerUpdatedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerConfirmedEvent;
@@ -93,6 +100,13 @@ public class LayerEventFactory {
 			return new LayerDeletedEvent().buildFrom(source);
 		}
 
+		if (type.equals(LayerEventTypes.REFRESH_CONFIRMED)) {
+
+			logger.debug("Creando evento RefreshLayerConfirmedEvent para: " + source.getAggregateId());
+
+			return new RefreshLayerConfirmedEvent().buildFrom(source);
+		}
+
 		logger.error("Tipo de evento no soportado");
 		throw new InternalException(ExceptionType.INTERNAL_EXCEPTION);
 	}
@@ -102,19 +116,44 @@ public class LayerEventFactory {
 		LayerEvent successfulEvent = null;
 
 		if (type.equals(LayerEventTypes.CREATED)) {
+
 			logger.debug("Creando evento LayerCreatedEvent para: " + source.getAggregateId());
 			successfulEvent = new LayerCreatedEvent().buildFrom(source);
 		}
 
 		if (type.equals(LayerEventTypes.UPDATED)) {
+
 			logger.debug("Creando evento LayerUpdatedEvent para: " + source.getAggregateId());
 			successfulEvent = new LayerUpdatedEvent().buildFrom(source);
 		}
 
 		if (successfulEvent != null) {
+
 			successfulEvent.setLayer(layer);
 			return successfulEvent;
 		} else {
+
+			logger.error("Tipo de evento no soportado");
+			throw new InternalException(ExceptionType.INTERNAL_EXCEPTION);
+		}
+	}
+
+	public static Event getEvent(Event source, String type, LayerWMSDTO layer) {
+
+		LayerRefreshEvent successfulEvent = null;
+
+		if (type.equals(LayerEventTypes.REFRESHED)) {
+
+			logger.debug("Creando evento LayerRefreshedEvent para: " + source.getAggregateId());
+			successfulEvent = new LayerRefreshedEvent().buildFrom(source);
+		}
+
+		if (successfulEvent != null) {
+
+			successfulEvent.setLayer(layer);
+			return successfulEvent;
+		} else {
+
 			logger.error("Tipo de evento no soportado");
 			throw new InternalException(ExceptionType.INTERNAL_EXCEPTION);
 		}
@@ -127,18 +166,24 @@ public class LayerEventFactory {
 
 		if (type.equals(LayerEventTypes.CREATE_FAILED)) {
 
-			logger.debug("No se pudo crear Atlas type en la vista");
+			logger.debug("No se pudo crear layer en la vista");
 			failedEvent = new CreateLayerFailedEvent().buildFrom(source);
 		}
 		if (type.equals(LayerEventTypes.UPDATE_FAILED)) {
 
-			logger.debug("No se pudo modificar Atlas type en la vista");
+			logger.debug("No se pudo modificar layer en la vista");
 			failedEvent = new UpdateLayerFailedEvent().buildFrom(source);
 		}
 		if (type.equals(LayerEventTypes.DELETE_FAILED)) {
 
-			logger.debug("No se pudo eliminar Atlas type de la vista");
+			logger.debug("No se pudo eliminar layer de la vista");
 			failedEvent = new DeleteLayerFailedEvent().buildFrom(source);
+		}
+
+		if (type.equals(LayerEventTypes.REFRESH_FAILED)) {
+
+			logger.debug("No se pudo refrescar layer de la vista");
+			failedEvent = new RefreshLayerFailedEvent().buildFrom(source);
 		}
 
 		if (type.equals(LayerEventTypes.DELETE_CHECK_FAILED)) {
@@ -180,6 +225,31 @@ public class LayerEventFactory {
 
 			logger.debug("Creando evento DeleteLayerCancelledEvent para: " + source.getAggregateId());
 			cancelledEvent = new DeleteLayerCancelledEvent().buildFrom(source);
+		}
+
+		if (cancelledEvent != null) {
+
+			cancelledEvent.setLayer(layer);
+			cancelledEvent.setExceptionType(exceptionType);
+			cancelledEvent.setArguments(exceptionArguments);
+			return cancelledEvent;
+
+		} else {
+
+			logger.error("Tipo de evento no soportado");
+			throw new InternalException(ExceptionType.INTERNAL_EXCEPTION);
+		}
+	}
+
+	public static Event getEvent(Event source, String type, LayerWMSDTO layer, String exceptionType,
+			Map<String, String> exceptionArguments) {
+
+		LayerRefreshCancelledEvent cancelledEvent = null;
+
+		if (type.equals(LayerEventTypes.REFRESH_CANCELLED)) {
+
+			logger.debug("Creando evento RefreshLayerCancelledEvent para: " + source.getAggregateId());
+			cancelledEvent = new RefreshLayerCancelledEvent().buildFrom(source);
 		}
 
 		if (cancelledEvent != null) {

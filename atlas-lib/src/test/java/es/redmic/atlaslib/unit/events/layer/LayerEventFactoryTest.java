@@ -38,6 +38,10 @@ import es.redmic.atlaslib.events.layer.delete.DeleteLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerFailedEvent;
 import es.redmic.atlaslib.events.layer.delete.LayerDeletedEvent;
+import es.redmic.atlaslib.events.layer.refresh.LayerRefreshedEvent;
+import es.redmic.atlaslib.events.layer.refresh.RefreshLayerCancelledEvent;
+import es.redmic.atlaslib.events.layer.refresh.RefreshLayerConfirmedEvent;
+import es.redmic.atlaslib.events.layer.refresh.RefreshLayerFailedEvent;
 import es.redmic.atlaslib.events.layer.update.LayerUpdatedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerConfirmedEvent;
@@ -118,6 +122,18 @@ public class LayerEventFactoryTest {
 		checkMetadataFields(source, event);
 	}
 
+	@Test
+	public void GetEvent_ReturnRefreshLayerConfirmedEvent_IfTypeIsRefreshConfirmed() {
+
+		Event source = LayerDataUtil.getRefreshLayerConfirmedEvent();
+		RefreshLayerConfirmedEvent event = (RefreshLayerConfirmedEvent) LayerEventFactory.getEvent(source,
+				LayerEventTypes.REFRESH_CONFIRMED);
+
+		assertEquals(LayerEventTypes.REFRESH_CONFIRMED, event.getType());
+
+		checkMetadataFields(source, event);
+	}
+
 	/////////////////////////
 
 	@Test
@@ -141,6 +157,19 @@ public class LayerEventFactoryTest {
 				LayerDataUtil.getLayer());
 
 		assertEquals(LayerEventTypes.UPDATED, event.getType());
+		assertNotNull(event.getLayer());
+
+		checkMetadataFields(source, event);
+	}
+
+	@Test
+	public void GetEvent_ReturnLayerRefreshedEvent_IfTypeIsRefreshed() {
+
+		Event source = LayerDataUtil.getLayerRefreshedEvent();
+		LayerRefreshedEvent event = (LayerRefreshedEvent) LayerEventFactory.getEvent(source, LayerEventTypes.REFRESHED,
+				LayerDataUtil.getLayerWMS());
+
+		assertEquals(LayerEventTypes.REFRESHED, event.getType());
 		assertNotNull(event.getLayer());
 
 		checkMetadataFields(source, event);
@@ -181,7 +210,23 @@ public class LayerEventFactoryTest {
 	}
 
 	@Test
-	public void GetEvent_ReturnDeleteLayerFailedEventt_IfTypeIsDeleteFailed() {
+	public void GetEvent_ReturnDeleteLayerFailedEvent_IfTypeIsRefreshFailed() {
+
+		RefreshLayerFailedEvent exception = LayerDataUtil.getRefreshLayerFailedEvent();
+
+		Event source = LayerDataUtil.getRefreshEvent();
+
+		RefreshLayerFailedEvent event = (RefreshLayerFailedEvent) LayerEventFactory.getEvent(source,
+				LayerEventTypes.REFRESH_FAILED, exception.getExceptionType(), exception.getArguments());
+
+		assertEquals(LayerEventTypes.REFRESH_FAILED, event.getType());
+
+		checkMetadataFields(source, event);
+		checkErrorFields(exception, event);
+	}
+
+	@Test
+	public void GetEvent_ReturnRefreshLayerFailedEvent_IfTypeIsDeleteFailed() {
 
 		DeleteLayerFailedEvent exception = LayerDataUtil.getDeleteLayerFailedEvent();
 
@@ -260,6 +305,24 @@ public class LayerEventFactoryTest {
 				exception.getArguments());
 
 		assertEquals(LayerEventTypes.DELETE_CANCELLED, event.getType());
+
+		checkMetadataFields(source, event);
+		checkErrorFields(exception, event);
+		assertNotNull(event.getLayer());
+	}
+
+	@Test
+	public void GetEvent_ReturnRefreshLayerCancelledEvent_IfTypeIsRefreshCancelled() {
+
+		RefreshLayerCancelledEvent exception = LayerDataUtil.getRefreshLayerCancelledEvent();
+
+		Event source = LayerDataUtil.getRefreshEvent();
+
+		RefreshLayerCancelledEvent event = (RefreshLayerCancelledEvent) LayerEventFactory.getEvent(source,
+				LayerEventTypes.REFRESH_CANCELLED, LayerDataUtil.getLayerWMS(), exception.getExceptionType(),
+				exception.getArguments());
+
+		assertEquals(LayerEventTypes.REFRESH_CANCELLED, event.getType());
 
 		checkMetadataFields(source, event);
 		checkErrorFields(exception, event);

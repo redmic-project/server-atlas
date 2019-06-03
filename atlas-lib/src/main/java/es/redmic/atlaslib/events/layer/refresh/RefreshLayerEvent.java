@@ -1,4 +1,4 @@
-package es.redmic.atlaslib.events.layer.create;
+package es.redmic.atlaslib.events.layer.refresh;
 
 /*-
  * #%L
@@ -20,26 +20,35 @@ package es.redmic.atlaslib.events.layer.create;
  * #L%
  */
 
+import java.util.UUID;
+
 import org.apache.avro.Schema;
 
+import es.redmic.atlaslib.dto.layerwms.LayerWMSDTO;
 import es.redmic.atlaslib.events.layer.LayerEventTypes;
-import es.redmic.brokerlib.avro.common.EventError;
+import es.redmic.atlaslib.events.layer.common.LayerRefreshEvent;
 
-public class CreateLayerCancelledEvent extends EventError {
+public class RefreshLayerEvent extends LayerRefreshEvent {
 
 	// @formatter:off
 
 	public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{"
-		+ "\"type\":\"record\",\"name\":\"CreateLayerCancelledEvent\","
-				+ "\"namespace\":\"es.redmic.atlaslib.events.layer.create\",\"fields\":["
-			+ getFailEventSchema() + ","
+		+ "\"type\":\"record\",\"name\":\"RefreshLayerEvent\","
+				+ "\"namespace\":\"es.redmic.atlaslib.events.layer.refresh\",\"fields\":["
+			+ getLayerEventSchema() + ","
 			+ getEventBaseSchema() + "]}");
 	// @formatter:on
 
-	static String type = LayerEventTypes.CREATE_CANCELLED;
+	static String type = LayerEventTypes.REFRESH;
 
-	public CreateLayerCancelledEvent() {
+	public RefreshLayerEvent() {
 		super(type);
+		setSessionId(UUID.randomUUID().toString());
+	}
+
+	public RefreshLayerEvent(LayerWMSDTO layer) {
+		this();
+		this.setLayer(layer);
 	}
 
 	@Override

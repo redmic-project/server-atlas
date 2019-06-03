@@ -1,4 +1,4 @@
-package es.redmic.atlaslib.events.layer.create;
+package es.redmic.atlaslib.events.layer.refresh;
 
 /*-
  * #%L
@@ -25,20 +25,20 @@ import org.apache.avro.Schema;
 import es.redmic.atlaslib.events.layer.LayerEventTypes;
 import es.redmic.brokerlib.avro.common.EventError;
 
-public class CreateLayerCancelledEvent extends EventError {
+public class RefreshLayerFailedEvent extends EventError {
 
 	// @formatter:off
 
 	public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{"
-		+ "\"type\":\"record\",\"name\":\"CreateLayerCancelledEvent\","
-				+ "\"namespace\":\"es.redmic.atlaslib.events.layer.create\",\"fields\":["
+		+ "\"type\":\"record\",\"name\":\"RefreshLayerFailedEvent\","
+				+ "\"namespace\":\"es.redmic.atlaslib.events.layer.refresh\",\"fields\":["
 			+ getFailEventSchema() + ","
 			+ getEventBaseSchema() + "]}");
 	// @formatter:on
 
-	static String type = LayerEventTypes.CREATE_CANCELLED;
+	static String type = LayerEventTypes.REFRESH_FAILED;
 
-	public CreateLayerCancelledEvent() {
+	public RefreshLayerFailedEvent() {
 		super(type);
 	}
 

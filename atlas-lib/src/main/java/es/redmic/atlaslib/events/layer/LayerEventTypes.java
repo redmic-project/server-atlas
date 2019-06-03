@@ -24,18 +24,29 @@ import es.redmic.brokerlib.avro.common.EventTypes;
 
 public abstract class LayerEventTypes extends EventTypes {
 
+	public static String
+	// @formatter:off
+		//REFRESH
+		REFRESH = "REFRESH",
+		REFRESH_CONFIRMED = "REFRESH_CONFIRMED",
+		REFRESHED = "REFRESHED",
+		REFRESH_FAILED = "REFRESH_FAILED",
+		REFRESH_CANCELLED = "REFRESH_CANCELLED";
+	//@formatter:on
+
 	public static boolean isLocked(String eventType) {
 
-		return EventTypes.isLocked(eventType);
+		return !(eventType.equals(LayerEventTypes.REFRESHED.toString())
+				|| eventType.equals(LayerEventTypes.REFRESHED.toString())) || EventTypes.isLocked(eventType);
 	}
 
 	public static boolean isSnapshot(String eventType) {
 
-		return EventTypes.isSnapshot(eventType);
+		return eventType.equals(LayerEventTypes.REFRESHED.toString()) || EventTypes.isSnapshot(eventType);
 	}
 
 	public static boolean isUpdatable(String eventType) {
 
-		return EventTypes.isUpdatable(eventType);
+		return (isSnapshot(eventType) && !eventType.equals(EventTypes.DELETED.toString()));
 	}
 }

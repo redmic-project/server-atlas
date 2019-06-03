@@ -38,6 +38,11 @@ import es.redmic.atlaslib.events.layer.delete.DeleteLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerFailedEvent;
 import es.redmic.atlaslib.events.layer.delete.LayerDeletedEvent;
+import es.redmic.atlaslib.events.layer.refresh.LayerRefreshedEvent;
+import es.redmic.atlaslib.events.layer.refresh.RefreshLayerCancelledEvent;
+import es.redmic.atlaslib.events.layer.refresh.RefreshLayerConfirmedEvent;
+import es.redmic.atlaslib.events.layer.refresh.RefreshLayerEvent;
+import es.redmic.atlaslib.events.layer.refresh.RefreshLayerFailedEvent;
 import es.redmic.atlaslib.events.layer.update.LayerUpdatedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerConfirmedEvent;
@@ -284,6 +289,73 @@ public class LayerEventsCheckAvroSchemaTest extends AtlasAvroBaseTest {
 
 		assertTrue("El objeto obtenido debe ser una instancia de DeleteLayerCancelledEvent",
 				DeleteLayerCancelledEvent.class.isInstance(result));
+
+		assertEquals(result, event);
+	}
+
+	// Refresh
+
+	@Test
+	public void RefreshLayerEventSerializeAndDeserialize_IsSuccessful_IfSchemaAndDataAreCorrect() {
+
+		RefreshLayerEvent event = LayerDataUtil.getRefreshEvent();
+
+		Object result = serializerAndDeserializer(event);
+
+		assertTrue("El objeto obtenido debe ser una instancia de RefreshLayerEvent",
+				RefreshLayerEvent.class.isInstance(result));
+
+		assertEquals(result, event);
+	}
+
+	@Test
+	public void RefreshLayerConfirmedEventSerializeAndDeserialize_IsSuccessful_IfSchemaAndDataAreCorrect() {
+
+		RefreshLayerConfirmedEvent event = LayerDataUtil.getRefreshLayerConfirmedEvent();
+
+		Object result = serializerAndDeserializer(event);
+
+		assertTrue("El objeto obtenido debe ser una instancia de RefreshLayerConfirmedEvent",
+				RefreshLayerConfirmedEvent.class.isInstance(result));
+
+		assertEquals(result, event);
+	}
+
+	@Test
+	public void LayerRefreshedEventSerializeAndDeserialize_IsSuccessful_IfSchemaAndDataAreCorrect() {
+
+		LayerRefreshedEvent event = LayerDataUtil.getLayerRefreshedEvent();
+
+		Object result = serializerAndDeserializer(event);
+
+		assertTrue("El objeto obtenido debe ser una instancia de LayerRefreshdEvent",
+				LayerRefreshedEvent.class.isInstance(result));
+
+		assertEquals(result, event);
+	}
+
+	@Test
+	public void RefreshLayerFailedEventSerializeAndDeserialize_IsSuccessful_IfSchemaAndDataAreCorrect() {
+
+		RefreshLayerFailedEvent event = LayerDataUtil.getRefreshLayerFailedEvent();
+
+		Object result = serializerAndDeserializer(event);
+
+		assertTrue("El objeto obtenido debe ser una instancia de RefreshLayerFailedEvent",
+				RefreshLayerFailedEvent.class.isInstance(result));
+
+		assertEquals(result, event);
+	}
+
+	@Test
+	public void RefreshLayerCancelledEventSerializeAndDeserialize_IsSuccessful_IfSchemaAndDataAreCorrect() {
+
+		RefreshLayerCancelledEvent event = LayerDataUtil.getRefreshLayerCancelledEvent();
+
+		Object result = serializerAndDeserializer(event);
+
+		assertTrue("El objeto obtenido debe ser una instancia de RefreshLayerCancelledEvent",
+				RefreshLayerCancelledEvent.class.isInstance(result));
 
 		assertEquals(result, event);
 	}

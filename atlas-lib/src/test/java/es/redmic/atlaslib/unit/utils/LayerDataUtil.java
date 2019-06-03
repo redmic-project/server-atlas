@@ -55,6 +55,11 @@ import es.redmic.atlaslib.events.layer.delete.DeleteLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerFailedEvent;
 import es.redmic.atlaslib.events.layer.delete.LayerDeletedEvent;
+import es.redmic.atlaslib.events.layer.refresh.LayerRefreshedEvent;
+import es.redmic.atlaslib.events.layer.refresh.RefreshLayerCancelledEvent;
+import es.redmic.atlaslib.events.layer.refresh.RefreshLayerConfirmedEvent;
+import es.redmic.atlaslib.events.layer.refresh.RefreshLayerEvent;
+import es.redmic.atlaslib.events.layer.refresh.RefreshLayerFailedEvent;
 import es.redmic.atlaslib.events.layer.update.LayerUpdatedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerConfirmedEvent;
@@ -228,6 +233,52 @@ public abstract class LayerDataUtil {
 		event.setType(LayerEventTypes.DELETE_CONFIRMED);
 		event.setLayer(getLayer());
 		event.setExceptionType("ItemNotFound");
+		return event;
+	}
+
+	// Refresh
+
+	public static RefreshLayerEvent getRefreshEvent() {
+
+		RefreshLayerEvent event = new RefreshLayerEvent();
+		event.setAggregateId(PREFIX + CODE);
+		event.setType(LayerEventTypes.REFRESH);
+		event.setVersion(1);
+		event.setUserId(USER);
+		event.setLayer(getLayerWMS());
+
+		return event;
+	}
+
+	public static RefreshLayerConfirmedEvent getRefreshLayerConfirmedEvent() {
+
+		RefreshLayerConfirmedEvent event = new RefreshLayerConfirmedEvent().buildFrom(getRefreshEvent());
+		event.setType(LayerEventTypes.REFRESH_CONFIRMED);
+		return event;
+	}
+
+	public static LayerRefreshedEvent getLayerRefreshedEvent() {
+
+		LayerRefreshedEvent event = new LayerRefreshedEvent().buildFrom(getRefreshEvent());
+		event.setType(LayerEventTypes.REFRESHED);
+		event.setLayer(getLayerWMS());
+		return event;
+	}
+
+	public static RefreshLayerFailedEvent getRefreshLayerFailedEvent() {
+
+		RefreshLayerFailedEvent event = new RefreshLayerFailedEvent().buildFrom(getRefreshEvent());
+		event.setType(LayerEventTypes.REFRESH_FAILED);
+		event.setExceptionType("ItemAlreadyExist");
+		return event;
+	}
+
+	public static RefreshLayerCancelledEvent getRefreshLayerCancelledEvent() {
+
+		RefreshLayerCancelledEvent event = new RefreshLayerCancelledEvent().buildFrom(getRefreshEvent());
+		event.setType(LayerEventTypes.REFRESH_CANCELLED);
+		event.setExceptionType("ItemAlreadyExist");
+		event.setLayer(getLayerWMS());
 		return event;
 	}
 
