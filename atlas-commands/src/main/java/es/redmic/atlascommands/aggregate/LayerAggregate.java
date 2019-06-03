@@ -2,6 +2,7 @@ package es.redmic.atlascommands.aggregate;
 
 import es.redmic.atlascommands.commands.layer.CreateLayerCommand;
 import es.redmic.atlascommands.commands.layer.DeleteLayerCommand;
+import es.redmic.atlascommands.commands.layer.RefreshLayerCommand;
 import es.redmic.atlascommands.commands.layer.UpdateLayerCommand;
 import es.redmic.atlascommands.statestore.LayerStateStore;
 
@@ -28,10 +29,12 @@ import es.redmic.atlascommands.statestore.LayerStateStore;
 import es.redmic.atlaslib.dto.layer.LayerDTO;
 import es.redmic.atlaslib.events.layer.LayerEventTypes;
 import es.redmic.atlaslib.events.layer.common.LayerEvent;
+import es.redmic.atlaslib.events.layer.common.LayerRefreshEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerEvent;
 import es.redmic.atlaslib.events.layer.delete.CheckDeleteLayerEvent;
 import es.redmic.atlaslib.events.layer.delete.LayerDeletedEvent;
+import es.redmic.atlaslib.events.layer.refresh.RefreshLayerEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEvent;
 import es.redmic.brokerlib.avro.common.Event;
 import es.redmic.commandslib.aggregate.Aggregate;
@@ -103,6 +106,25 @@ public class LayerAggregate extends Aggregate {
 		return evt;
 	}
 
+	public RefreshLayerEvent process(RefreshLayerCommand cmd) {
+
+		assert layerStateStore != null;
+
+		String id = cmd.getLayerId();
+
+		Event state = getStateFromHistory(id);
+
+		loadFromHistory(state);
+
+		checkState(id, state.getType());
+
+		RefreshLayerEvent evt = new RefreshLayerEvent(cmd.getLayer());
+		evt.setAggregateId(id);
+		evt.setVersion(getVersion() + 1);
+
+		return evt;
+	}
+
 	public LayerDTO getLayer() {
 		return layer;
 	}
@@ -141,6 +163,10 @@ public class LayerAggregate extends Aggregate {
 			logger.debug("Item borrado");
 			apply((LayerDeletedEvent) event);
 			break;
+		case "REFRESHED":
+			logger.debug("Item refrescado");
+			apply((LayerEvent) event);
+			break;
 		// CANCELLED
 		case "CREATE_CANCELLED":
 			logger.debug("Compensación por creación fallida");
@@ -148,7 +174,8 @@ public class LayerAggregate extends Aggregate {
 			break;
 		case "UPDATE_CANCELLED":
 		case "DELETE_CANCELLED":
-			logger.debug("Compensación por edición/borrado fallido");
+		case "REFRESH_CANCELLED":
+			logger.debug("Compensación por edición/borrado/refresco fallido");
 			apply((LayerEvent) event);
 			break;
 		default:
@@ -168,6 +195,10 @@ public class LayerAggregate extends Aggregate {
 
 	public void apply(LayerEvent event) {
 		this.layer = event.getLayer();
+		super.apply(event);
+	}
+
+	public void apply(LayerRefreshEvent event) {
 		super.apply(event);
 	}
 

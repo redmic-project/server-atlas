@@ -33,6 +33,7 @@ import org.springframework.stereotype.Component;
 import es.redmic.atlascommands.aggregate.LayerAggregate;
 import es.redmic.atlascommands.commands.layer.CreateLayerCommand;
 import es.redmic.atlascommands.commands.layer.DeleteLayerCommand;
+import es.redmic.atlascommands.commands.layer.RefreshLayerCommand;
 import es.redmic.atlascommands.commands.layer.UpdateLayerCommand;
 import es.redmic.atlascommands.config.UserService;
 import es.redmic.atlascommands.statestore.LayerStateStore;
@@ -50,6 +51,9 @@ import es.redmic.atlaslib.events.layer.delete.DeleteLayerCheckFailedEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerCheckedEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.delete.LayerDeletedEvent;
+import es.redmic.atlaslib.events.layer.refresh.LayerRefreshedEvent;
+import es.redmic.atlaslib.events.layer.refresh.RefreshLayerCancelledEvent;
+import es.redmic.atlaslib.events.layer.refresh.RefreshLayerEvent;
 import es.redmic.atlaslib.events.layer.update.LayerUpdatedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEvent;
@@ -204,6 +208,32 @@ public class LayerCommandHandler extends CommandHandler {
 		return getResult(event.getSessionId(), completableFuture);
 	}
 
+	public LayerDTO refresh(RefreshLayerCommand cmd) {
+
+		LayerAggregate agg = new LayerAggregate(layerStateStore);
+
+		// Se procesa el comando, obteniendo el evento generado
+		RefreshLayerEvent event = agg.process(cmd);
+
+		// Si no se genera evento significa que no se va a aplicar
+		if (event == null)
+			return null;
+
+		event.setUserId(userService.getUserId());
+
+		// Si no existen excepciones, se aplica el comando
+		agg.apply(event);
+
+		// Crea la espera hasta que se responda con evento completado
+		CompletableFuture<LayerDTO> completableFuture = getCompletableFeature(event.getSessionId(), agg.getLayer());
+
+		// Emite evento para enviar a kafka
+		publishToKafka(event, layerTopic);
+
+		// Obtiene el resultado cuando se resuelva la espera
+		return getResult(event.getSessionId(), completableFuture);
+	}
+
 	@KafkaHandler
 	private void listen(LayerCreatedEvent event) {
 
@@ -220,6 +250,16 @@ public class LayerCommandHandler extends CommandHandler {
 		logger.debug("Layer modificado " + event.getAggregateId());
 
 		// El evento Modificado se envía desde el stream
+
+		resolveCommand(event.getSessionId());
+	}
+
+	@KafkaHandler
+	private void listen(LayerRefreshedEvent event) {
+
+		logger.debug("Layer refrescado " + event.getAggregateId());
+
+		// El evento Refrescado se envía desde el stream
 
 		resolveCommand(event.getSessionId());
 	}
@@ -264,6 +304,17 @@ public class LayerCommandHandler extends CommandHandler {
 	private void listen(UpdateLayerCancelledEvent event) {
 
 		logger.debug("Error modificando Layer " + event.getAggregateId());
+
+		// El evento Cancelled se envía desde el stream
+
+		resolveCommand(event.getSessionId(),
+				ExceptionFactory.getException(event.getExceptionType(), event.getArguments()));
+	}
+
+	@KafkaHandler
+	private void listen(RefreshLayerCancelledEvent event) {
+
+		logger.debug("Error refrescando Layer " + event.getAggregateId());
 
 		// El evento Cancelled se envía desde el stream
 
