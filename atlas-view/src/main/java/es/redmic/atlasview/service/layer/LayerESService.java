@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import es.redmic.atlaslib.dto.layer.LayerDTO;
 import es.redmic.atlasview.model.layer.Layer;
+import es.redmic.atlasview.model.layer.LayerWMS;
 import es.redmic.atlasview.repository.layer.LayerESRepository;
 import es.redmic.models.es.common.dto.EventApplicationResult;
 import es.redmic.models.es.common.dto.JSONCollectionDTO;
@@ -50,6 +51,10 @@ public class LayerESService extends RDataService<Layer, LayerDTO, SimpleQueryDTO
 
 	public EventApplicationResult update(Layer model, String parentId) {
 		return repository.update(model, parentId);
+	}
+
+	public EventApplicationResult refresh(LayerWMS model) {
+		return repository.refresh(model);
 	}
 
 	public EventApplicationResult delete(String id) {

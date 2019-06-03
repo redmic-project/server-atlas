@@ -30,11 +30,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import es.redmic.atlaslib.dto.layer.LayerDTO;
 import es.redmic.atlaslib.events.layer.LayerEventFactory;
 import es.redmic.atlaslib.events.layer.LayerEventTypes;
-import es.redmic.atlaslib.events.layer.create.CreateLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerEvent;
-import es.redmic.atlaslib.events.layer.delete.DeleteLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerEvent;
-import es.redmic.atlaslib.events.layer.update.UpdateLayerConfirmedEvent;
+import es.redmic.atlaslib.events.layer.refresh.RefreshLayerEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEvent;
 import es.redmic.atlasview.config.MapperScanBean;
 import es.redmic.atlasview.model.layer.Layer;
@@ -79,7 +77,7 @@ public class LayerController extends DataController<Layer, LayerDTO, SimpleQuery
 		}
 
 		if (result.isSuccess()) {
-			publishConfirmedEvent(new CreateLayerConfirmedEvent().buildFrom(event), layer_topic);
+			publishConfirmedEvent(LayerEventFactory.getEvent(event, LayerEventTypes.CREATE_CONFIRMED), layer_topic);
 		} else {
 			publishFailedEvent(LayerEventFactory.getEvent(event, LayerEventTypes.CREATE_FAILED,
 					result.getExeptionType(), result.getExceptionArguments()), layer_topic);
@@ -103,9 +101,31 @@ public class LayerController extends DataController<Layer, LayerDTO, SimpleQuery
 		}
 
 		if (result.isSuccess()) {
-			publishConfirmedEvent(new UpdateLayerConfirmedEvent().buildFrom(event), layer_topic);
+			publishConfirmedEvent(LayerEventFactory.getEvent(event, LayerEventTypes.UPDATE_CONFIRMED), layer_topic);
 		} else {
 			publishFailedEvent(LayerEventFactory.getEvent(event, LayerEventTypes.UPDATE_FAILED,
+					result.getExeptionType(), result.getExceptionArguments()), layer_topic);
+		}
+	}
+
+	@KafkaHandler
+	public void listen(RefreshLayerEvent event) {
+
+		EventApplicationResult result = null;
+
+		try {
+			result = service.refresh(mapper.getMapperFacade().map(event.getLayer(), Layer.class));
+		} catch (Exception e) {
+			e.printStackTrace();
+			publishFailedEvent(LayerEventFactory.getEvent(event, LayerEventTypes.REFRESH_FAILED,
+					ExceptionType.INTERNAL_EXCEPTION.name(), null), layer_topic);
+			return;
+		}
+
+		if (result.isSuccess()) {
+			publishConfirmedEvent(LayerEventFactory.getEvent(event, LayerEventTypes.REFRESH_CONFIRMED), layer_topic);
+		} else {
+			publishFailedEvent(LayerEventFactory.getEvent(event, LayerEventTypes.REFRESH_FAILED,
 					result.getExeptionType(), result.getExceptionArguments()), layer_topic);
 		}
 	}
@@ -125,7 +145,7 @@ public class LayerController extends DataController<Layer, LayerDTO, SimpleQuery
 		}
 
 		if (result.isSuccess()) {
-			publishConfirmedEvent(new DeleteLayerConfirmedEvent().buildFrom(event), layer_topic);
+			publishConfirmedEvent(LayerEventFactory.getEvent(event, LayerEventTypes.DELETE_CONFIRMED), layer_topic);
 		} else {
 			publishFailedEvent(LayerEventFactory.getEvent(event, LayerEventTypes.DELETE_FAILED,
 					result.getExeptionType(), result.getExceptionArguments()), layer_topic);

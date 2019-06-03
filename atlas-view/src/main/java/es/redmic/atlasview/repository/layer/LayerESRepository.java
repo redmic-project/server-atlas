@@ -37,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import es.redmic.atlasview.model.layer.Layer;
+import es.redmic.atlasview.model.layer.LayerWMS;
 import es.redmic.elasticsearchlib.common.utils.ElasticPersistenceUtils;
 import es.redmic.elasticsearchlib.data.repository.RWDataESRepository;
 import es.redmic.exception.common.ExceptionType;
@@ -63,7 +64,7 @@ public class LayerESRepository extends RWDataESRepository<Layer, SimpleQueryDTO>
 	// @formatter:on
 
 	@Autowired
-	ElasticPersistenceUtils<Layer> elasticPersistenceUtils;
+	ElasticPersistenceUtils elasticPersistenceUtils;
 
 	public LayerESRepository() {
 		super(INDEX, TYPE);
@@ -165,6 +166,14 @@ public class LayerESRepository extends RWDataESRepository<Layer, SimpleQueryDTO>
 	protected EventApplicationResult checkDeleteConstraintsFulfilled(String modelToIndexId) {
 
 		return new EventApplicationResult(true);
+	}
+
+	public EventApplicationResult refresh(LayerWMS layer) {
+
+		Layer source = (Layer) queryById(layer.getId()).get_source();
+
+		return elasticPersistenceUtils.update(getIndex(source), getType(), layer, source.getId().toString(),
+				source.getJoinIndex().getParent());
 	}
 
 	@Override
