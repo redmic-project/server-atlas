@@ -1,5 +1,7 @@
 package es.redmic.atlascommands.commands.layer;
 
+import org.joda.time.DateTime;
+
 import es.redmic.atlaslib.dto.layer.LayerDTO;
 import es.redmic.commandslib.commands.Command;
 
@@ -31,6 +33,9 @@ public class UpdateLayerCommand extends Command {
 	}
 
 	public UpdateLayerCommand(LayerDTO layer) {
+
+		layer.setUpdated(DateTime.now());
+
 		this.setLayer(layer);
 	}
 

@@ -22,6 +22,8 @@ package es.redmic.atlascommands.commands.layer;
 
 import java.util.UUID;
 
+import org.joda.time.DateTime;
+
 import es.redmic.atlaslib.dto.layer.LayerDTO;
 import es.redmic.atlaslib.utils.LayerUtil;
 import es.redmic.commandslib.commands.Command;
@@ -39,6 +41,10 @@ public class CreateLayerCommand extends Command {
 			// Se crea un id único para Layer
 			layer.setId(LayerUtil.generateId(UUID.randomUUID().toString()));
 		}
+		
+		layer.setInserted(DateTime.now());
+		layer.setUpdated(DateTime.now());
+		
 		this.setLayer(layer);
 	}
 
