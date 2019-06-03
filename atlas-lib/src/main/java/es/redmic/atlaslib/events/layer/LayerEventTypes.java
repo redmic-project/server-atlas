@@ -37,7 +37,7 @@ public abstract class LayerEventTypes extends EventTypes {
 	public static boolean isLocked(String eventType) {
 
 		return !(eventType.equals(LayerEventTypes.REFRESHED.toString())
-				|| eventType.equals(LayerEventTypes.REFRESHED.toString())) || EventTypes.isLocked(eventType);
+				|| eventType.equals(LayerEventTypes.REFRESH_CANCELLED.toString())) && EventTypes.isLocked(eventType);
 	}
 
 	public static boolean isSnapshot(String eventType) {
