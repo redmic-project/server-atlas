@@ -22,147 +22,77 @@ package es.redmic.atlasview.model.layer;
 
 import java.util.List;
 
-import org.locationtech.jts.geom.Polygon;
+import org.joda.time.DateTime;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import es.redmic.elasticsearchlib.common.model.JoinIndex;
-import es.redmic.models.es.administrative.model.ActivityCompact;
+import es.redmic.atlasview.model.themeinspire.ThemeInspire;
+import es.redmic.models.es.common.deserializer.CustomDateTimeDeserializer;
+import es.redmic.models.es.common.serializer.CustomDateTimeSerializer;
 
-public class Layer extends LayerModelCompact {
+public class Layer extends LayerWMS {
 
-	@JsonIgnore
-	public static final String JOIN_INDEX_NAME = "layer";
-
-	private JoinIndex joinIndex;
-
-	private String title;
-	private String abstractLayer;
-	private List<String> keywords;
-	private List<String> srs;
-	private List<StyleLayer> stylesLayer;
-	private Contact contact;
-	private List<ActivityCompact> activities;
+	private String description;
+	private String alias;
+	private Boolean atlas;
+	private ThemeInspire themeInspire;
+	private Integer refresh;
 	private String urlSource;
-	private Boolean queryable;
-	private List<String> formats;
-	private String image;
 	private LatLonBoundingBox latLonBoundsImage;
 	private List<Protocol> protocols;
-	private Polygon geometry;
-	private String legend;
-	private Attribution attribution;
-	private Dimension timeDimension;
-	private Dimension elevationDimension;
+	private String image;
+
+	@JsonSerialize(using = CustomDateTimeSerializer.class)
+	@JsonDeserialize(using = CustomDateTimeDeserializer.class)
+	private DateTime inserted;
+
+	@JsonSerialize(using = CustomDateTimeSerializer.class)
+	@JsonDeserialize(using = CustomDateTimeDeserializer.class)
+	private DateTime updated;
 
 	public Layer() {
-
-		joinIndex = new JoinIndex();
-		joinIndex.setName(JOIN_INDEX_NAME);
+		super();
 	}
 
-	public JoinIndex getJoinIndex() {
-		return joinIndex;
+	public String getDescription() {
+		return description;
 	}
 
-	public void setJoinIndex(JoinIndex joinIndex) {
-		this.joinIndex = joinIndex;
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
-	public Contact getContact() {
-		return contact;
+	public String getAlias() {
+		return alias;
 	}
 
-	public void setContact(Contact contact) {
-		this.contact = contact;
+	public void setAlias(String alias) {
+		this.alias = alias;
 	}
 
-	public String getTitle() {
-		return title;
+	public Boolean getAtlas() {
+		return atlas;
 	}
 
-	public void setTitle(String title) {
-		this.title = title;
+	public void setAtlas(Boolean atlas) {
+		this.atlas = atlas;
 	}
 
-	public List<String> getKeywords() {
-		return keywords;
+	public ThemeInspire getThemeInspire() {
+		return themeInspire;
 	}
 
-	public void setKeywords(List<String> keywords) {
-		this.keywords = keywords;
+	public void setThemeInspire(ThemeInspire themeInspire) {
+		this.themeInspire = themeInspire;
 	}
 
-	public List<String> getSrs() {
-		return srs;
+	public Integer getRefresh() {
+		return refresh;
 	}
 
-	public void setSrs(List<String> srs) {
-		this.srs = srs;
-	}
-
-	public String getAbstractLayer() {
-		return abstractLayer;
-	}
-
-	public void setAbstractLayer(String abstractLayer) {
-		this.abstractLayer = abstractLayer;
-	}
-
-	public List<StyleLayer> getStylesLayer() {
-		return stylesLayer;
-	}
-
-	public void setStylesLayer(List<StyleLayer> stylesLayer) {
-		this.stylesLayer = stylesLayer;
-	}
-
-	public Polygon getGeometry() {
-		return geometry;
-	}
-
-	public void setGeometry(Polygon geometry) {
-		this.geometry = geometry;
-	}
-
-	public String getLegend() {
-		return legend;
-	}
-
-	public void setLegend(String legend) {
-		this.legend = legend;
-	}
-
-	public Attribution getAttribution() {
-		return attribution;
-	}
-
-	public void setAttribution(Attribution attribution) {
-		this.attribution = attribution;
-	}
-
-	public Dimension getTimeDimension() {
-		return timeDimension;
-	}
-
-	public void setTimeDimension(Dimension timeDimension) {
-		this.timeDimension = timeDimension;
-	}
-
-	public Dimension getElevationDimension() {
-		return elevationDimension;
-	}
-
-	public void setElevationDimension(Dimension elevationDimension) {
-		this.elevationDimension = elevationDimension;
-	}
-
-	public List<ActivityCompact> getActivities() {
-		return activities;
-	}
-
-	public void setActivities(List<ActivityCompact> activities) {
-		this.activities = activities;
+	public void setRefresh(Integer refresh) {
+		this.refresh = refresh;
 	}
 
 	public String getUrlSource() {
@@ -171,30 +101,6 @@ public class Layer extends LayerModelCompact {
 
 	public void setUrlSource(String urlSource) {
 		this.urlSource = urlSource;
-	}
-
-	public Boolean getQueryable() {
-		return queryable;
-	}
-
-	public void setQueryable(Boolean queryable) {
-		this.queryable = queryable;
-	}
-
-	public List<String> getFormats() {
-		return formats;
-	}
-
-	public void setFormats(List<String> formats) {
-		this.formats = formats;
-	}
-
-	public String getImage() {
-		return image;
-	}
-
-	public void setImage(String image) {
-		this.image = image;
 	}
 
 	public LatLonBoundingBox getLatLonBoundsImage() {
@@ -211,5 +117,29 @@ public class Layer extends LayerModelCompact {
 
 	public void setProtocols(List<Protocol> protocols) {
 		this.protocols = protocols;
+	}
+
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
+	}
+
+	public DateTime getInserted() {
+		return inserted;
+	}
+
+	public void setInserted(DateTime inserted) {
+		this.inserted = inserted;
+	}
+
+	public DateTime getUpdated() {
+		return updated;
+	}
+
+	public void setUpdated(DateTime updated) {
+		this.updated = updated;
 	}
 }
