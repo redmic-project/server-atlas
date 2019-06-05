@@ -23,7 +23,6 @@
 		<redmic.atlas-lib.version>0.1.0</redmic.atlas-lib.version>
 		<redmic.exceptions.version>0.9.0</redmic.exceptions.version>
 		<!-- Versions of the OTHERS library used in the children -->
-		<ma.glasnost.orika.core.version>1.5.2</ma.glasnost.orika.core.version>
 		<kafka.version>2.0.1</kafka.version>
 
 		<!-- Plugins -->
