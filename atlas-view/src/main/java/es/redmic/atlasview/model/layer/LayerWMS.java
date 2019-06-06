@@ -64,6 +64,7 @@ public class LayerWMS extends BaseAbstractStringES {
 
 	public void setJoinIndex(JoinIndex joinIndex) {
 		this.joinIndex = joinIndex;
+		joinIndex.setName(JOIN_INDEX_NAME);
 	}
 
 	public String getName() {
