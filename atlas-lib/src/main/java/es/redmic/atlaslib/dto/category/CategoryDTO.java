@@ -43,7 +43,7 @@ public class CategoryDTO extends CommonDTO {
 	@JsonIgnore
 	public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse(
 		"{\"type\":\"record\",\"name\":\"CategoryDTO\",\"namespace\":\"es.redmic.atlaslib.dto.category\",\"fields\":["
-				+ "{\"name\":\"name\",\"type\":\"string\"},"
+				+ "{\"name\":\"name\",\"type\":[\"string\", \"null\"]},"
 				+ "{\"name\":\"id\",\"type\":\"string\"}]}");
 	// @formatter:on
 
