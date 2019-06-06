@@ -20,7 +20,7 @@ package es.redmic.atlasview.controller.themeinspire;
  * #L%
  */
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -36,7 +36,7 @@ import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireConfirmed
 import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireConfirmedEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireEvent;
-import es.redmic.atlasview.config.MapperScanBean;
+import es.redmic.atlasview.mapper.themeinspire.ThemeInspireESMapper;
 import es.redmic.atlasview.model.themeinspire.ThemeInspire;
 import es.redmic.atlasview.service.themeinspire.ThemeInspireESService;
 import es.redmic.exception.common.ExceptionType;
@@ -52,9 +52,6 @@ public class ThemeInspireController extends DataController<ThemeInspire, ThemeIn
 	@Value("${broker.topic.theme-inspire}")
 	private String theme_inspire_topic;
 
-	@Autowired
-	protected MapperScanBean mapper;
-
 	ThemeInspireESService service;
 
 	public ThemeInspireController(ThemeInspireESService service) {
@@ -68,7 +65,7 @@ public class ThemeInspireController extends DataController<ThemeInspire, ThemeIn
 		EventApplicationResult result = null;
 
 		try {
-			result = service.save(mapper.getMapperFacade().map(event.getThemeInspire(), ThemeInspire.class));
+			result = service.save(Mappers.getMapper(ThemeInspireESMapper.class).map(event.getThemeInspire()));
 		} catch (Exception e) {
 			publishFailedEvent(ThemeInspireEventFactory.getEvent(event, ThemeInspireEventTypes.CREATE_FAILED,
 					ExceptionType.INTERNAL_EXCEPTION.name(), null), theme_inspire_topic);
@@ -89,7 +86,7 @@ public class ThemeInspireController extends DataController<ThemeInspire, ThemeIn
 		EventApplicationResult result = null;
 
 		try {
-			result = service.update(mapper.getMapperFacade().map(event.getThemeInspire(), ThemeInspire.class));
+			result = service.update(Mappers.getMapper(ThemeInspireESMapper.class).map(event.getThemeInspire()));
 		} catch (Exception e) {
 			publishFailedEvent(ThemeInspireEventFactory.getEvent(event, ThemeInspireEventTypes.UPDATE_FAILED,
 					ExceptionType.INTERNAL_EXCEPTION.name(), null), theme_inspire_topic);

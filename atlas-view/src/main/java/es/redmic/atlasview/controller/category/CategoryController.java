@@ -20,7 +20,7 @@ package es.redmic.atlasview.controller.category;
  * #L%
  */
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -36,7 +36,7 @@ import es.redmic.atlaslib.events.category.delete.DeleteCategoryConfirmedEvent;
 import es.redmic.atlaslib.events.category.delete.DeleteCategoryEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryConfirmedEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryEvent;
-import es.redmic.atlasview.config.MapperScanBean;
+import es.redmic.atlasview.mapper.category.CategoryESMapper;
 import es.redmic.atlasview.model.category.Category;
 import es.redmic.atlasview.service.category.CategoryESService;
 import es.redmic.exception.common.ExceptionType;
@@ -52,9 +52,6 @@ public class CategoryController extends DataController<Category, CategoryDTO, Si
 	@Value("${broker.topic.category}")
 	private String category_topic;
 
-	@Autowired
-	protected MapperScanBean mapper;
-
 	CategoryESService service;
 
 	public CategoryController(CategoryESService service) {
@@ -68,7 +65,7 @@ public class CategoryController extends DataController<Category, CategoryDTO, Si
 		EventApplicationResult result = null;
 
 		try {
-			result = service.save(mapper.getMapperFacade().map(event.getCategory(), Category.class));
+			result = service.save(Mappers.getMapper(CategoryESMapper.class).map(event.getCategory()));
 		} catch (Exception e) {
 			e.printStackTrace();
 			publishFailedEvent(CategoryEventFactory.getEvent(event, CategoryEventTypes.CREATE_FAILED,
@@ -90,7 +87,7 @@ public class CategoryController extends DataController<Category, CategoryDTO, Si
 		EventApplicationResult result = null;
 
 		try {
-			result = service.update(mapper.getMapperFacade().map(event.getCategory(), Category.class));
+			result = service.update(Mappers.getMapper(CategoryESMapper.class).map(event.getCategory()));
 		} catch (Exception e) {
 			e.printStackTrace();
 			publishFailedEvent(CategoryEventFactory.getEvent(event, CategoryEventTypes.UPDATE_FAILED,

@@ -37,6 +37,7 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -63,6 +64,7 @@ import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireConfirmed
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireFailedEvent;
 import es.redmic.atlasview.AtlasViewApplication;
+import es.redmic.atlasview.mapper.themeinspire.ThemeInspireESMapper;
 import es.redmic.atlasview.model.themeinspire.ThemeInspire;
 import es.redmic.atlasview.repository.themeinspire.ThemeInspireESRepository;
 import es.redmic.brokerlib.avro.common.Event;
@@ -70,7 +72,6 @@ import es.redmic.brokerlib.listener.SendListener;
 import es.redmic.exception.data.ItemNotFoundException;
 import es.redmic.models.es.data.common.model.DataHitWrapper;
 import es.redmic.testutils.documentation.DocumentationViewBaseTest;
-import es.redmic.viewlib.config.MapperScanBeanItfc;
 
 @SpringBootTest(classes = { AtlasViewApplication.class })
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -81,9 +82,6 @@ import es.redmic.viewlib.config.MapperScanBeanItfc;
 public class ThemeInspireEventHandlerTest extends DocumentationViewBaseTest {
 
 	private final String USER_ID = "1";
-
-	@Autowired
-	MapperScanBeanItfc mapper;
 
 	@Autowired
 	ThemeInspireESRepository repository;
@@ -143,7 +141,8 @@ public class ThemeInspireEventHandlerTest extends DocumentationViewBaseTest {
 
 		UpdateThemeInspireEvent event = getUpdateThemeInspireEvent();
 
-		repository.save(mapper.getMapperFacade().map(event.getThemeInspire(), ThemeInspire.class));
+		repository.save(Mappers.getMapper(ThemeInspireESMapper.class).map(event.getThemeInspire())); // mapper.getMapperFacade().map(event.getThemeInspire(),
+																										// ThemeInspire.class));
 
 		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(THEME_INSPIRE_TOPIC,
 				event.getAggregateId(), event);
@@ -171,8 +170,9 @@ public class ThemeInspireEventHandlerTest extends DocumentationViewBaseTest {
 
 		DeleteThemeInspireEvent event = getDeleteThemeInspireEvent();
 
-		repository
-				.save(mapper.getMapperFacade().map(getUpdateThemeInspireEvent().getThemeInspire(), ThemeInspire.class));
+		repository.save(
+				Mappers.getMapper(ThemeInspireESMapper.class).map(getUpdateThemeInspireEvent().getThemeInspire())); // mapper.getMapperFacade().map(getUpdateThemeInspireEvent().getThemeInspire(),
+																													// ThemeInspire.class));
 
 		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(THEME_INSPIRE_TOPIC,
 				event.getAggregateId(), event);
@@ -191,7 +191,8 @@ public class ThemeInspireEventHandlerTest extends DocumentationViewBaseTest {
 
 		CreateThemeInspireEvent event = getCreateThemeInspireEvent();
 
-		repository.save(mapper.getMapperFacade().map(event.getThemeInspire(), ThemeInspire.class));
+		repository.save(Mappers.getMapper(ThemeInspireESMapper.class).map(event.getThemeInspire())); // mapper.getMapperFacade().map(event.getThemeInspire(),
+																										// ThemeInspire.class));
 
 		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(THEME_INSPIRE_TOPIC,
 				event.getAggregateId(), event);
@@ -231,10 +232,12 @@ public class ThemeInspireEventHandlerTest extends DocumentationViewBaseTest {
 		conflict.setCode("171");
 
 		// Guarda el que se va a modificar
-		repository.save(mapper.getMapperFacade().map(original, ThemeInspire.class));
+		repository.save(Mappers.getMapper(ThemeInspireESMapper.class).map(original)); // mapper.getMapperFacade().map(original,
+																						// ThemeInspire.class));
 
 		// Guarda el que va a entrar en conflicto
-		repository.save(mapper.getMapperFacade().map(conflict, ThemeInspire.class));
+		repository.save(Mappers.getMapper(ThemeInspireESMapper.class).map(conflict)); // mapper.getMapperFacade().map(conflict,
+																						// ThemeInspire.class));
 
 		// Edita el code del que se va a modificar para entrar en conflicto
 		original.setCode(conflict.getCode());

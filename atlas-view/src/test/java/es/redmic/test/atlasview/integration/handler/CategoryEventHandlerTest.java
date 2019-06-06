@@ -36,6 +36,7 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -62,6 +63,7 @@ import es.redmic.atlaslib.events.category.update.UpdateCategoryConfirmedEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryFailedEvent;
 import es.redmic.atlasview.AtlasViewApplication;
+import es.redmic.atlasview.mapper.category.CategoryESMapper;
 import es.redmic.atlasview.model.category.Category;
 import es.redmic.atlasview.model.layer.Layer;
 import es.redmic.atlasview.repository.category.CategoryESRepository;
@@ -72,7 +74,6 @@ import es.redmic.exception.data.ItemNotFoundException;
 import es.redmic.models.es.data.common.model.DataHitWrapper;
 import es.redmic.testutils.documentation.DocumentationViewBaseTest;
 import es.redmic.testutils.utils.JsonToBeanTestUtil;
-import es.redmic.viewlib.config.MapperScanBeanItfc;
 
 @SpringBootTest(classes = { AtlasViewApplication.class })
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -83,9 +84,6 @@ import es.redmic.viewlib.config.MapperScanBeanItfc;
 public class CategoryEventHandlerTest extends DocumentationViewBaseTest {
 
 	private final String USER_ID = "1";
-
-	@Autowired
-	MapperScanBeanItfc mapper;
 
 	@Autowired
 	CategoryESRepository repository;
@@ -147,7 +145,8 @@ public class CategoryEventHandlerTest extends DocumentationViewBaseTest {
 
 		UpdateCategoryEvent event = getUpdateCategoryEvent();
 
-		repository.save(mapper.getMapperFacade().map(event.getCategory(), Category.class));
+		repository.save(Mappers.getMapper(CategoryESMapper.class).map(event.getCategory()));// mapper.getMapperFacade().map(event.getCategory(),
+																							// Category.class));
 
 		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(CATEGORY_TOPIC, event.getAggregateId(),
 				event);
@@ -174,7 +173,8 @@ public class CategoryEventHandlerTest extends DocumentationViewBaseTest {
 
 		DeleteCategoryEvent event = getDeleteCategoryEvent();
 
-		repository.save(mapper.getMapperFacade().map(getUpdateCategoryEvent().getCategory(), Category.class));
+		repository.save(Mappers.getMapper(CategoryESMapper.class).map(getUpdateCategoryEvent().getCategory()));// mapper.getMapperFacade().map(getUpdateCategoryEvent().getCategory(),
+		// Category.class));
 
 		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(CATEGORY_TOPIC, event.getAggregateId(),
 				event);
@@ -192,7 +192,8 @@ public class CategoryEventHandlerTest extends DocumentationViewBaseTest {
 
 		CreateCategoryEvent event = getCreateCategoryEvent();
 
-		repository.save(mapper.getMapperFacade().map(event.getCategory(), Category.class));
+		repository.save(Mappers.getMapper(CategoryESMapper.class).map(event.getCategory()));// mapper.getMapperFacade().map(event.getCategory(),
+																							// Category.class));
 
 		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(CATEGORY_TOPIC, event.getAggregateId(),
 				event);
@@ -230,10 +231,12 @@ public class CategoryEventHandlerTest extends DocumentationViewBaseTest {
 		conflict.setName(original.getName() + "cpy");
 
 		// Guarda el que se va a modificar
-		repository.save(mapper.getMapperFacade().map(original, Category.class));
+		repository.save(Mappers.getMapper(CategoryESMapper.class).map(original));// mapper.getMapperFacade().map(original,
+																					// Category.class));
 
 		// Guarda el que va a entrar en conflicto
-		repository.save(mapper.getMapperFacade().map(conflict, Category.class));
+		repository.save(Mappers.getMapper(CategoryESMapper.class).map(conflict)); // mapper.getMapperFacade().map(conflict,
+																					// Category.class));
 
 		// Edita el nombre del que se va a modificar para entrar en conflicto
 		original.setName(conflict.getName());
@@ -268,7 +271,8 @@ public class CategoryEventHandlerTest extends DocumentationViewBaseTest {
 		CategoryDTO category = getCategory();
 
 		// Guarda el que se va a borrar
-		repository.save(mapper.getMapperFacade().map(category, Category.class));
+		repository.save(Mappers.getMapper(CategoryESMapper.class).map(category)); // mapper.getMapperFacade().map(category,
+																					// Category.class));
 
 		Layer layer = (Layer) JsonToBeanTestUtil.getBean("/data/model/layer/layer.json", Layer.class);
 		layer.getJoinIndex().setParent(category.getId());

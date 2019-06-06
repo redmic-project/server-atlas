@@ -1,5 +1,7 @@
 package es.redmic.atlasview.service.layer;
 
+import org.mapstruct.factory.Mappers;
+
 /*-
  * #%L
  * Atlas-query-endpoint
@@ -24,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import es.redmic.atlaslib.dto.layer.LayerDTO;
+import es.redmic.atlasview.mapper.layer.LayerESMapper;
 import es.redmic.atlasview.model.layer.Layer;
 import es.redmic.atlasview.model.layer.LayerWMS;
 import es.redmic.atlasview.repository.layer.LayerESRepository;
@@ -31,6 +34,9 @@ import es.redmic.models.es.common.dto.EventApplicationResult;
 import es.redmic.models.es.common.dto.JSONCollectionDTO;
 import es.redmic.models.es.common.query.dto.MgetDTO;
 import es.redmic.models.es.common.query.dto.SimpleQueryDTO;
+import es.redmic.models.es.data.common.model.DataHitWrapper;
+import es.redmic.models.es.data.common.model.DataHitsWrapper;
+import es.redmic.models.es.data.common.model.DataSearchWrapper;
 import es.redmic.viewlib.data.dto.MetaDTO;
 import es.redmic.viewlib.data.service.RDataService;
 
@@ -68,7 +74,7 @@ public class LayerESService extends RDataService<Layer, LayerDTO, SimpleQueryDTO
 	@Override
 	public MetaDTO<?> findById(String id) {
 
-		return mapper.getMapperFacade().map(repository.queryById(id), MetaDTO.class, getMappingContext());
+		return viewResultToDTO(repository.queryById(id));
 	}
 
 	/**
@@ -78,8 +84,21 @@ public class LayerESService extends RDataService<Layer, LayerDTO, SimpleQueryDTO
 	@Override
 	public JSONCollectionDTO mget(MgetDTO dto) {
 
-		return mapper.getMapperFacade().map(
-				repository.searchByIds(dto.getIds().stream().toArray(String[]::new)).getHits(),
-				JSONCollectionDTO.class);
+		return viewResultToDTO(repository.searchByIds(dto.getIds().stream().toArray(String[]::new)).getHits());
+	}
+
+	@Override
+	protected MetaDTO<?> viewResultToDTO(DataHitWrapper<?> viewResult) {
+		return Mappers.getMapper(LayerESMapper.class).map(viewResult);
+	}
+
+	@Override
+	protected JSONCollectionDTO viewResultToDTO(DataSearchWrapper<?> viewResult) {
+		return Mappers.getMapper(LayerESMapper.class).map(viewResult);
+	}
+
+	@Override
+	protected JSONCollectionDTO viewResultToDTO(DataHitsWrapper<?> viewResult) {
+		return Mappers.getMapper(LayerESMapper.class).map(viewResult);
 	}
 }

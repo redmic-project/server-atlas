@@ -1,5 +1,7 @@
 package es.redmic.atlasview.service.themeinspire;
 
+import org.mapstruct.factory.Mappers;
+
 /*-
  * #%L
  * Atlas-query-endpoint
@@ -24,9 +26,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import es.redmic.atlaslib.dto.themeinspire.ThemeInspireDTO;
+import es.redmic.atlasview.mapper.themeinspire.ThemeInspireESMapper;
 import es.redmic.atlasview.model.themeinspire.ThemeInspire;
 import es.redmic.atlasview.repository.themeinspire.ThemeInspireESRepository;
+import es.redmic.models.es.common.dto.JSONCollectionDTO;
 import es.redmic.models.es.common.query.dto.SimpleQueryDTO;
+import es.redmic.models.es.data.common.model.DataHitWrapper;
+import es.redmic.models.es.data.common.model.DataHitsWrapper;
+import es.redmic.models.es.data.common.model.DataSearchWrapper;
+import es.redmic.viewlib.data.dto.MetaDTO;
 import es.redmic.viewlib.data.service.RWDataService;
 
 @Service
@@ -35,5 +43,20 @@ public class ThemeInspireESService extends RWDataService<ThemeInspire, ThemeInsp
 	@Autowired
 	public ThemeInspireESService(ThemeInspireESRepository repository) {
 		super(repository);
+	}
+
+	@Override
+	protected MetaDTO<?> viewResultToDTO(DataHitWrapper<?> viewResult) {
+		return Mappers.getMapper(ThemeInspireESMapper.class).map(viewResult);
+	}
+
+	@Override
+	protected JSONCollectionDTO viewResultToDTO(DataSearchWrapper<?> viewResult) {
+		return Mappers.getMapper(ThemeInspireESMapper.class).map(viewResult);
+	}
+
+	@Override
+	protected JSONCollectionDTO viewResultToDTO(DataHitsWrapper<?> viewResult) {
+		return Mappers.getMapper(ThemeInspireESMapper.class).map(viewResult);
 	}
 }
