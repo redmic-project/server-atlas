@@ -21,6 +21,7 @@ package es.redmic.test.atlasview.integration.handler;
  */
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -40,6 +41,7 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -55,6 +57,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.concurrent.ListenableFuture;
 
 import es.redmic.atlaslib.dto.layer.LayerDTO;
+import es.redmic.atlaslib.dto.layerwms.LayerWMSDTO;
 import es.redmic.atlaslib.events.layer.LayerEventTypes;
 import es.redmic.atlaslib.events.layer.create.CreateLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerEvent;
@@ -62,10 +65,13 @@ import es.redmic.atlaslib.events.layer.create.CreateLayerFailedEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerFailedEvent;
+import es.redmic.atlaslib.events.layer.refresh.RefreshLayerConfirmedEvent;
+import es.redmic.atlaslib.events.layer.refresh.RefreshLayerEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerFailedEvent;
 import es.redmic.atlasview.AtlasViewApplication;
+import es.redmic.atlasview.mapper.layer.LayerESMapper;
 import es.redmic.atlasview.model.category.Category;
 import es.redmic.atlasview.model.layer.Layer;
 import es.redmic.atlasview.repository.category.CategoryESRepository;
@@ -76,7 +82,6 @@ import es.redmic.exception.data.ItemNotFoundException;
 import es.redmic.models.es.data.common.model.DataHitWrapper;
 import es.redmic.testutils.documentation.DocumentationViewBaseTest;
 import es.redmic.testutils.utils.JsonToBeanTestUtil;
-import es.redmic.viewlib.config.MapperScanBeanItfc;
 
 @SpringBootTest(classes = { AtlasViewApplication.class })
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -89,9 +94,6 @@ public class LayerEventHandlerTest extends DocumentationViewBaseTest {
 	private static final String PARENT_ID = "category-333";
 
 	private static final String USER_ID = "1";
-
-	@Autowired
-	MapperScanBeanItfc mapper;
 
 	@Autowired
 	LayerESRepository repository;
@@ -165,11 +167,11 @@ public class LayerEventHandlerTest extends DocumentationViewBaseTest {
 	}
 
 	@Test
-	public void sendLayerUpdatedEvent_callUpdate_IfEventIsOk() throws Exception {
+	public void sendUpdateLayerEvent_callUpdate_IfEventIsOk() throws Exception {
 
 		UpdateLayerEvent event = getUpdateLayerEvent();
 
-		repository.save(mapper.getMapperFacade().map(event.getLayer(), Layer.class),
+		repository.save(Mappers.getMapper(LayerESMapper.class).map(event.getLayer()),
 				event.getLayer().getParent().getId());
 
 		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(LAYER_TOPIC, event.getAggregateId(),
@@ -192,6 +194,36 @@ public class LayerEventHandlerTest extends DocumentationViewBaseTest {
 		assertEquals(layer.getName(), event.getLayer().getName());
 	}
 
+	@Test
+	public void sendRefreshLayerEvent_callRefresh_IfEventIsOk() throws Exception {
+
+		RefreshLayerEvent event = getRefreshLayerEvent();
+
+		event.getLayer().setQueryable(false);
+
+		LayerDTO layer = getLayer();
+
+		repository.save(Mappers.getMapper(LayerESMapper.class).map(layer), layer.getParent().getId());
+
+		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(LAYER_TOPIC, event.getAggregateId(),
+				event);
+		future.addCallback(new SendListener());
+
+		RefreshLayerConfirmedEvent confirm = (RefreshLayerConfirmedEvent) blockingQueue.poll(50, TimeUnit.SECONDS);
+
+		// Se restablece el estado de la vista
+		repository.delete(event.getLayer().getId(), layer.getParent().getId());
+
+		assertNotNull(confirm);
+		assertEquals(LayerEventTypes.REFRESH_CONFIRMED.toString(), confirm.getType());
+
+		LayerDTO result = confirm.getLayer();
+		assertEquals(result.getId(), event.getAggregateId());
+		assertEquals(result.getName(), event.getLayer().getName());
+		// Se modifica bien el campo al refrescar
+		assertFalse(layer.getQueryable().equals(result.getQueryable()));
+	}
+
 	@Test(expected = ItemNotFoundException.class)
 	public void sendLayerDeleteEvent_callDelete_IfEventIsOk() throws Exception {
 
@@ -201,7 +233,7 @@ public class LayerEventHandlerTest extends DocumentationViewBaseTest {
 
 		String parentId = original.getParent().getId();
 
-		repository.save(mapper.getMapperFacade().map(original, Layer.class), parentId);
+		repository.save(Mappers.getMapper(LayerESMapper.class).map(original), parentId);
 
 		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(LAYER_TOPIC, event.getAggregateId(),
 				event);
@@ -219,7 +251,7 @@ public class LayerEventHandlerTest extends DocumentationViewBaseTest {
 
 		CreateLayerEvent event = getCreateLayerEvent();
 
-		repository.save(mapper.getMapperFacade().map(event.getLayer(), Layer.class),
+		repository.save(Mappers.getMapper(LayerESMapper.class).map(event.getLayer()),
 				event.getLayer().getParent().getId());
 
 		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(LAYER_TOPIC, event.getAggregateId(),
@@ -259,10 +291,10 @@ public class LayerEventHandlerTest extends DocumentationViewBaseTest {
 		conflict.setName(original.getName() + "cpy");
 
 		// Guarda el que se va a modificar
-		repository.save(mapper.getMapperFacade().map(original, Layer.class), original.getParent().getId());
+		repository.save(Mappers.getMapper(LayerESMapper.class).map(original), original.getParent().getId());
 
 		// Guarda el que va a entrar en conflicto
-		repository.save(mapper.getMapperFacade().map(conflict, Layer.class), conflict.getParent().getId());
+		repository.save(Mappers.getMapper(LayerESMapper.class).map(conflict), conflict.getParent().getId());
 
 		// Edita el nombre del que se va a modificar para entrar en conflicto (mismo
 		// nombre y urlsource con distinto id)
@@ -337,6 +369,12 @@ public class LayerEventHandlerTest extends DocumentationViewBaseTest {
 		blockingQueue.offer(deleteLayerFailedEvent);
 	}
 
+	@KafkaHandler
+	public void refreshLayerConfirmed(RefreshLayerConfirmedEvent refreshLayerConfirmedEvent) {
+
+		blockingQueue.offer(refreshLayerConfirmedEvent);
+	}
+
 	@KafkaHandler(isDefault = true)
 	public void defaultEvent(Object def) {
 
@@ -375,6 +413,25 @@ public class LayerEventHandlerTest extends DocumentationViewBaseTest {
 		updatedEvent.setSessionId(UUID.randomUUID().toString());
 		updatedEvent.setUserId(USER_ID);
 		return updatedEvent;
+	}
+
+	protected RefreshLayerEvent getRefreshLayerEvent() throws IOException {
+
+		RefreshLayerEvent refreshEvent = new RefreshLayerEvent();
+
+		refreshEvent.setId(UUID.randomUUID().toString());
+		refreshEvent.setDate(DateTime.now());
+		refreshEvent.setType(LayerEventTypes.UPDATE);
+		LayerWMSDTO layer = (LayerWMSDTO) JsonToBeanTestUtil.getBean("/data/dto/layer/layerWMS.json",
+				LayerWMSDTO.class);
+		layer.setName(layer.getName() + "2");
+		refreshEvent.setLayer(layer);
+		refreshEvent.setAggregateId(refreshEvent.getLayer().getId());
+		refreshEvent.setVersion(2);
+		refreshEvent.setSessionId(UUID.randomUUID().toString());
+		refreshEvent.setUserId(USER_ID);
+
+		return refreshEvent;
 	}
 
 	protected DeleteLayerEvent getDeleteLayerEvent() throws IOException {
