@@ -19,6 +19,10 @@
 				"_source": {
 					"id": "635",
 					"name": "SpeciesInCell100m",
+					"joinIndex": {
+						"parent": "category-333",
+						"name": "layer"
+					},
 					"description": "Registros de especies representados en cuadrículas de cuadrículas100x100m",
 					"alias": "Especies en cuadrículas 100x100m",
 					"atlas": true,

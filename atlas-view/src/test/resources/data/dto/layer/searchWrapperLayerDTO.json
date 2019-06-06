@@ -144,7 +144,10 @@
 				"unitSymbol": "m",
 				"defaultValue": "1"
 			},
-			"parent": null,
+			"parent": {
+				"id": "category-333",
+				"name": null
+			},
 			"updated": "2017-05-23T12:35:12.052+00:00",
 			"inserted": "2017-05-23T12:35:12.052+00:00"
 		}

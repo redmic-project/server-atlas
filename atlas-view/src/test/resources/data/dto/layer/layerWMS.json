@@ -1,16 +1,6 @@
 {
 	"id": "635",
 	"name": "SpeciesInCell100m",
-	"description": "Registros de especies representados en cuadrículas de cuadrículas100x100m",
-	"alias": "Especies en cuadrículas 100x100m",
-	"atlas": true,
-	"themeInspire": {
-		"code": "sd",
-		"name": "Distribución de las especies",
-		"id": "32",
-		"name_en": "Species distribution"
-	},
-	"refresh": 0,
 	"title": "Especies en cuadrículas 100x100m",
 	"abstractLayer": "Registros de especies representados en cuadrículas de cuadrículas 100x100m",
 	"keywords": [
@@ -68,7 +58,6 @@
 			"id": "12"
 		}
 	],
-	"urlSource": "https://atlas.redmic.es/geoserver/sd/wms",
 	"queryable": true,
 	"formats": [
 		"image/png",
@@ -84,19 +73,6 @@
 		"text/html; subtype=openlayers",
 		"text/html; subtype=openlayers2",
 		"text/html; subtype=openlayers3"
-	],
-	"image": "/api/mediastorage/photobank/layers/635.png",
-	"latLonBoundsImage": {
-		"minY": 28.56990337371826,"unitSymbol": "m",
-		"minX": -16.3326358795166,
-		"maxY": 28.58088970184326,
-		"maxX": -16.3216495513916
-	},
-	"protocols": [
-		{
-			"type": "WMS",
-			"url": "https://atlas.redmic.es/geoserver/sd/wms"
-		}
 	],
 	"geometry": {
 		"type": "Polygon",
@@ -129,11 +105,5 @@
 		"units": "ISO8601",
 		"unitSymbol": "m",
 		"defaultValue": "1"
-	},
-	"parent": {
-		"id": "category-333",
-		"name": "pepe"
-	},
-	"updated": "2017-05-23T12:35:12.052+00:00",
-	"inserted": "2017-05-23T12:35:12.052+00:00"
+	}
 }
