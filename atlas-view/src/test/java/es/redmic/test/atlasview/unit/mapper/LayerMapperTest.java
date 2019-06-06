@@ -23,10 +23,9 @@ package es.redmic.test.atlasview.unit.mapper;
 import java.io.IOException;
 
 import org.json.JSONException;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
+import org.mapstruct.factory.Mappers;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.skyscreamer.jsonassert.JSONAssert;
 
@@ -35,28 +34,14 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import es.redmic.atlaslib.dto.layer.LayerDTO;
-import es.redmic.atlasview.config.MapperScanBean;
 import es.redmic.atlasview.mapper.layer.LayerESMapper;
 import es.redmic.atlasview.model.layer.Layer;
 import es.redmic.models.es.common.dto.JSONCollectionDTO;
 import es.redmic.models.es.data.common.model.DataSearchWrapper;
 import es.redmic.testutils.utils.JsonToBeanTestUtil;
-import es.redmic.viewlib.common.mapper.es2dto.DataCollectionESMapper;
-import es.redmic.viewlib.common.mapper.es2dto.DataItemESMapper;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LayerMapperTest {
-
-	@InjectMocks
-	LayerESMapper mapper;
-
-	@InjectMocks
-	DataCollectionESMapper dataCollectionMapper;
-
-	@InjectMocks
-	DataItemESMapper dataItemMapper;
-
-	protected MapperScanBean factory = new MapperScanBean().build();
 
 	// @formatter:off
 
@@ -67,20 +52,12 @@ public class LayerMapperTest {
 
 	// @formatter:on
 
-	@Before
-	public void setupTest() throws IOException {
-
-		factory.addMapper(mapper);
-		factory.addMapper(dataCollectionMapper);
-		factory.addMapper(dataItemMapper);
-	}
-
 	@Test
 	public void mapperDtoToModel() throws JsonParseException, JsonMappingException, IOException, JSONException {
 
 		LayerDTO dtoIn = (LayerDTO) JsonToBeanTestUtil.getBean(dtoToSavePath, LayerDTO.class);
 
-		Layer modelOut = factory.getMapperFacade().map(dtoIn, Layer.class);
+		Layer modelOut = Mappers.getMapper(LayerESMapper.class).map(dtoIn);
 
 		String modelStringExpected = JsonToBeanTestUtil.getJsonString(modelPath);
 		String modelString = JsonToBeanTestUtil.writeValueAsString(modelOut);
@@ -97,8 +74,7 @@ public class LayerMapperTest {
 				type);
 		String expected = JsonToBeanTestUtil.getJsonString(searchDTOPath);
 
-		JSONCollectionDTO searchDTO = factory.getMapperFacade().map(searchWrapperModel.getHits(),
-				JSONCollectionDTO.class);
+		JSONCollectionDTO searchDTO = Mappers.getMapper(LayerESMapper.class).map(searchWrapperModel.getHits());
 
 		String searchDTOString = JsonToBeanTestUtil.writeValueAsString(searchDTO);
 

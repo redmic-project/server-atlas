@@ -23,10 +23,9 @@ package es.redmic.test.atlasview.unit.mapper;
 import java.io.IOException;
 
 import org.json.JSONException;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
+import org.mapstruct.factory.Mappers;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.skyscreamer.jsonassert.JSONAssert;
 
@@ -35,28 +34,14 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import es.redmic.atlaslib.dto.category.CategoryDTO;
-import es.redmic.atlasview.config.MapperScanBean;
 import es.redmic.atlasview.mapper.category.CategoryESMapper;
 import es.redmic.atlasview.model.category.Category;
 import es.redmic.models.es.common.dto.JSONCollectionDTO;
 import es.redmic.models.es.data.common.model.DataSearchWrapper;
 import es.redmic.testutils.utils.JsonToBeanTestUtil;
-import es.redmic.viewlib.common.mapper.es2dto.DataCollectionESMapper;
-import es.redmic.viewlib.common.mapper.es2dto.DataItemESMapper;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CategoryMapperTest {
-
-	@InjectMocks
-	CategoryESMapper mapper;
-
-	@InjectMocks
-	DataCollectionESMapper dataCollectionMapper;
-
-	@InjectMocks
-	DataItemESMapper dataItemMapper;
-
-	protected MapperScanBean factory = new MapperScanBean().build();
 
 	// @formatter:off
 
@@ -67,20 +52,12 @@ public class CategoryMapperTest {
 
 	// @formatter:on
 
-	@Before
-	public void setupTest() throws IOException {
-
-		factory.addMapper(mapper);
-		factory.addMapper(dataCollectionMapper);
-		factory.addMapper(dataItemMapper);
-	}
-
 	@Test
 	public void mapperDtoToModel() throws JsonParseException, JsonMappingException, IOException, JSONException {
 
 		CategoryDTO dtoIn = (CategoryDTO) JsonToBeanTestUtil.getBean(dtoToSavePath, CategoryDTO.class);
 
-		Category modelOut = factory.getMapperFacade().map(dtoIn, Category.class);
+		Category modelOut = Mappers.getMapper(CategoryESMapper.class).map(dtoIn);
 
 		String modelStringExpected = JsonToBeanTestUtil.getJsonString(modelPath);
 		String modelString = JsonToBeanTestUtil.writeValueAsString(modelOut);
@@ -97,8 +74,7 @@ public class CategoryMapperTest {
 				type);
 		String expected = JsonToBeanTestUtil.getJsonString(searchDTOPath);
 
-		JSONCollectionDTO searchDTO = factory.getMapperFacade().map(searchWrapperModel.getHits(),
-				JSONCollectionDTO.class);
+		JSONCollectionDTO searchDTO = Mappers.getMapper(CategoryESMapper.class).map(searchWrapperModel);
 
 		String searchDTOString = JsonToBeanTestUtil.writeValueAsString(searchDTO);
 

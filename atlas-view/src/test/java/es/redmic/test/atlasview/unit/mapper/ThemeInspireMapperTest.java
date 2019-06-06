@@ -23,10 +23,9 @@ package es.redmic.test.atlasview.unit.mapper;
 import java.io.IOException;
 
 import org.json.JSONException;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
+import org.mapstruct.factory.Mappers;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.skyscreamer.jsonassert.JSONAssert;
 
@@ -35,28 +34,14 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import es.redmic.atlaslib.dto.themeinspire.ThemeInspireDTO;
-import es.redmic.atlasview.config.MapperScanBean;
 import es.redmic.atlasview.mapper.themeinspire.ThemeInspireESMapper;
 import es.redmic.atlasview.model.themeinspire.ThemeInspire;
 import es.redmic.models.es.common.dto.JSONCollectionDTO;
 import es.redmic.models.es.data.common.model.DataSearchWrapper;
 import es.redmic.testutils.utils.JsonToBeanTestUtil;
-import es.redmic.viewlib.common.mapper.es2dto.DataCollectionESMapper;
-import es.redmic.viewlib.common.mapper.es2dto.DataItemESMapper;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ThemeInspireMapperTest {
-
-	@InjectMocks
-	ThemeInspireESMapper mapper;
-
-	@InjectMocks
-	DataCollectionESMapper dataCollectionMapper;
-
-	@InjectMocks
-	DataItemESMapper dataItemMapper;
-
-	protected MapperScanBean factory = new MapperScanBean().build();
 
 	// @formatter:off
 
@@ -67,20 +52,12 @@ public class ThemeInspireMapperTest {
 
 	// @formatter:on
 
-	@Before
-	public void setupTest() throws IOException {
-
-		factory.addMapper(mapper);
-		factory.addMapper(dataCollectionMapper);
-		factory.addMapper(dataItemMapper);
-	}
-
 	@Test
 	public void mapperDtoToModel() throws JsonParseException, JsonMappingException, IOException, JSONException {
 
 		ThemeInspireDTO dtoIn = (ThemeInspireDTO) JsonToBeanTestUtil.getBean(dtoToSavePath, ThemeInspireDTO.class);
 
-		ThemeInspire modelOut = factory.getMapperFacade().map(dtoIn, ThemeInspire.class);
+		ThemeInspire modelOut = Mappers.getMapper(ThemeInspireESMapper.class).map(dtoIn);
 
 		String modelStringExpected = JsonToBeanTestUtil.getJsonString(modelPath);
 		String modelString = JsonToBeanTestUtil.writeValueAsString(modelOut);
@@ -97,8 +74,7 @@ public class ThemeInspireMapperTest {
 				type);
 		String expected = JsonToBeanTestUtil.getJsonString(searchDTOPath);
 
-		JSONCollectionDTO searchDTO = factory.getMapperFacade().map(searchWrapperModel.getHits(),
-				JSONCollectionDTO.class);
+		JSONCollectionDTO searchDTO = Mappers.getMapper(ThemeInspireESMapper.class).map(searchWrapperModel.getHits());
 
 		String searchDTOString = JsonToBeanTestUtil.writeValueAsString(searchDTO);
 
