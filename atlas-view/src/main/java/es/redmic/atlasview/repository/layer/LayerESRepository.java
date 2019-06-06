@@ -172,6 +172,8 @@ public class LayerESRepository extends RWDataESRepository<Layer, SimpleQueryDTO>
 
 		Layer source = (Layer) queryById(layer.getId()).get_source();
 
+		layer.getJoinIndex().setParent(source.getJoinIndex().getParent());
+
 		return elasticPersistenceUtils.update(getIndex(source), getType(), layer, source.getId().toString(),
 				source.getJoinIndex().getParent());
 	}
