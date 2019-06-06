@@ -20,7 +20,7 @@ package es.redmic.atlasview.controller.layer;
  * #L%
  */
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -34,7 +34,8 @@ import es.redmic.atlaslib.events.layer.create.CreateLayerEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEvent;
-import es.redmic.atlasview.config.MapperScanBean;
+import es.redmic.atlasview.mapper.layer.LayerESMapper;
+import es.redmic.atlasview.mapper.layer.LayerWMSESMapper;
 import es.redmic.atlasview.model.layer.Layer;
 import es.redmic.atlasview.service.layer.LayerESService;
 import es.redmic.exception.common.ExceptionType;
@@ -49,9 +50,6 @@ public class LayerController extends DataController<Layer, LayerDTO, SimpleQuery
 
 	@Value("${broker.topic.layer}")
 	private String layer_topic;
-
-	@Autowired
-	protected MapperScanBean mapper;
 
 	LayerESService service;
 
@@ -68,7 +66,7 @@ public class LayerController extends DataController<Layer, LayerDTO, SimpleQuery
 		String parentId = event.getLayer().getParent() != null ? event.getLayer().getParent().getId() : null;
 
 		try {
-			result = service.save(mapper.getMapperFacade().map(event.getLayer(), Layer.class), parentId);
+			result = service.save(Mappers.getMapper(LayerESMapper.class).map(event.getLayer()), parentId);
 		} catch (Exception e) {
 			e.printStackTrace();
 			publishFailedEvent(LayerEventFactory.getEvent(event, LayerEventTypes.CREATE_FAILED,
@@ -92,7 +90,7 @@ public class LayerController extends DataController<Layer, LayerDTO, SimpleQuery
 		String parentId = event.getLayer().getParent() != null ? event.getLayer().getParent().getId() : null;
 
 		try {
-			result = service.update(mapper.getMapperFacade().map(event.getLayer(), Layer.class), parentId);
+			result = service.update(Mappers.getMapper(LayerESMapper.class).map(event.getLayer()), parentId);
 		} catch (Exception e) {
 			e.printStackTrace();
 			publishFailedEvent(LayerEventFactory.getEvent(event, LayerEventTypes.UPDATE_FAILED,
@@ -114,7 +112,7 @@ public class LayerController extends DataController<Layer, LayerDTO, SimpleQuery
 		EventApplicationResult result = null;
 
 		try {
-			result = service.refresh(mapper.getMapperFacade().map(event.getLayer(), Layer.class));
+			result = service.refresh(Mappers.getMapper(LayerWMSESMapper.class).map(event.getLayer()));
 		} catch (Exception e) {
 			e.printStackTrace();
 			publishFailedEvent(LayerEventFactory.getEvent(event, LayerEventTypes.REFRESH_FAILED,
@@ -123,7 +121,11 @@ public class LayerController extends DataController<Layer, LayerDTO, SimpleQuery
 		}
 
 		if (result.isSuccess()) {
-			publishConfirmedEvent(LayerEventFactory.getEvent(event, LayerEventTypes.REFRESH_CONFIRMED), layer_topic);
+
+			LayerDTO layer = (LayerDTO) service.findById(event.getLayer().getId()).get_source();
+
+			publishConfirmedEvent(LayerEventFactory.getEvent(event, LayerEventTypes.REFRESH_CONFIRMED, layer),
+					layer_topic);
 		} else {
 			publishFailedEvent(LayerEventFactory.getEvent(event, LayerEventTypes.REFRESH_FAILED,
 					result.getExeptionType(), result.getExceptionArguments()), layer_topic);
