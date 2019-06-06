@@ -37,8 +37,7 @@ import es.redmic.restlib.config.ResourceBundleMessageSource;
 import io.micrometer.core.instrument.MeterRegistry;
 
 @SpringBootApplication
-@ComponentScan({ "es.redmic.atlasview", "es.redmic.viewlib.common.mapper.es2dto", "es.redmic.elasticsearchlib",
-		"es.redmic.restlib" })
+@ComponentScan({ "es.redmic.atlasview", "es.redmic.elasticsearchlib", "es.redmic.restlib" })
 public class AtlasViewApplication {
 
 	@Value("${info.microservice.name}")
