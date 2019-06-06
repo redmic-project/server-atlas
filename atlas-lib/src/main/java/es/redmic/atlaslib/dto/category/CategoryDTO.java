@@ -112,7 +112,7 @@ public class CategoryDTO extends CommonDTO {
 	public void put(int field, Object value) {
 		switch (field) {
 		case 0:
-			setName(value.toString());
+			setName(value != null ? value.toString() : null);
 			break;
 		case 1:
 			setId(value.toString());
