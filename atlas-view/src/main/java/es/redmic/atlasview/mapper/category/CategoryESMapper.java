@@ -20,12 +20,21 @@ package es.redmic.atlasview.mapper.category;
  * #L%
  */
 
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
 
 import es.redmic.atlaslib.dto.category.CategoryDTO;
 import es.redmic.atlasview.model.category.Category;
-import ma.glasnost.orika.CustomMapper;
+import es.redmic.viewlib.common.mapper.es2dto.DataCollectionESMapper;
 
-@Component
-public class CategoryESMapper extends CustomMapper<Category, CategoryDTO> {
+@Mapper
+public abstract class CategoryESMapper extends DataCollectionESMapper<CategoryDTO, Category> {
+
+	public abstract CategoryDTO map(Category model);
+
+	public abstract Category map(CategoryDTO dto);
+
+	@Override
+	protected CategoryDTO mapSource(Category model) {
+		return map(model);
+	}
 }

@@ -1,5 +1,8 @@
 package es.redmic.atlasview.mapper.layer;
 
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+
 /*-
  * #%L
  * Atlas-query-endpoint
@@ -20,119 +23,23 @@ package es.redmic.atlasview.mapper.layer;
  * #L%
  */
 
-import org.springframework.stereotype.Component;
-
-import es.redmic.atlaslib.dto.layer.ActivityDTO;
-import es.redmic.atlaslib.dto.layer.AttributionDTO;
-import es.redmic.atlaslib.dto.layer.ContactDTO;
-import es.redmic.atlaslib.dto.layer.DimensionDTO;
-import es.redmic.atlaslib.dto.layer.LatLonBoundingBoxDTO;
 import es.redmic.atlaslib.dto.layer.LayerDTO;
-import es.redmic.atlaslib.dto.layer.ProtocolDTO;
-import es.redmic.atlaslib.dto.layer.StyleLayerDTO;
-import es.redmic.atlaslib.dto.themeinspire.ThemeInspireDTO;
-import es.redmic.atlasview.model.layer.Attribution;
-import es.redmic.atlasview.model.layer.Contact;
-import es.redmic.atlasview.model.layer.Dimension;
-import es.redmic.atlasview.model.layer.LatLonBoundingBox;
 import es.redmic.atlasview.model.layer.Layer;
-import es.redmic.atlasview.model.layer.Protocol;
-import es.redmic.atlasview.model.layer.StyleLayer;
-import es.redmic.atlasview.model.themeinspire.ThemeInspire;
-import es.redmic.models.es.administrative.model.ActivityCompact;
-import ma.glasnost.orika.CustomMapper;
-import ma.glasnost.orika.MappingContext;
+import es.redmic.viewlib.common.mapper.es2dto.DataCollectionESMapper;
 
-@Component
-public class LayerESMapper extends CustomMapper<Layer, LayerDTO> {
+@Mapper
+public abstract class LayerESMapper extends DataCollectionESMapper<LayerDTO, Layer> {
 
-	@Override
-	public void mapAtoB(Layer a, LayerDTO b, MappingContext context) {
+	@Mapping(source = "model.joinIndex.parent", target = "parent.id")
+	@Mapping(target = "parent.name", ignore = true)
+	public abstract LayerDTO map(Layer model);
 
-		if (a.getStylesLayer() != null) {
-			b.setStylesLayer(mapperFacade.mapAsList(a.getStylesLayer(), StyleLayerDTO.class));
-		}
-
-		if (a.getContact() != null) {
-			b.setContact(mapperFacade.map(a.getContact(), ContactDTO.class));
-		}
-
-		if (a.getActivities() != null) {
-			b.setActivities(mapperFacade.mapAsList(a.getActivities(), ActivityDTO.class));
-		}
-
-		if (a.getThemeInspire() != null) {
-			b.setThemeInspire(mapperFacade.map(a.getThemeInspire(), ThemeInspireDTO.class));
-		}
-
-		if (a.getLatLonBoundsImage() != null) {
-			b.setLatLonBoundsImage(mapperFacade.map(a.getLatLonBoundsImage(), LatLonBoundingBoxDTO.class));
-		}
-
-		if (a.getProtocols() != null) {
-			b.setProtocols(mapperFacade.mapAsList(a.getProtocols(), ProtocolDTO.class));
-		}
-
-		if (a.getTimeDimension() != null) {
-			b.setTimeDimension(mapperFacade.map(a.getTimeDimension(), DimensionDTO.class));
-		}
-
-		if (a.getElevationDimension() != null) {
-			b.setElevationDimension(mapperFacade.map(a.getElevationDimension(), DimensionDTO.class));
-		}
-
-		if (a.getAttribution() != null) {
-			b.setAttribution(mapperFacade.map(a.getAttribution(), AttributionDTO.class));
-		}
-
-		super.mapAtoB(a, b, context);
-	}
+	@Mapping(source = "dto.parent.id", target = "joinIndex.parent")
+	@Mapping(target = "joinIndex.name", ignore = true)
+	public abstract Layer map(LayerDTO dto);
 
 	@Override
-	public void mapBtoA(LayerDTO b, Layer a, MappingContext context) {
-
-		if (b.getStylesLayer() != null) {
-			a.setStylesLayer(mapperFacade.mapAsList(b.getStylesLayer(), StyleLayer.class));
-		}
-
-		if (b.getContact() != null) {
-			a.setContact(mapperFacade.map(b.getContact(), Contact.class));
-		}
-
-		if (b.getActivities() != null) {
-			a.setActivities(mapperFacade.mapAsList(b.getActivities(), ActivityCompact.class));
-		}
-
-		if (b.getThemeInspire() != null) {
-			a.setThemeInspire(mapperFacade.map(b.getThemeInspire(), ThemeInspire.class));
-		}
-
-		if (b.getLatLonBoundsImage() != null) {
-			a.setLatLonBoundsImage(mapperFacade.map(b.getLatLonBoundsImage(), LatLonBoundingBox.class));
-		}
-
-		if (b.getProtocols() != null) {
-			a.setProtocols(mapperFacade.mapAsList(b.getProtocols(), Protocol.class));
-		}
-
-		if (b.getTimeDimension() != null) {
-			a.setTimeDimension(mapperFacade.map(b.getTimeDimension(), Dimension.class));
-		}
-
-		if (b.getElevationDimension() != null) {
-			a.setElevationDimension(mapperFacade.map(b.getElevationDimension(), Dimension.class));
-		}
-
-		if (b.getAttribution() != null) {
-			a.setAttribution(mapperFacade.map(b.getAttribution(), Attribution.class));
-		}
-
-		if (b.getParent() != null && b.getParent().getId() != null) {
-			a.getJoinIndex().setParent(b.getParent().getId());
-		} else {
-			a.setJoinIndex(null);
-		}
-
-		super.mapBtoA(b, a, context);
+	protected LayerDTO mapSource(Layer model) {
+		return map(model);
 	}
 }

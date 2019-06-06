@@ -20,12 +20,16 @@ package es.redmic.atlasview.mapper.themeinspire;
  * #L%
  */
 
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
 
 import es.redmic.atlaslib.dto.themeinspire.ThemeInspireDTO;
 import es.redmic.atlasview.model.themeinspire.ThemeInspire;
-import ma.glasnost.orika.CustomMapper;
+import es.redmic.viewlib.common.mapper.es2dto.DataCollectionESMapper;
 
-@Component
-public class ThemeInspireESMapper extends CustomMapper<ThemeInspire, ThemeInspireDTO> {
+@Mapper
+public abstract class ThemeInspireESMapper extends DataCollectionESMapper<ThemeInspireDTO, ThemeInspire> {
+
+	public abstract ThemeInspireDTO map(ThemeInspire model);
+
+	public abstract ThemeInspire map(ThemeInspireDTO dto);
 }
