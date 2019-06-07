@@ -21,6 +21,7 @@ package es.redmic.atlascommands.service;
  */
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Service;
 import es.redmic.atlascommands.utils.Capabilities;
 import es.redmic.atlaslib.dto.layer.LayerDTO;
 import es.redmic.atlaslib.dto.layerwms.LayerWMSDTO;
+import es.redmic.exception.atlas.LayerNotFoundException;
 
 @Service
 public class OGCLayerService {
@@ -35,11 +37,21 @@ public class OGCLayerService {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public List<LayerDTO> discoverWMSLayers(String urlSource) {
 
+		HashMap<String, LayerWMSDTO> result = Capabilities.getCapabilities(urlSource);
+
+		if (result.isEmpty())
+			return new ArrayList<>();
+
 		return new ArrayList(Capabilities.getCapabilities(urlSource).values());
 	}
 
 	public LayerWMSDTO getLayerFromWMSService(String urlSource, String name) {
 
-		return Capabilities.getCapabilities(urlSource).get(name);
+		HashMap<String, LayerWMSDTO> result = Capabilities.getCapabilities(urlSource);
+
+		if (!result.containsKey(name))
+			throw new LayerNotFoundException(name, urlSource);
+
+		return result.get(name);
 	}
 }
