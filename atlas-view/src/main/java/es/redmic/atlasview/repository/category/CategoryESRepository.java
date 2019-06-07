@@ -171,8 +171,7 @@ public class CategoryESRepository extends RWDataESRepository<Category, SimpleQue
 		}
 
 		if (arguments.size() > 0) {
-			// TODO: crear excepción propia
-			return new EventApplicationResult(ExceptionType.ES_UPDATE_DOCUMENT.toString(), arguments);
+			return new EventApplicationResult(ExceptionType.ES_DELETE_ITEM_WITH_CHILDREN_ERROR.toString(), arguments);
 		}
 
 		return new EventApplicationResult(true);
