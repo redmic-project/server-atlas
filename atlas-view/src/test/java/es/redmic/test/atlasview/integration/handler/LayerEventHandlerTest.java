@@ -142,7 +142,7 @@ public class LayerEventHandlerTest extends DocumentationViewBaseTest {
 	}
 
 	@Test
-	public void sendLayerCreatedEvent_SaveItem_IfEventIsOk() throws Exception {
+	public void sendCreateLayerEvent_SaveItem_IfEventIsOk() throws Exception {
 
 		CreateLayerEvent event = getCreateLayerEvent();
 
@@ -225,7 +225,7 @@ public class LayerEventHandlerTest extends DocumentationViewBaseTest {
 	}
 
 	@Test(expected = ItemNotFoundException.class)
-	public void sendLayerDeleteEvent_callDelete_IfEventIsOk() throws Exception {
+	public void sendDeleteLayerEvent_callDelete_IfEventIsOk() throws Exception {
 
 		DeleteLayerEvent event = getDeleteLayerEvent();
 
@@ -247,7 +247,7 @@ public class LayerEventHandlerTest extends DocumentationViewBaseTest {
 	}
 
 	@Test
-	public void sendLayerCreatedEvent_PublishCreateLayerFailedEvent_IfNoConstraintsFulfilled() throws Exception {
+	public void sendCreateLayerEvent_PublishCreateLayerFailedEvent_IfNoConstraintsFulfilled() throws Exception {
 
 		CreateLayerEvent event = getCreateLayerEvent();
 
@@ -279,7 +279,36 @@ public class LayerEventHandlerTest extends DocumentationViewBaseTest {
 	}
 
 	@Test
-	public void sendLayerUpdateEvent_PublishUpdateLayerFailedEvent_IfNoConstraintsFulfilled() throws Exception {
+	public void sendCreateLayerEvent_PublishCreateLayerFailedEvent_IfParentNotExist() throws Exception {
+
+		CreateLayerEvent event = getCreateLayerEvent();
+
+		String newParentId = "dddd";
+
+		event.getLayer().getParent().setId(newParentId);
+
+		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(LAYER_TOPIC, event.getAggregateId(),
+				event);
+		future.addCallback(new SendListener());
+
+		Event fail = (Event) blockingQueue.poll(50, TimeUnit.SECONDS);
+
+		assertNotNull(fail);
+		assertEquals(LayerEventTypes.CREATE_FAILED.toString(), fail.getType());
+
+		CreateLayerFailedEvent createLayerFailedEvent = (CreateLayerFailedEvent) fail;
+
+		Map<String, String> arguments = createLayerFailedEvent.getArguments();
+		assertNotNull(arguments);
+
+		assertEquals(1, arguments.size());
+
+		assertNotNull(arguments.get("parentId"));
+		assertEquals(newParentId, arguments.get("parentId"));
+	}
+
+	@Test
+	public void sendUpdateLayerEvent_PublishUpdateLayerFailedEvent_IfNoConstraintsFulfilled() throws Exception {
 
 		UpdateLayerEvent event = getUpdateLayerEvent();
 
@@ -327,7 +356,36 @@ public class LayerEventHandlerTest extends DocumentationViewBaseTest {
 	}
 
 	@Test
-	public void sendLayerDeleteEvent_PublishDeleteLayerFailedEvent_IfNoConstraintsFulfilled() throws Exception {
+	public void sendUpdateLayerEvent_PublishCreateLayerFailedEvent_IfParentNotExist() throws Exception {
+
+		UpdateLayerEvent event = getUpdateLayerEvent();
+
+		String newParentId = "dddd";
+
+		event.getLayer().getParent().setId(newParentId);
+
+		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(LAYER_TOPIC, event.getAggregateId(),
+				event);
+		future.addCallback(new SendListener());
+
+		Event fail = (Event) blockingQueue.poll(50, TimeUnit.SECONDS);
+
+		assertNotNull(fail);
+		assertEquals(LayerEventTypes.UPDATE_FAILED.toString(), fail.getType());
+
+		UpdateLayerFailedEvent updateLayerFailedEvent = (UpdateLayerFailedEvent) fail;
+
+		Map<String, String> arguments = updateLayerFailedEvent.getArguments();
+		assertNotNull(arguments);
+
+		assertEquals(1, arguments.size());
+
+		assertNotNull(arguments.get("parentId"));
+		assertEquals(newParentId, arguments.get("parentId"));
+	}
+
+	@Test
+	public void sendDeleteLayerEvent_PublishDeleteLayerFailedEvent_IfNoConstraintsFulfilled() throws Exception {
 
 		// TODO: Implementar cuando se metan las referencias en la vista.
 		assertTrue(true);

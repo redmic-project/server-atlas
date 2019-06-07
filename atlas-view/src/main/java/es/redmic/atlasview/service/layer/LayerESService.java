@@ -1,5 +1,7 @@
 package es.redmic.atlasview.service.layer;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mapstruct.factory.Mappers;
 
 /*-
@@ -29,7 +31,9 @@ import es.redmic.atlaslib.dto.layer.LayerDTO;
 import es.redmic.atlasview.mapper.layer.LayerESMapper;
 import es.redmic.atlasview.model.layer.Layer;
 import es.redmic.atlasview.model.layer.LayerWMS;
+import es.redmic.atlasview.repository.category.CategoryESRepository;
 import es.redmic.atlasview.repository.layer.LayerESRepository;
+import es.redmic.exception.common.ExceptionType;
 import es.redmic.models.es.common.dto.EventApplicationResult;
 import es.redmic.models.es.common.dto.JSONCollectionDTO;
 import es.redmic.models.es.common.query.dto.MgetDTO;
@@ -43,19 +47,42 @@ import es.redmic.viewlib.data.service.RDataService;
 @Service
 public class LayerESService extends RDataService<Layer, LayerDTO, SimpleQueryDTO> {
 
+	protected static Logger logger = LogManager.getLogger();
+
 	LayerESRepository repository;
 
+	CategoryESRepository categoryRepository;
+
 	@Autowired
-	public LayerESService(LayerESRepository repository) {
+	public LayerESService(LayerESRepository repository, CategoryESRepository categoryRepository) {
 		super(repository);
 		this.repository = repository;
+		this.categoryRepository = categoryRepository;
 	}
 
 	public EventApplicationResult save(Layer model, String parentId) {
+
+		try {
+			categoryRepository.findById(parentId);
+		} catch (Exception e) {
+			logger.error("Categoría con id ",
+					parentId + " no encontrada. Imposible guardar una capa asociada a una categoría que no existe");
+			return new EventApplicationResult(ExceptionType.ES_PARENT_NOT_EXIST_ERROR.toString(), "parentId", parentId);
+		}
+
 		return repository.save(model, parentId);
 	}
 
 	public EventApplicationResult update(Layer model, String parentId) {
+
+		try {
+			categoryRepository.findById(parentId);
+		} catch (Exception e) {
+			logger.error("Categoría con id ",
+					parentId + " no encontrada. Imposible modificar una capa asociada a una categoría que no existe");
+			return new EventApplicationResult(ExceptionType.ES_PARENT_NOT_EXIST_ERROR.toString(), "parentId", parentId);
+		}
+
 		return repository.update(model, parentId);
 	}
 
