@@ -139,6 +139,10 @@
 		"minX": -15.848636627197266,
 		"minY": 27.940807342529297
 	},
+	"protocols": [{
+		"type": "WMS",
+		"url" :"https://atlas.redmic.es/geoserver/tn/wms"
+	}],
 	"description": "Batimetrías de costera de las Islas Canarias (DGC)",
 	"alias": "Batimetrías by operator",
 	"atlas": true,

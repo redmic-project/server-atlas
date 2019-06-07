@@ -9,7 +9,10 @@
 		"name": "Elevaciones",
 		"name_en": "Elevation"
 	},
-	
+	"protocols": [{
+		"type": "WMS",
+		"url" :"https://atlas.redmic.es/geoserver/tn/wms"
+	}],
 	"latLonBoundsImage": {
 		"maxX": -15.826663970947266,
 		"maxY": 27.962779998779297,
