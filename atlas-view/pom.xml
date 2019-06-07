@@ -54,7 +54,7 @@
 			<artifactId>view-lib</artifactId>
 			<version>${redmic.view-lib.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>es.redmic.atlas</groupId>
 			<artifactId>atlas-lib</artifactId>
@@ -66,13 +66,7 @@
 			<artifactId>elasticsearch-lib</artifactId>
 			<version>${redmic.elasticsearch-lib.version}</version>
 		</dependency>
-		
-		<dependency>
-			<groupId>es.redmic.lib</groupId>
-			<artifactId>exceptions</artifactId>
-			<version>${redmic.exceptions.version}</version>
-		</dependency>
-		
+
 		<dependency>
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct</artifactId>

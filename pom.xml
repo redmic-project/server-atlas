@@ -50,6 +50,14 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- REDMIC -->
+
+		<dependency>
+			<groupId>es.redmic.lib</groupId>
+			<artifactId>exceptions</artifactId>
+			<version>${redmic.exceptions.version}</version>
+		</dependency>
+
 		<!-- Override kafkaClient version -->
 
 		<dependency>
