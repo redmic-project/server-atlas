@@ -44,14 +44,14 @@ import es.redmic.exception.common.ExceptionType;
 import es.redmic.exception.data.ItemNotFoundException;
 import es.redmic.exception.elasticsearch.ESQueryException;
 import es.redmic.models.es.common.dto.EventApplicationResult;
-import es.redmic.models.es.common.query.dto.SimpleQueryDTO;
+import es.redmic.models.es.common.query.dto.GeoDataQueryDTO;
 import es.redmic.models.es.data.common.model.DataHitWrapper;
 import es.redmic.models.es.data.common.model.DataSearchWrapper;
 import es.redmic.viewlib.data.repository.IDataRepository;
 
 @Repository
-public class LayerESRepository extends RWDataESRepository<Layer, SimpleQueryDTO>
-		implements IDataRepository<Layer, SimpleQueryDTO> {
+public class LayerESRepository extends RWDataESRepository<Layer, GeoDataQueryDTO>
+		implements IDataRepository<Layer, GeoDataQueryDTO> {
 
 	private static String[] INDEX = { "layer" };
 	private static String TYPE = "_doc";

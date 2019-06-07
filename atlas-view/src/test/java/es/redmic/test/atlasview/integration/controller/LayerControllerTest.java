@@ -312,7 +312,7 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 	public void getFilterSchema_Return200_WhenSchemaIsAvailable() throws Exception {
 
 		Map<String, Object> schemaExpected = (Map<String, Object>) JsonToBeanTestUtil
-				.getBean("/data/schemas/simplequerydtoschema.json", Map.class);
+				.getBean("/data/schemas/geodataquerydtoschema.json", Map.class);
 
 		// @formatter:off
 		

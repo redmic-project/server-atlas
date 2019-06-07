@@ -40,13 +40,13 @@ import es.redmic.atlasview.model.layer.Layer;
 import es.redmic.atlasview.service.layer.LayerESService;
 import es.redmic.exception.common.ExceptionType;
 import es.redmic.models.es.common.dto.EventApplicationResult;
-import es.redmic.models.es.common.query.dto.SimpleQueryDTO;
+import es.redmic.models.es.common.query.dto.GeoDataQueryDTO;
 import es.redmic.viewlib.data.controller.DataController;
 
 @Controller
 @RequestMapping(value = "${controller.mapping.LAYER}")
 @KafkaListener(topics = "${broker.topic.layer}")
-public class LayerController extends DataController<Layer, LayerDTO, SimpleQueryDTO> {
+public class LayerController extends DataController<Layer, LayerDTO, GeoDataQueryDTO> {
 
 	@Value("${broker.topic.layer}")
 	private String layer_topic;

@@ -36,8 +36,8 @@ import es.redmic.atlasview.repository.layer.LayerESRepository;
 import es.redmic.exception.common.ExceptionType;
 import es.redmic.models.es.common.dto.EventApplicationResult;
 import es.redmic.models.es.common.dto.JSONCollectionDTO;
+import es.redmic.models.es.common.query.dto.GeoDataQueryDTO;
 import es.redmic.models.es.common.query.dto.MgetDTO;
-import es.redmic.models.es.common.query.dto.SimpleQueryDTO;
 import es.redmic.models.es.data.common.model.DataHitWrapper;
 import es.redmic.models.es.data.common.model.DataHitsWrapper;
 import es.redmic.models.es.data.common.model.DataSearchWrapper;
@@ -45,7 +45,7 @@ import es.redmic.viewlib.data.dto.MetaDTO;
 import es.redmic.viewlib.data.service.RDataService;
 
 @Service
-public class LayerESService extends RDataService<Layer, LayerDTO, SimpleQueryDTO> {
+public class LayerESService extends RDataService<Layer, LayerDTO, GeoDataQueryDTO> {
 
 	protected static Logger logger = LogManager.getLogger();
 
