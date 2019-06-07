@@ -41,7 +41,8 @@ import es.redmic.atlascommands.mapper.ContactMapper;
 import es.redmic.atlascommands.mapper.LayerWMSMapper;
 import es.redmic.atlascommands.utils.Capabilities;
 import es.redmic.atlaslib.dto.layerwms.LayerWMSDTO;
-import es.redmic.exception.custom.ResourceNotFoundException;
+import es.redmic.exception.custom.URLException;
+import es.redmic.exception.utils.ExternalResourceException;
 import es.redmic.jts4jackson.module.JTSModule;
 import es.redmic.testutils.utils.JsonToBeanTestUtil;
 
@@ -67,15 +68,13 @@ public class CapabilitiesTest {
 				URL_CAPABILITIES + "?request=GetLegendGraphic&version=1.0.0&format=image/png&layer=topp:states");
 	}
 
-	// TODO: cambiar excepción
-	@Test(expected = ResourceNotFoundException.class)
+	@Test(expected = URLException.class)
 	public void getCapabilities_ThrowException_IfUrlIsMalformed() throws IOException, ServiceException {
 
 		Capabilities.getCapabilities("wms.xml");
 	}
 
-	// TODO: cambiar excepción
-	@Test(expected = ResourceNotFoundException.class)
+	@Test(expected = ExternalResourceException.class)
 	public void getCapabilities_ThrowException_IfServiceIsInaccessible() throws IOException, ServiceException {
 
 		Capabilities.getCapabilities(new File("wms.xml").toURI().toString());

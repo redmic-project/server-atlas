@@ -37,7 +37,8 @@ import es.redmic.atlascommands.mapper.ContactMapper;
 import es.redmic.atlascommands.mapper.LayerWMSMapper;
 import es.redmic.atlaslib.dto.layer.ContactDTO;
 import es.redmic.atlaslib.dto.layerwms.LayerWMSDTO;
-import es.redmic.exception.custom.ResourceNotFoundException;
+import es.redmic.exception.custom.URLException;
+import es.redmic.exception.utils.ExternalResourceException;
 
 public abstract class Capabilities {
 
@@ -49,8 +50,7 @@ public abstract class Capabilities {
 			serverURL = new URL(url.split("\\?")[0]);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
-			// TODO: excepción propia
-			throw new ResourceNotFoundException();
+			throw new URLException(e, url);
 		}
 
 		WebMapServer wms;
@@ -59,8 +59,7 @@ public abstract class Capabilities {
 			wms = new WebMapServer(serverURL);
 		} catch (ServiceException | IOException e) {
 			e.printStackTrace();
-			// TODO: excepción propia
-			throw new ResourceNotFoundException();
+			throw new ExternalResourceException(e, url);
 		}
 
 		return getLayers(url, wms.getCapabilities());
