@@ -52,6 +52,7 @@ import org.springframework.kafka.test.rule.EmbeddedKafkaRule;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import es.redmic.atlasview.AtlasViewApplication;
@@ -182,7 +183,10 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 		List<AggsPropertiesDTO> aggs = new ArrayList<>();
 
 		aggs.add(getAggProperties("keywords", "keywords"));
-		aggs.add(getAggProperties("protocols", "protocols.type"));
+
+		AggsPropertiesDTO aggP = getAggProperties("protocols", "protocols.type");
+		aggP.setNested("protocols");
+		aggs.add(aggP);
 		aggs.add(getAggProperties("themeInspire", "themeInspire.name"));
 		geoDataQuery.setAggs(aggs);
 
@@ -195,7 +199,7 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 
 		// @formatter:off
 		
-		this.mockMvc
+		MvcResult x = this.mockMvc
 				.perform(post(LAYER_PATH + "/_search").content(mapper.writeValueAsString(query))
 					.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -207,12 +211,15 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 				.andExpect(jsonPath("$.body._aggs.protocols", notNullValue()))
 				.andExpect(jsonPath("$.body._aggs.themeInspire", notNullValue()))
 				.andExpect(jsonPath("$.body._aggs.keywords", notNullValue()))
-				.andExpect(jsonPath("$.body._aggs.protocols.buckets", notNullValue()))
+				.andExpect(jsonPath("$.body._aggs.protocols.sterms#protocols", notNullValue()))
+				.andExpect(jsonPath("$.body._aggs.protocols.sterms#protocols.buckets", notNullValue()))
 				.andExpect(jsonPath("$.body._aggs.themeInspire.buckets", notNullValue()))
 				.andExpect(jsonPath("$.body._aggs.keywords.buckets", notNullValue()))
-				.andExpect(jsonPath("$.body._aggs.protocols.buckets.length()", is(1)))
+				.andExpect(jsonPath("$.body._aggs.protocols.sterms#protocols.buckets.length()", is(1)))
 				.andExpect(jsonPath("$.body._aggs.themeInspire.buckets.length()", is(1)))
-				.andExpect(jsonPath("$.body._aggs.keywords.buckets.length()", is(1)));
+				.andExpect(jsonPath("$.body._aggs.keywords.buckets.length()", is(1))).andReturn();
+		
+		System.out.println(x.getResponse().getContentAsString());
 		
 		// @formatter:on
 	}

@@ -308,6 +308,8 @@
 					}
 				},
 				"protocols": {
+					"dynamic": false,
+					"type": "nested",
 					"properties": {
 						"type": {
 							"type": "keyword"
