@@ -252,20 +252,7 @@
 					}
 				},
 				"geometry": {
-					"properties": {
-						"coordinates": {
-							"type": "float"
-						},
-						"type": {
-							"type": "text",
-							"fields": {
-								"keyword": {
-									"type": "keyword",
-									"ignore_above": 256
-								}
-							}
-						}
-					}
+					"type": "geo_shape"
 				},
 				"id": {
 					"type": "keyword"
@@ -283,13 +270,7 @@
 					"type": "date"
 				},
 				"keywords": {
-					"type": "text",
-					"fields": {
-						"keyword": {
-							"type": "keyword",
-							"ignore_above": 256
-						}
-					}
+					"type": "keyword"
 				},
 				"latLonBoundsImage": {
 					"properties": {
@@ -329,13 +310,7 @@
 				"protocols": {
 					"properties": {
 						"type": {
-							"type": "text",
-							"fields": {
-								"keyword": {
-									"type": "keyword",
-									"ignore_above": 256
-								}
-							}
+							"type": "keyword"
 						},
 						"url": {
 							"type": "text",
@@ -433,13 +408,7 @@
 							}
 						},
 						"name": {
-							"type": "text",
-							"fields": {
-								"keyword": {
-									"type": "keyword",
-									"ignore_above": 256
-								}
-							}
+							"type": "keyword"
 						},
 						"name_en": {
 							"type": "text",
