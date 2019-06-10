@@ -36,6 +36,7 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import es.redmic.atlasview.common.query.LayerQueryUtils;
 import es.redmic.atlasview.model.layer.Layer;
 import es.redmic.atlasview.model.layer.LayerWMS;
 import es.redmic.elasticsearchlib.common.utils.ElasticPersistenceUtils;
@@ -190,6 +191,12 @@ public class LayerESRepository extends RWDataESRepository<Layer, GeoDataQueryDTO
 		Layer result = (Layer) queryById(id).get_source();
 
 		return elasticPersistenceUtils.delete(getIndex()[0], getType(), id, result.getJoinIndex().getParent());
+	}
+
+	@Override
+	protected BoolQueryBuilder getQuery(GeoDataQueryDTO queryDTO, QueryBuilder internalQuery,
+			QueryBuilder partialQuery) {
+		return LayerQueryUtils.getQuery(queryDTO, getInternalQuery(), partialQuery);
 	}
 
 	public DataHitWrapper<?> queryById(String id) {
