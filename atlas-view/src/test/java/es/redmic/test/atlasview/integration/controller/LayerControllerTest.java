@@ -31,7 +31,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -56,6 +59,9 @@ import es.redmic.atlasview.model.category.Category;
 import es.redmic.atlasview.model.layer.Layer;
 import es.redmic.atlasview.repository.category.CategoryESRepository;
 import es.redmic.atlasview.repository.layer.LayerESRepository;
+import es.redmic.models.es.common.query.dto.AggsPropertiesDTO;
+import es.redmic.models.es.common.query.dto.BboxQueryDTO;
+import es.redmic.models.es.common.query.dto.GeoDataQueryDTO;
 import es.redmic.models.es.common.query.dto.MgetDTO;
 import es.redmic.models.es.common.query.dto.SimpleQueryDTO;
 import es.redmic.testutils.documentation.DocumentationViewBaseTest;
@@ -163,6 +169,117 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 				.andExpect(jsonPath("$.body.data[0]", notNullValue()))
 				.andExpect(jsonPath("$.body.data.length()", is(1)))
 					.andDo(getSimpleQueryFieldsDescriptor());
+		
+		// @formatter:on
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void searchLayersPostWithFacets_Return200_WhenSearchIsCorrect() throws Exception {
+
+		GeoDataQueryDTO geoDataQuery = new GeoDataQueryDTO();
+
+		List<AggsPropertiesDTO> aggs = new ArrayList<>();
+
+		aggs.add(getAggProperties("keywords", "keywords"));
+		aggs.add(getAggProperties("protocols", "protocols.type"));
+		aggs.add(getAggProperties("themeInspire", "themeInspire.name"));
+		geoDataQuery.setAggs(aggs);
+
+		geoDataQuery.setSize(1);
+
+		// Se elimina accessibilityIds ya que no está permitido para usuarios
+		// básicos
+		HashMap<String, Object> query = mapper.convertValue(geoDataQuery, HashMap.class);
+		query.remove("accessibilityIds");
+
+		// @formatter:off
+		
+		this.mockMvc
+				.perform(post(LAYER_PATH + "/_search").content(mapper.writeValueAsString(query))
+					.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.success", is(true)))
+				.andExpect(jsonPath("$.body.data", notNullValue()))
+				.andExpect(jsonPath("$.body.data[0]", notNullValue()))
+				.andExpect(jsonPath("$.body.data.length()", is(1)))
+				.andExpect(jsonPath("$.body._aggs", notNullValue()))
+				.andExpect(jsonPath("$.body._aggs.protocols", notNullValue()))
+				.andExpect(jsonPath("$.body._aggs.themeInspire", notNullValue()))
+				.andExpect(jsonPath("$.body._aggs.keywords", notNullValue()))
+				.andExpect(jsonPath("$.body._aggs.protocols.buckets", notNullValue()))
+				.andExpect(jsonPath("$.body._aggs.themeInspire.buckets", notNullValue()))
+				.andExpect(jsonPath("$.body._aggs.keywords.buckets", notNullValue()))
+				.andExpect(jsonPath("$.body._aggs.protocols.buckets.length()", is(1)))
+				.andExpect(jsonPath("$.body._aggs.themeInspire.buckets.length()", is(1)))
+				.andExpect(jsonPath("$.body._aggs.keywords.buckets.length()", is(1)));
+		
+		// @formatter:on
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void searchLayersByBbox_Return200_WhenSearchIsCorrect() throws Exception {
+
+		GeoDataQueryDTO geoDataQuery = new GeoDataQueryDTO();
+
+		BboxQueryDTO bbox = new BboxQueryDTO();
+		bbox.setBottomRightLat(26.91650390625);
+		bbox.setBottomRightLon(-13.29345703125);
+		bbox.setTopLeftLat(29.55322265625);
+		bbox.setTopLeftLon(-18.78662109375);
+
+		geoDataQuery.setBbox(bbox);
+		geoDataQuery.setSize(1);
+
+		// Se elimina accessibilityIds ya que no está permitido para usuarios
+		// básicos
+		HashMap<String, Object> query = mapper.convertValue(geoDataQuery, HashMap.class);
+		query.remove("accessibilityIds");
+
+		// @formatter:off
+		
+		this.mockMvc
+				.perform(post(LAYER_PATH + "/_search").content(mapper.writeValueAsString(query))
+					.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.success", is(true)))
+				.andExpect(jsonPath("$.body.data", notNullValue()))
+				.andExpect(jsonPath("$.body.data[0]", notNullValue()))
+				.andExpect(jsonPath("$.body.data.length()", is(1)));
+		
+		// @formatter:on
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void searchLayersByBbox_NoReturnRecords_WhenDataNotSatisfyQuery() throws Exception {
+
+		GeoDataQueryDTO geoDataQuery = new GeoDataQueryDTO();
+
+		BboxQueryDTO bbox = new BboxQueryDTO();
+		bbox.setBottomRightLat(27.7294921875);
+		bbox.setBottomRightLon(-30.56640625);
+		bbox.setTopLeftLat(30.3662109375);
+		bbox.setTopLeftLon(-36.0595703125);
+
+		geoDataQuery.setBbox(bbox);
+		geoDataQuery.setSize(1);
+
+		// Se elimina accessibilityIds ya que no está permitido para usuarios
+		// básicos
+		HashMap<String, Object> query = mapper.convertValue(geoDataQuery, HashMap.class);
+		query.remove("accessibilityIds");
+
+		// @formatter:off
+		
+		this.mockMvc
+				.perform(post(LAYER_PATH + "/_search").content(mapper.writeValueAsString(query))
+					.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.success", is(true)))
+				.andExpect(jsonPath("$.body.data", notNullValue()))
+				.andExpect(jsonPath("$.body.data.length()", is(0)));
 		
 		// @formatter:on
 	}
@@ -324,5 +441,15 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 			.andExpect(jsonPath("$.body", notNullValue()))
 			.andExpect(jsonPath("$.body", is(schemaExpected)));
 		// @formatter:on
+	}
+
+	private AggsPropertiesDTO getAggProperties(String term, String field) {
+
+		AggsPropertiesDTO aggProperties = new AggsPropertiesDTO();
+		aggProperties.setField(field);
+		aggProperties.setTerm(term);
+		aggProperties.setSize(10);
+		aggProperties.setMinCount(1);
+		return aggProperties;
 	}
 }
