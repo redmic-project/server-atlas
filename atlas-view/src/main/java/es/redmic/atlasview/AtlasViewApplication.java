@@ -22,6 +22,7 @@ package es.redmic.atlasview;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCustomizer;
@@ -31,9 +32,17 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
 import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
 import es.redmic.jts4jackson.module.JTSModule;
+import es.redmic.models.es.common.view.QueryDTODeserializerModifier;
+import es.redmic.restlib.common.service.UserUtilsServiceItfc;
 import es.redmic.restlib.config.ResourceBundleMessageSource;
+import es.redmic.viewlib.common.querymanagement.QueryDTOMessageConverter;
 import io.micrometer.core.instrument.MeterRegistry;
 
 @SpringBootApplication
@@ -42,6 +51,12 @@ public class AtlasViewApplication {
 
 	@Value("${info.microservice.name}")
 	String microserviceName;
+
+	@Autowired
+	ObjectMapper objectMapper;
+
+	@Autowired
+	UserUtilsServiceItfc userService;
 
 	public static void main(String[] args) {
 		SpringApplication.run(AtlasViewApplication.class, args);
@@ -56,6 +71,22 @@ public class AtlasViewApplication {
 	@Bean
 	public Module jtsModule() {
 		return new JTSModule();
+	}
+
+	@Bean
+	public SimpleModule queryDTOJsonViewModule() {
+
+		return new SimpleModule().setDeserializerModifier(new QueryDTODeserializerModifier());
+	}
+
+	@Bean
+	public QueryDTOMessageConverter queryDTOMessageConverter() {
+
+		FilterProvider filters = new SimpleFilterProvider().setFailOnUnknownId(false).addFilter("DataQueryDTO",
+				SimpleBeanPropertyFilter.serializeAll());
+		objectMapper.setFilterProvider(filters);
+
+		return new QueryDTOMessageConverter(objectMapper, userService);
 	}
 
 	@PostConstruct
