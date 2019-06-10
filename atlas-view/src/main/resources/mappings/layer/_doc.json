@@ -71,11 +71,12 @@
 					}
 				},
 				"alias": {
-					"type": "text",
+					"type": "keyword",
 					"fields": {
-						"keyword": {
-							"type": "keyword",
-							"ignore_above": 256
+						"suggest": {
+							"type": "text",
+							"analyzer": "autocomplete",
+							"search_analyzer": "lower_analyzer"
 						}
 					}
 				},
@@ -270,7 +271,14 @@
 					"type": "date"
 				},
 				"keywords": {
-					"type": "keyword"
+					"type": "keyword",
+					"fields": {
+						"suggest": {
+							"type": "text",
+							"analyzer": "autocomplete",
+							"search_analyzer": "lower_analyzer"
+						}
+					}
 				},
 				"latLonBoundsImage": {
 					"properties": {
@@ -455,7 +463,14 @@
 					}
 				},
 				"title": {
-					"type": "keyword"
+					"type": "keyword",
+					"fields": {
+						"suggest": {
+							"type": "text",
+							"analyzer": "autocomplete",
+							"search_analyzer": "lower_analyzer"
+						}
+					}
 				},
 				"updated": {
 					"type": "date"
