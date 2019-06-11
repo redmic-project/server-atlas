@@ -211,11 +211,11 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 				.andExpect(jsonPath("$.body._aggs.protocols", notNullValue()))
 				.andExpect(jsonPath("$.body._aggs.themeInspire", notNullValue()))
 				.andExpect(jsonPath("$.body._aggs.keywords", notNullValue()))
-				.andExpect(jsonPath("$.body._aggs.protocols.sterms#protocols", notNullValue()))
-				.andExpect(jsonPath("$.body._aggs.protocols.sterms#protocols.buckets", notNullValue()))
+				.andExpect(jsonPath("$.body._aggs.protocols.protocols", notNullValue()))
+				.andExpect(jsonPath("$.body._aggs.protocols.protocols.buckets", notNullValue()))
 				.andExpect(jsonPath("$.body._aggs.themeInspire.buckets", notNullValue()))
 				.andExpect(jsonPath("$.body._aggs.keywords.buckets", notNullValue()))
-				.andExpect(jsonPath("$.body._aggs.protocols.sterms#protocols.buckets.length()", is(1)))
+				.andExpect(jsonPath("$.body._aggs.protocols.protocols.buckets.length()", is(1)))
 				.andExpect(jsonPath("$.body._aggs.themeInspire.buckets.length()", is(1)))
 				.andExpect(jsonPath("$.body._aggs.keywords.buckets.length()", is(1)));
 		
