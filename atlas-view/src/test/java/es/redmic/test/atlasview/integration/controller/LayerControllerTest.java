@@ -52,7 +52,6 @@ import org.springframework.kafka.test.rule.EmbeddedKafkaRule;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import es.redmic.atlasview.AtlasViewApplication;
@@ -65,6 +64,7 @@ import es.redmic.models.es.common.query.dto.BboxQueryDTO;
 import es.redmic.models.es.common.query.dto.GeoDataQueryDTO;
 import es.redmic.models.es.common.query.dto.MgetDTO;
 import es.redmic.models.es.common.query.dto.SimpleQueryDTO;
+import es.redmic.models.es.common.query.dto.TextQueryDTO;
 import es.redmic.testutils.documentation.DocumentationViewBaseTest;
 import es.redmic.testutils.utils.JsonToBeanTestUtil;
 
@@ -199,7 +199,7 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 
 		// @formatter:off
 		
-		MvcResult x = this.mockMvc
+		this.mockMvc
 				.perform(post(LAYER_PATH + "/_search").content(mapper.writeValueAsString(query))
 					.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -217,9 +217,59 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 				.andExpect(jsonPath("$.body._aggs.keywords.buckets", notNullValue()))
 				.andExpect(jsonPath("$.body._aggs.protocols.sterms#protocols.buckets.length()", is(1)))
 				.andExpect(jsonPath("$.body._aggs.themeInspire.buckets.length()", is(1)))
-				.andExpect(jsonPath("$.body._aggs.keywords.buckets.length()", is(1))).andReturn();
+				.andExpect(jsonPath("$.body._aggs.keywords.buckets.length()", is(1)));
 		
-		System.out.println(x.getResponse().getContentAsString());
+		// @formatter:on
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void searchLayersWithAggQuery_ReturnOneRecord_WhenSearchIsCorrect() throws Exception {
+
+		GeoDataQueryDTO geoDataQuery = new GeoDataQueryDTO();
+
+		List<AggsPropertiesDTO> aggs = new ArrayList<>();
+
+		aggs.add(getAggProperties("keywords", "keywords"));
+
+		AggsPropertiesDTO aggP = getAggProperties("protocols", "protocols.type");
+		aggP.setNested("protocols");
+		aggs.add(aggP);
+		aggs.add(getAggProperties("themeInspire", "themeInspire.name"));
+		geoDataQuery.setAggs(aggs);
+
+		Map<String, String[]> postFilter = new HashMap<>();
+		postFilter.put("themeInspire.name", "Distribución de las especies".split(","));
+		geoDataQuery.setPostFilter(postFilter);
+
+		geoDataQuery.setSize(1);
+
+		// Se elimina accessibilityIds ya que no está permitido para usuarios
+		// básicos
+		HashMap<String, Object> query = mapper.convertValue(geoDataQuery, HashMap.class);
+		query.remove("accessibilityIds");
+
+		// @formatter:off
+		
+		this.mockMvc
+				.perform(post(LAYER_PATH + "/_search").content(mapper.writeValueAsString(query))
+					.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.success", is(true)))
+				.andExpect(jsonPath("$.body.data", notNullValue()))
+				.andExpect(jsonPath("$.body.data[0]", notNullValue()))
+				.andExpect(jsonPath("$.body.data.length()", is(1)))
+				.andExpect(jsonPath("$.body._aggs", notNullValue()))
+				.andExpect(jsonPath("$.body._aggs.protocols", notNullValue()))
+				.andExpect(jsonPath("$.body._aggs.themeInspire", notNullValue()))
+				.andExpect(jsonPath("$.body._aggs.keywords", notNullValue()))
+				.andExpect(jsonPath("$.body._aggs.protocols.sterms#protocols", notNullValue()))
+				.andExpect(jsonPath("$.body._aggs.protocols.sterms#protocols.buckets", notNullValue()))
+				.andExpect(jsonPath("$.body._aggs.themeInspire.buckets", notNullValue()))
+				.andExpect(jsonPath("$.body._aggs.keywords.buckets", notNullValue()))
+				.andExpect(jsonPath("$.body._aggs.protocols.sterms#protocols.buckets.length()", is(1)))
+				.andExpect(jsonPath("$.body._aggs.themeInspire.buckets.length()", is(1)))
+				.andExpect(jsonPath("$.body._aggs.keywords.buckets.length()", is(1)));
 		
 		// @formatter:on
 	}
@@ -349,8 +399,8 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 		
 		this.mockMvc
 			.perform(get(LAYER_PATH)
-					.param("fields", "{name}")
-					.param("text", layer.getName())
+					.param("fields", "{keywords, alias, title}")
+					.param("text", layer.getId())
 					.param("from", "0")
 					.param("size", "1").accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -358,7 +408,42 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 				.andExpect(jsonPath("$.body.data", notNullValue()))
 				.andExpect(jsonPath("$.body.data[0]", notNullValue()))
 				.andExpect(jsonPath("$.body.data.length()", is(1)))
-					.andDo(getSearchSimpleParametersDescription());
+				.andDo(getSearchSimpleParametersDescription());
+		
+		// @formatter:off
+	}
+	
+	@Test
+	public void textSearchQueryWithHighlight_ReturnRecordsAndHighlight_WhenSearchIsCorrect() throws Exception {
+
+		// @formatter:off
+		
+		SimpleQueryDTO dataQuery = new SimpleQueryDTO();
+		dataQuery.setSize(1);
+		
+		TextQueryDTO textQuery = new TextQueryDTO();
+		
+		textQuery.setSearchFields(new String[] { "keywords.suggest", "alias.suggest", "title.suggest"});
+		textQuery.setHighlightFields(new String[] { "keywords.suggest", "alias.suggest", "title.suggest"});
+		textQuery.setText(layer.getTitle());
+		
+		dataQuery.setText(textQuery );
+		
+		this.mockMvc
+			.perform(post(LAYER_PATH + "/_search")
+					.content(mapper.writeValueAsString(dataQuery))
+					.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.success", is(true)))
+				.andExpect(jsonPath("$.body.data", notNullValue()))
+				.andExpect(jsonPath("$.body.data[0]", notNullValue()))
+				.andExpect(jsonPath("$.body.data.length()", is(1)))
+				.andExpect(jsonPath("$.body.data[0]._meta", notNullValue()))
+				.andExpect(jsonPath("$.body.data[0]._meta.highlight", notNullValue()))
+				.andExpect(jsonPath("$.body.data[0]._meta.highlight.alias", notNullValue()))
+				.andExpect(jsonPath("$.body.data[0]._meta.highlight.title", notNullValue()))
+				.andExpect(jsonPath("$.body.data[0]._meta.highlight.alias.length()", is(1)))
+				.andExpect(jsonPath("$.body.data[0]._meta.highlight.title.length()", is(1)));
 		
 		// @formatter:off
 	}
@@ -392,8 +477,8 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 		
 		this.mockMvc
 			.perform(get(LAYER_PATH + "/_suggest")
-					.param("fields", new String[] { "name" })
-					.param("text", layer.getName())
+					.param("fields", new String[] { "keywords", "alias", "title" })
+					.param("text", layer.getTitle())
 					.param("size", "1")
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
