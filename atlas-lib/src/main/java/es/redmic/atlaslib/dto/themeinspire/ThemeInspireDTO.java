@@ -35,7 +35,7 @@ public class ThemeInspireDTO extends DomainDTO {
 	@JsonIgnore
 	public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse(
 		"{\"type\":\"record\",\"name\":\"ThemeInspireDTO\",\"namespace\":\"es.redmic.atlaslib.dto.themeinspire\",\"fields\":["
-				+ "{\"name\":\"code\",\"type\":\"string\"},"
+				+ "{\"name\":\"code\",\"type\":[\"string\", \"null\"]},"
 				+ "{\"name\":\"name\",\"type\":[\"string\", \"null\"]},"
 				+ "{\"name\":\"name_en\",\"type\":[\"string\", \"null\"]},"
 				+ "{\"name\":\"id\",\"type\":\"string\"}]}");

@@ -20,7 +20,6 @@ package es.redmic.atlaslib.dto.layerinfo;
  * #L%
  */
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.avro.Schema;
@@ -51,7 +50,7 @@ public class LayerInfoDTO extends LayerCompactDTO {
 	public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse(
 		"{\"type\":\"record\",\"name\":\"LayerDTO\",\"namespace\":\"es.redmic.atlaslib.dto.layerinfo\",\"fields\":["
 			+ "{\"name\":\"parent\",\"type\":" + CategoryDTO.SCHEMA$ + "},"
-			+ "{\"name\":\"themeInspire\",\"type\":["+ ThemeInspireDTO.SCHEMA$ +", \"null\"]},"
+			+ "{\"name\":\"themeInspire\",\"type\":[" + ThemeInspireDTO.SCHEMA$ + ", \"null\"]},"
 			+ "{\"name\":\"latLonBoundsImage\",\"type\":[" + LatLonBoundingBoxDTO.SCHEMA$ + ", \"null\"]},"
 			+ "{\"name\": \"protocols\",\"type\": [{\"type\": \"array\",\"items\":" + ProtocolDTO.SCHEMA$ + "},\"null\"]},"
 			+ "{\"name\":\"description\",\"type\":[\"string\", \"null\"]},"
@@ -70,7 +69,6 @@ public class LayerInfoDTO extends LayerCompactDTO {
 	@NotNull
 	@JsonDeserialize(using = CustomRelationDeserializer.class)
 	@JsonSchemaUrl(value = "controller.mapping.CATEGORY")
-	@Valid
 	CategoryDTO parent;
 
 	public CategoryDTO getParent() {

@@ -104,14 +104,6 @@ public class LayerInfoCheckDTOValidationTest extends DTOBaseTest<LayerInfoDTO> {
 	}
 
 	@Test
-	public void validationDTO_ReturnNotNullError_IfThemeInspireFieldIsNull() {
-
-		dto.getThemeInspire().setName(null);
-
-		checkDTOHasError(dto, NOT_NULL_MESSAGE_TEMPLATE);
-	}
-
-	@Test
 	public void validationDTO_ReturnNotNullError_IfLatLonBoundsImageFieldIsNull() {
 
 		LatLonBoundingBoxDTO latLonBoundingBoxDTO = LayerDataUtil.getLatLonBoundingBoxDTO();

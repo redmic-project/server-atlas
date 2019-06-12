@@ -44,7 +44,6 @@ public abstract class LayerCompactDTO extends LayerBaseDTO {
 
 	@JsonDeserialize(using = CustomRelationDeserializer.class)
 	@JsonSchemaUrl(value = "controller.mapping.THEME_INSPIRE")
-	@Valid
 	private ThemeInspireDTO themeInspire;
 
 	@Valid
