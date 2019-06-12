@@ -170,7 +170,7 @@ public class LayerRestTest extends DocumentationCommandBaseTest {
 		this.mockMvc
 				.perform(post(CATEGORY_PATH)
 						.header("Authorization", "Bearer " + getTokenOAGUser())
-						.content(mapper.writeValueAsString(layerInfoDTO))
+						.content(LayerDataUtil.getLayerInfoToSave(layerInfoDTO))
 						.contentType(MediaType.APPLICATION_JSON)
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -209,7 +209,7 @@ public class LayerRestTest extends DocumentationCommandBaseTest {
 		this.mockMvc
 				.perform(put(CATEGORY_PATH + "/" + id)
 						.header("Authorization", "Bearer " + getTokenOAGUser())
-						.content(mapper.writeValueAsString(layerInfoDTO))
+						.content(LayerDataUtil.getLayerInfoToSave(layerInfoDTO))
 						.contentType(MediaType.APPLICATION_JSON)
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())

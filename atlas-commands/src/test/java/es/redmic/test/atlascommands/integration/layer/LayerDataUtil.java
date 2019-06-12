@@ -32,6 +32,9 @@ import org.joda.time.DateTime;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Polygon;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import es.redmic.atlaslib.dto.layer.ActivityDTO;
 import es.redmic.atlaslib.dto.layer.AttributionDTO;
 import es.redmic.atlaslib.dto.layer.ContactDTO;
@@ -284,6 +287,21 @@ public abstract class LayerDataUtil {
 		layerInfo.setLatLonBoundsImage(getLatLonBoundingBoxDTO());
 
 		return layerInfo;
+	}
+
+	public static String getLayerInfoToSave(LayerInfoDTO layerInfoDTO) throws JsonProcessingException {
+
+		ObjectMapper mapper = new ObjectMapper();
+
+		String layerInfoString = mapper.writeValueAsString(layerInfoDTO);
+
+		layerInfoString = layerInfoString.replace(mapper.writeValueAsString(ThemeInspireDataUtil.getThemeInspire("cc")),
+				"\"" + ThemeInspireDataUtil.getThemeInspire("cc").getId() + "\"");
+
+		layerInfoString = layerInfoString.replace(mapper.writeValueAsString(CategoryDataUtil.getCategory("3442")),
+				"\"" + CategoryDataUtil.getCategory("3442").getId() + "\"");
+
+		return layerInfoString;
 	}
 
 	public static LayerDTO getLayer(String code) {
