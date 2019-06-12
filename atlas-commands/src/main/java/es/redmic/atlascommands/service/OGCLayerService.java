@@ -27,7 +27,6 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import es.redmic.atlascommands.utils.Capabilities;
-import es.redmic.atlaslib.dto.layer.LayerDTO;
 import es.redmic.atlaslib.dto.layerwms.LayerWMSDTO;
 import es.redmic.exception.atlas.LayerNotFoundException;
 
@@ -35,7 +34,7 @@ import es.redmic.exception.atlas.LayerNotFoundException;
 public class OGCLayerService {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public List<LayerDTO> discoverWMSLayers(String urlSource) {
+	public List<LayerWMSDTO> discoverWMSLayers(String urlSource) {
 
 		HashMap<String, LayerWMSDTO> result = Capabilities.getCapabilities(urlSource);
 

@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.redmic.atlascommands.service.OGCLayerService;
-import es.redmic.atlaslib.dto.layer.LayerDTO;
+import es.redmic.atlaslib.dto.layerwms.LayerWMSDTO;
 import es.redmic.exception.data.ItemAlreadyExistException;
 import es.redmic.exception.databinding.DTONotValidException;
 import es.redmic.models.es.common.dto.BodyItemDTO;
@@ -59,11 +59,11 @@ public class OGCLayerController {
 		if (errorDto.hasErrors())
 			throw new DTONotValidException(errorDto);
 
-		List<LayerDTO> result = service.discoverWMSLayers(workSpace.getUrl());
+		List<LayerWMSDTO> result = service.discoverWMSLayers(workSpace.getUrl());
 
 		if (result == null)
 			throw new ItemAlreadyExistException();
 
-		return new BodyItemDTO<List<LayerDTO>>(result);
+		return new BodyItemDTO<List<LayerWMSDTO>>(result);
 	}
 }
