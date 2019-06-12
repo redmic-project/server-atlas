@@ -13,7 +13,7 @@
 		},
 		"themeInspire": {
 			"type": ["integer", "null"],
-			"url": "/api/atlas/commands/themeinspire"
+			"url": "/api/atlas/view/themeinspire"
 		},
 		"latLonBoundsImage": {
 			"$ref": "#/definitions/LatLonBoundingBoxDTO"
@@ -48,7 +48,7 @@
 		},
 		"parent": {
 			"type": "integer",
-			"url": "/api/atlas/commands/category"
+			"url": "/api/atlas/view/category"
 		}
 	},
 	"required": ["name", "protocols", "atlas", "refresh", "urlSource", "parent"],
