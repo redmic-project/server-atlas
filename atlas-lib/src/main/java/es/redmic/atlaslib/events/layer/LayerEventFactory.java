@@ -30,7 +30,9 @@ import es.redmic.atlaslib.events.layer.common.LayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.common.LayerEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerConfirmedEvent;
+import es.redmic.atlaslib.events.layer.create.CreateLayerEnrichedEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerFailedEvent;
+import es.redmic.atlaslib.events.layer.create.EnrichCreateLayerEvent;
 import es.redmic.atlaslib.events.layer.create.LayerCreatedEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerCheckFailedEvent;
@@ -104,6 +106,18 @@ public class LayerEventFactory {
 	public static Event getEvent(Event source, String type, LayerDTO layer) {
 
 		LayerEvent successfulEvent = null;
+
+		if (type.equals(LayerEventTypes.ENRICH_CREATE)) {
+
+			logger.debug("Creando evento EnrichCreateLayerEvent para: " + source.getAggregateId());
+			successfulEvent = new EnrichCreateLayerEvent().buildFrom(source);
+		}
+
+		if (type.equals(LayerEventTypes.CREATE_ENRICHED)) {
+
+			logger.debug("Creando evento CreateLayerEnrichedEvent para: " + source.getAggregateId());
+			successfulEvent = new CreateLayerEnrichedEvent().buildFrom(source);
+		}
 
 		if (type.equals(LayerEventTypes.CREATED)) {
 

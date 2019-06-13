@@ -29,7 +29,9 @@ import es.redmic.atlaslib.events.layer.LayerEventFactory;
 import es.redmic.atlaslib.events.layer.LayerEventTypes;
 import es.redmic.atlaslib.events.layer.create.CreateLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerConfirmedEvent;
+import es.redmic.atlaslib.events.layer.create.CreateLayerEnrichedEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerFailedEvent;
+import es.redmic.atlaslib.events.layer.create.EnrichCreateLayerEvent;
 import es.redmic.atlaslib.events.layer.create.LayerCreatedEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerCheckFailedEvent;
@@ -123,6 +125,32 @@ public class LayerEventFactoryTest {
 	}
 
 	/////////////////////////
+
+	@Test
+	public void GetEvent_ReturnEnrichCreateLayerEvent_IfTypeIsEnrichCreate() {
+
+		Event source = LayerDataUtil.getEnrichCreateLayerEvent();
+		EnrichCreateLayerEvent event = (EnrichCreateLayerEvent) LayerEventFactory.getEvent(source,
+				LayerEventTypes.ENRICH_CREATE, LayerDataUtil.getLayer());
+
+		assertEquals(LayerEventTypes.ENRICH_CREATE, event.getType());
+		assertNotNull(event.getLayer());
+
+		checkMetadataFields(source, event);
+	}
+
+	@Test
+	public void GetEvent_ReturnCreateEnrichedLayerEvent_IfTypeIsEnrichCreate() {
+
+		Event source = LayerDataUtil.getCreateLayerEnrichedEvent();
+		CreateLayerEnrichedEvent event = (CreateLayerEnrichedEvent) LayerEventFactory.getEvent(source,
+				LayerEventTypes.CREATE_ENRICHED, LayerDataUtil.getLayer());
+
+		assertEquals(LayerEventTypes.CREATE_ENRICHED, event.getType());
+		assertNotNull(event.getLayer());
+
+		checkMetadataFields(source, event);
+	}
 
 	@Test
 	public void GetEvent_ReturnLayerCreatedEvent_IfTypeIsCreated() {

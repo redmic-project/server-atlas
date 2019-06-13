@@ -44,8 +44,10 @@ import es.redmic.atlaslib.dto.layerwms.LayerWMSDTO;
 import es.redmic.atlaslib.events.layer.LayerEventTypes;
 import es.redmic.atlaslib.events.layer.create.CreateLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerConfirmedEvent;
+import es.redmic.atlaslib.events.layer.create.CreateLayerEnrichedEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerFailedEvent;
+import es.redmic.atlaslib.events.layer.create.EnrichCreateLayerEvent;
 import es.redmic.atlaslib.events.layer.create.LayerCreatedEvent;
 import es.redmic.atlaslib.events.layer.delete.CheckDeleteLayerEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerCancelledEvent;
@@ -85,6 +87,22 @@ public abstract class LayerDataUtil {
 		event.setUserId(USER);
 		event.setLayer(getLayer());
 
+		return event;
+	}
+
+	public static EnrichCreateLayerEvent getEnrichCreateLayerEvent() {
+
+		EnrichCreateLayerEvent event = new EnrichCreateLayerEvent().buildFrom(getCreateEvent());
+		event.setType(LayerEventTypes.ENRICH_CREATE);
+		event.setLayer(getLayer());
+		return event;
+	}
+
+	public static CreateLayerEnrichedEvent getCreateLayerEnrichedEvent() {
+
+		CreateLayerEnrichedEvent event = new CreateLayerEnrichedEvent().buildFrom(getCreateEvent());
+		event.setType(LayerEventTypes.CREATE_ENRICHED);
+		event.setLayer(getLayer());
 		return event;
 	}
 

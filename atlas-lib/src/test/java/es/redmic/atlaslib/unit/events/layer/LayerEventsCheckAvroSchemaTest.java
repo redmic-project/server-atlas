@@ -27,8 +27,10 @@ import org.junit.Test;
 
 import es.redmic.atlaslib.events.layer.create.CreateLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerConfirmedEvent;
+import es.redmic.atlaslib.events.layer.create.CreateLayerEnrichedEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerFailedEvent;
+import es.redmic.atlaslib.events.layer.create.EnrichCreateLayerEvent;
 import es.redmic.atlaslib.events.layer.create.LayerCreatedEvent;
 import es.redmic.atlaslib.events.layer.delete.CheckDeleteLayerEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerCancelledEvent;
@@ -54,6 +56,32 @@ import es.redmic.atlaslib.unit.utils.LayerDataUtil;
 public class LayerEventsCheckAvroSchemaTest extends AtlasAvroBaseTest {
 
 	// Create
+
+	@Test
+	public void EnrichCreateLayerEventSerializeAndDeserialize_IsSuccessful_IfSchemaAndDataAreCorrect() {
+
+		EnrichCreateLayerEvent event = LayerDataUtil.getEnrichCreateLayerEvent();
+
+		Object result = serializerAndDeserializer(event);
+
+		assertTrue("El objeto obtenido debe ser una instancia de EnrichCreateLayerEvent",
+				EnrichCreateLayerEvent.class.isInstance(result));
+
+		assertEquals(result, event);
+	}
+
+	@Test
+	public void CreateLayerEnrichedEventSerializeAndDeserialize_IsSuccessful_IfSchemaAndDataAreCorrect() {
+
+		CreateLayerEnrichedEvent event = LayerDataUtil.getCreateLayerEnrichedEvent();
+
+		Object result = serializerAndDeserializer(event);
+
+		assertTrue("El objeto obtenido debe ser una instancia de CreateLayerEnrichedEvent",
+				CreateLayerEnrichedEvent.class.isInstance(result));
+
+		assertEquals(result, event);
+	}
 
 	@Test
 	public void CreateLayerEventSerializeAndDeserialize_IsSuccessful_IfSchemaAndDataAreCorrect() {
