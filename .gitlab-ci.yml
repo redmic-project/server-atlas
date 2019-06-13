@@ -26,6 +26,7 @@ variables:
   LOGGING_LEVEL_ROOT: error
   LOGGING_LEVEL_ORG_SPRINGFRAMEWORK: error
   LOGGING_LEVEL_ES_REDMIC: error
+  STATUS_CHECK_DELAY: 200
 
 maven-build-view:
   variables:
