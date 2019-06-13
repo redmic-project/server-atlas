@@ -1,4 +1,4 @@
-package es.redmic.atlaslib.events.layer.create;
+package es.redmic.atlaslib.events.layer.update;
 
 /*-
  * #%L
@@ -20,31 +20,35 @@ package es.redmic.atlaslib.events.layer.create;
  * #L%
  */
 
+import java.util.UUID;
+
 import org.apache.avro.Schema;
 
 import es.redmic.atlaslib.dto.layer.LayerDTO;
 import es.redmic.atlaslib.events.layer.LayerEventTypes;
 import es.redmic.atlaslib.events.layer.common.LayerEvent;
 
-public class CreateLayerEnrichedEvent extends LayerEvent {
+public class EnrichUpdateLayerEvent extends LayerEvent {
 
 	// @formatter:off
 
 	public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{"
-		+ "\"type\":\"record\",\"name\":\"CreateLayerEnrichedEvent\","
-				+ "\"namespace\":\"es.redmic.atlaslib.events.layer.create\",\"fields\":["
+		+ "\"type\":\"record\",\"name\":\"EnrichUpdateLayerEvent\","
+				+ "\"namespace\":\"es.redmic.atlaslib.events.layer.update\",\"fields\":["
 			+ getLayerEventSchema() + ","
 			+ getEventBaseSchema() + "]}");
 	// @formatter:on
 
-	static String type = LayerEventTypes.CREATE_ENRICHED;
+	static String type = LayerEventTypes.ENRICH_UPDATE;
 
-	public CreateLayerEnrichedEvent() {
+	public EnrichUpdateLayerEvent() {
 		super(type);
+		setSessionId(UUID.randomUUID().toString());
 	}
 
-	public CreateLayerEnrichedEvent(LayerDTO layer) {
+	public EnrichUpdateLayerEvent(LayerDTO layer) {
 		super(type);
+		setSessionId(UUID.randomUUID().toString());
 		setLayer(layer);
 	}
 

@@ -45,9 +45,11 @@ import es.redmic.atlaslib.events.layer.refresh.RefreshLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerFailedEvent;
+import es.redmic.atlaslib.events.layer.update.EnrichUpdateLayerEvent;
 import es.redmic.atlaslib.events.layer.update.LayerUpdatedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerConfirmedEvent;
+import es.redmic.atlaslib.events.layer.update.UpdateLayerEnrichedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerFailedEvent;
 import es.redmic.atlaslib.unit.utils.AtlasAvroBaseTest;
@@ -149,6 +151,32 @@ public class LayerEventsCheckAvroSchemaTest extends AtlasAvroBaseTest {
 	}
 
 	// Update
+
+	@Test
+	public void EnrichUpdateLayerEventSerializeAndDeserialize_IsSuccessful_IfSchemaAndDataAreCorrect() {
+
+		EnrichUpdateLayerEvent event = LayerDataUtil.getEnrichUpdateLayerEvent();
+
+		Object result = serializerAndDeserializer(event);
+
+		assertTrue("El objeto obtenido debe ser una instancia de EnrichUpdateLayerEvent",
+				EnrichUpdateLayerEvent.class.isInstance(result));
+
+		assertEquals(result, event);
+	}
+
+	@Test
+	public void UpdateLayerEnrichedEventSerializeAndDeserialize_IsSuccessful_IfSchemaAndDataAreCorrect() {
+
+		UpdateLayerEnrichedEvent event = LayerDataUtil.getUpdateLayerEnrichedEvent();
+
+		Object result = serializerAndDeserializer(event);
+
+		assertTrue("El objeto obtenido debe ser una instancia de UpdateLayerEnrichedEvent",
+				UpdateLayerEnrichedEvent.class.isInstance(result));
+
+		assertEquals(result, event);
+	}
 
 	@Test
 	public void UpdateLayerEventSerializeAndDeserialize_IsSuccessful_IfSchemaAndDataAreCorrect() {

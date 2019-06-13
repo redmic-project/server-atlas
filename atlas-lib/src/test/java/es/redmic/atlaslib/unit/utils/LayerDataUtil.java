@@ -62,9 +62,11 @@ import es.redmic.atlaslib.events.layer.refresh.RefreshLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerFailedEvent;
+import es.redmic.atlaslib.events.layer.update.EnrichUpdateLayerEvent;
 import es.redmic.atlaslib.events.layer.update.LayerUpdatedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerConfirmedEvent;
+import es.redmic.atlaslib.events.layer.update.UpdateLayerEnrichedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerFailedEvent;
 
@@ -146,6 +148,23 @@ public abstract class LayerDataUtil {
 		event.setType(LayerEventTypes.UPDATE);
 		event.setVersion(2);
 		event.setUserId(USER);
+		event.setLayer(getLayer());
+		return event;
+	}
+
+	public static EnrichUpdateLayerEvent getEnrichUpdateLayerEvent() {
+
+		EnrichUpdateLayerEvent event = new EnrichUpdateLayerEvent().buildFrom(getUpdateEvent());
+
+		event.setType(LayerEventTypes.ENRICH_UPDATE);
+		event.setLayer(getLayer());
+		return event;
+	}
+
+	public static UpdateLayerEnrichedEvent getUpdateLayerEnrichedEvent() {
+
+		UpdateLayerEnrichedEvent event = new UpdateLayerEnrichedEvent().buildFrom(getUpdateEvent());
+		event.setType(LayerEventTypes.UPDATE_ENRICHED);
 		event.setLayer(getLayer());
 		return event;
 	}

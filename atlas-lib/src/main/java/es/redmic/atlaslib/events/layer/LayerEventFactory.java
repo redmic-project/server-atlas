@@ -45,9 +45,11 @@ import es.redmic.atlaslib.events.layer.refresh.LayerRefreshedEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerFailedEvent;
+import es.redmic.atlaslib.events.layer.update.EnrichUpdateLayerEvent;
 import es.redmic.atlaslib.events.layer.update.LayerUpdatedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerConfirmedEvent;
+import es.redmic.atlaslib.events.layer.update.UpdateLayerEnrichedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerFailedEvent;
 import es.redmic.brokerlib.avro.common.Event;
 import es.redmic.brokerlib.avro.common.EventError;
@@ -123,6 +125,18 @@ public class LayerEventFactory {
 
 			logger.debug("Creando evento LayerCreatedEvent para: " + source.getAggregateId());
 			successfulEvent = new LayerCreatedEvent().buildFrom(source);
+		}
+
+		if (type.equals(LayerEventTypes.ENRICH_UPDATE)) {
+
+			logger.debug("Creando evento EnrichUpdateLayerEvent para: " + source.getAggregateId());
+			successfulEvent = new EnrichUpdateLayerEvent().buildFrom(source);
+		}
+
+		if (type.equals(LayerEventTypes.UPDATE_ENRICHED)) {
+
+			logger.debug("Creando evento UpdateLayerEnrichedEvent para: " + source.getAggregateId());
+			successfulEvent = new UpdateLayerEnrichedEvent().buildFrom(source);
 		}
 
 		if (type.equals(LayerEventTypes.UPDATED)) {

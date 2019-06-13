@@ -1,4 +1,4 @@
-package es.redmic.atlaslib.events.layer.create;
+package es.redmic.atlaslib.events.layer.update;
 
 /*-
  * #%L
@@ -26,24 +26,24 @@ import es.redmic.atlaslib.dto.layer.LayerDTO;
 import es.redmic.atlaslib.events.layer.LayerEventTypes;
 import es.redmic.atlaslib.events.layer.common.LayerEvent;
 
-public class CreateLayerEnrichedEvent extends LayerEvent {
+public class UpdateLayerEnrichedEvent extends LayerEvent {
 
 	// @formatter:off
 
 	public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{"
-		+ "\"type\":\"record\",\"name\":\"CreateLayerEnrichedEvent\","
-				+ "\"namespace\":\"es.redmic.atlaslib.events.layer.create\",\"fields\":["
+		+ "\"type\":\"record\",\"name\":\"UpdateLayerEnrichedEvent\","
+				+ "\"namespace\":\"es.redmic.atlaslib.events.layer.update\",\"fields\":["
 			+ getLayerEventSchema() + ","
 			+ getEventBaseSchema() + "]}");
 	// @formatter:on
 
-	static String type = LayerEventTypes.CREATE_ENRICHED;
+	static String type = LayerEventTypes.UPDATE_ENRICHED;
 
-	public CreateLayerEnrichedEvent() {
+	public UpdateLayerEnrichedEvent() {
 		super(type);
 	}
 
-	public CreateLayerEnrichedEvent(LayerDTO layer) {
+	public UpdateLayerEnrichedEvent(LayerDTO layer) {
 		super(type);
 		setLayer(layer);
 	}
