@@ -30,6 +30,7 @@ import es.redmic.atlaslib.events.layer.LayerEventTypes;
 import es.redmic.atlaslib.events.layer.create.CreateLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerEnrichedEvent;
+import es.redmic.atlaslib.events.layer.create.CreateLayerEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerFailedEvent;
 import es.redmic.atlaslib.events.layer.create.EnrichCreateLayerEvent;
 import es.redmic.atlaslib.events.layer.create.LayerCreatedEvent;
@@ -49,6 +50,7 @@ import es.redmic.atlaslib.events.layer.update.LayerUpdatedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEnrichedEvent;
+import es.redmic.atlaslib.events.layer.update.UpdateLayerEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerFailedEvent;
 import es.redmic.atlaslib.unit.utils.LayerDataUtil;
 import es.redmic.brokerlib.avro.common.Event;
@@ -155,6 +157,19 @@ public class LayerEventFactoryTest {
 	}
 
 	@Test
+	public void GetEvent_ReturnCreateLayerEvent_IfTypeIsCreate() {
+
+		Event source = LayerDataUtil.getCreateLayerEnrichedEvent();
+		CreateLayerEvent event = (CreateLayerEvent) LayerEventFactory.getEvent(source, LayerEventTypes.CREATE,
+				LayerDataUtil.getLayer());
+
+		assertEquals(LayerEventTypes.CREATE, event.getType());
+		assertNotNull(event.getLayer());
+
+		checkMetadataFields(source, event);
+	}
+
+	@Test
 	public void GetEvent_ReturnLayerCreatedEvent_IfTypeIsCreated() {
 
 		Event source = LayerDataUtil.getCreateLayerConfirmedEvent();
@@ -188,6 +203,19 @@ public class LayerEventFactoryTest {
 				LayerEventTypes.UPDATE_ENRICHED, LayerDataUtil.getLayer());
 
 		assertEquals(LayerEventTypes.UPDATE_ENRICHED, event.getType());
+		assertNotNull(event.getLayer());
+
+		checkMetadataFields(source, event);
+	}
+
+	@Test
+	public void GetEvent_ReturnUpdateLayerEvent_IfTypeIsUpdate() {
+
+		Event source = LayerDataUtil.getUpdateLayerEnrichedEvent();
+		UpdateLayerEvent event = (UpdateLayerEvent) LayerEventFactory.getEvent(source, LayerEventTypes.UPDATE,
+				LayerDataUtil.getLayer());
+
+		assertEquals(LayerEventTypes.UPDATE, event.getType());
 		assertNotNull(event.getLayer());
 
 		checkMetadataFields(source, event);
