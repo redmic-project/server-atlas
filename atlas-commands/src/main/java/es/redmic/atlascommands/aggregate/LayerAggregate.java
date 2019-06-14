@@ -36,6 +36,7 @@ import es.redmic.atlaslib.events.layer.create.EnrichCreateLayerEvent;
 import es.redmic.atlaslib.events.layer.delete.CheckDeleteLayerEvent;
 import es.redmic.atlaslib.events.layer.delete.LayerDeletedEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerEvent;
+import es.redmic.atlaslib.events.layer.update.EnrichUpdateLayerEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEvent;
 import es.redmic.brokerlib.avro.common.Event;
 import es.redmic.commandslib.aggregate.Aggregate;
@@ -77,7 +78,7 @@ public class LayerAggregate extends Aggregate {
 		return evt;
 	}
 
-	public UpdateLayerEvent process(UpdateLayerCommand cmd) {
+	public LayerEvent process(UpdateLayerCommand cmd) {
 
 		assert layerStateStore != null;
 
@@ -89,7 +90,14 @@ public class LayerAggregate extends Aggregate {
 
 		checkState(id, state.getType());
 
-		UpdateLayerEvent evt = new UpdateLayerEvent(cmd.getLayer());
+		LayerEvent evt;
+
+		if (cmd.getLayer().getThemeInspire() != null) {
+			evt = new EnrichUpdateLayerEvent(cmd.getLayer());
+		} else {
+			evt = new UpdateLayerEvent(cmd.getLayer());
+		}
+
 		evt.setAggregateId(id);
 		evt.setVersion(getVersion() + 1);
 		return evt;
