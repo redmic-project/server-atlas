@@ -57,7 +57,7 @@ import es.redmic.atlaslib.events.layer.refresh.RefreshLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerEvent;
 import es.redmic.atlaslib.events.layer.update.LayerUpdatedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerCancelledEvent;
-import es.redmic.atlaslib.events.layer.update.UpdateLayerEvent;
+import es.redmic.atlaslib.events.layer.update.UpdateLayerEnrichedEvent;
 import es.redmic.brokerlib.alert.AlertService;
 import es.redmic.commandslib.commands.CommandHandler;
 import es.redmic.commandslib.streaming.common.StreamConfig;
@@ -164,7 +164,7 @@ public class LayerCommandHandler extends CommandHandler {
 		LayerAggregate agg = new LayerAggregate(layerStateStore);
 
 		// Se procesa el comando, obteniendo el evento generado
-		UpdateLayerEvent event = agg.process(cmd);
+		LayerEvent event = agg.process(cmd);
 
 		// Si no se genera evento significa que no se va a aplicar
 		if (event == null)
@@ -252,6 +252,12 @@ public class LayerCommandHandler extends CommandHandler {
 		// El evento Creado se envía desde el stream
 
 		resolveCommand(event.getSessionId());
+	}
+
+	@KafkaHandler
+	private void listen(UpdateLayerEnrichedEvent event) {
+
+		publishToKafka(LayerEventFactory.getEvent(event, LayerEventTypes.UPDATE, event.getLayer()), layerTopic);
 	}
 
 	@KafkaHandler
