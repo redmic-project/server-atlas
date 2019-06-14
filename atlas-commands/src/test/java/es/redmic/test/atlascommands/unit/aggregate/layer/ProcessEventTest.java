@@ -43,7 +43,7 @@ import es.redmic.atlascommands.statestore.LayerStateStore;
 import es.redmic.atlaslib.dto.layer.LayerDTO;
 import es.redmic.atlaslib.dto.layerwms.LayerWMSDTO;
 import es.redmic.atlaslib.events.layer.LayerEventTypes;
-import es.redmic.atlaslib.events.layer.create.CreateLayerEvent;
+import es.redmic.atlaslib.events.layer.common.LayerEvent;
 import es.redmic.atlaslib.events.layer.delete.CheckDeleteLayerEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEvent;
@@ -69,15 +69,16 @@ public class ProcessEventTest {
 	}
 
 	@Test
-	public void processCreateLayerCommand_ReturnLayerCreatedEvent_IfProcessIsOk() {
+	public void processCreateLayerCommand_ReturnCreateLayerEvent_IfThemeInspireIsNull() {
 
 		when(layerStateStore.getLayer(any())).thenReturn(null);
 
 		LayerDTO layer = LayerDataUtil.getLayer(code);
+		layer.setThemeInspire(null);
 
 		CreateLayerCommand command = new CreateLayerCommand(layer);
 
-		CreateLayerEvent evt = agg.process(command);
+		LayerEvent evt = agg.process(command);
 
 		assertNotNull(evt);
 		assertNotNull(evt.getDate());
@@ -86,6 +87,27 @@ public class ProcessEventTest {
 		assertNotNull(evt.getId());
 		assertEquals(evt.getAggregateId(), layer.getId());
 		assertEquals(evt.getType(), LayerEventTypes.CREATE);
+		assertTrue(evt.getVersion().equals(1));
+	}
+
+	@Test
+	public void processCreateLayerCommand_ReturnEnrichCreateLayerEvent_IfThemeInspireIsNotNull() {
+
+		when(layerStateStore.getLayer(any())).thenReturn(null);
+
+		LayerDTO layer = LayerDataUtil.getLayer(code);
+
+		CreateLayerCommand command = new CreateLayerCommand(layer);
+
+		LayerEvent evt = agg.process(command);
+
+		assertNotNull(evt);
+		assertNotNull(evt.getDate());
+		assertNotNull(evt.getLayer());
+		assertEquals(evt.getLayer(), layer);
+		assertNotNull(evt.getId());
+		assertEquals(evt.getAggregateId(), layer.getId());
+		assertEquals(evt.getType(), LayerEventTypes.ENRICH_CREATE);
 		assertTrue(evt.getVersion().equals(1));
 	}
 

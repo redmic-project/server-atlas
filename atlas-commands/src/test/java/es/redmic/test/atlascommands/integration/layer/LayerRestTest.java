@@ -82,9 +82,11 @@ import es.redmic.atlaslib.events.layer.refresh.RefreshLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEvent;
+import es.redmic.atlaslib.events.themeinspire.create.ThemeInspireCreatedEvent;
 import es.redmic.brokerlib.avro.common.Event;
 import es.redmic.brokerlib.listener.SendListener;
 import es.redmic.test.atlascommands.integration.KafkaEmbeddedConfig;
+import es.redmic.test.atlascommands.integration.themeinspire.ThemeInspireDataUtil;
 import es.redmic.testutils.documentation.DocumentationCommandBaseTest;
 import es.redmic.testutils.utils.JsonToBeanTestUtil;
 
@@ -104,7 +106,7 @@ public class LayerRestTest extends DocumentationCommandBaseTest {
 	// @formatter:off
 	
 	private final String HOST = "redmic.es/api/atlas/commands",
-			CATEGORY_PATH = "/layer";
+			LAYER_PATH = "/layer";
 	
 	// @formatter:on
 
@@ -120,6 +122,9 @@ public class LayerRestTest extends DocumentationCommandBaseTest {
 
 	@Value("${broker.topic.layer}")
 	private String layer_topic;
+
+	@Value("${broker.topic.theme-inspire}")
+	private String theme_inspire_topic;
 
 	@PostConstruct
 	public void CreateLayerFromRestTestPostConstruct() throws Exception {
@@ -154,7 +159,52 @@ public class LayerRestTest extends DocumentationCommandBaseTest {
 	}
 
 	@Test
-	public void createLayer_SendCreateLayerEvent_IfCommandWasSuccess() throws Exception {
+	public void createLayer_SendCreateLayerEvent_IfThemeInspireIsNull() throws Exception {
+
+		LayerInfoDTO layerInfoDTO = LayerDataUtil.getLayerInfo(CODE);
+
+		String originalName = "batimetriaGlobal";
+
+		layerInfoDTO.setUrlSource(new File("src/test/resources/data/capabilities/wms.xml").toURI().toString());
+		layerInfoDTO.setName(originalName);
+
+		layerInfoDTO.setThemeInspire(null);
+
+		// @formatter:off
+		
+		String id = LayerDataUtil.PREFIX + CODE;
+		
+		this.mockMvc
+				.perform(post(LAYER_PATH)
+						.header("Authorization", "Bearer " + getTokenOAGUser())
+						.content(LayerDataUtil.getLayerInfoToSave(layerInfoDTO))
+						.contentType(MediaType.APPLICATION_JSON)
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.success", is(true)))
+				.andExpect(jsonPath("$.body", notNullValue()))
+				.andExpect(jsonPath("$.body.id", is(id)))
+				.andExpect(jsonPath("$.body.name", is(layerInfoDTO.getName())));
+		
+		// @formatter:on
+
+		CreateLayerEvent event = (CreateLayerEvent) blockingQueue.poll(50, TimeUnit.SECONDS);
+
+		CreateLayerEvent expectedEvent = LayerDataUtil.getCreateEvent(CODE);
+		assertNotNull(event);
+		assertEquals(event.getType(), expectedEvent.getType());
+		assertEquals(event.getVersion(), expectedEvent.getVersion());
+		assertEquals(event.getLayer().getName(), originalName);
+	}
+
+	@Test
+	public void createLayer_SendCreateLayerEvent_IfThemeInspireIsNotNullAndDataIsEnriched() throws Exception {
+
+		ThemeInspireCreatedEvent themeInspireCreatedEvent = ThemeInspireDataUtil.getThemeInspireCreatedEvent("cc");
+
+		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(theme_inspire_topic,
+				themeInspireCreatedEvent.getAggregateId(), themeInspireCreatedEvent);
+		future.addCallback(new SendListener());
 
 		LayerInfoDTO layerInfoDTO = LayerDataUtil.getLayerInfo(CODE);
 
@@ -168,7 +218,7 @@ public class LayerRestTest extends DocumentationCommandBaseTest {
 		String id = LayerDataUtil.PREFIX + CODE;
 		
 		this.mockMvc
-				.perform(post(CATEGORY_PATH)
+				.perform(post(LAYER_PATH)
 						.header("Authorization", "Bearer " + getTokenOAGUser())
 						.content(LayerDataUtil.getLayerInfoToSave(layerInfoDTO))
 						.contentType(MediaType.APPLICATION_JSON)
@@ -207,7 +257,7 @@ public class LayerRestTest extends DocumentationCommandBaseTest {
 		String id = LayerDataUtil.PREFIX + CODE;
 		
 		this.mockMvc
-				.perform(put(CATEGORY_PATH + "/" + id)
+				.perform(put(LAYER_PATH + "/" + id)
 						.header("Authorization", "Bearer " + getTokenOAGUser())
 						.content(LayerDataUtil.getLayerInfoToSave(layerInfoDTO))
 						.contentType(MediaType.APPLICATION_JSON)
@@ -247,7 +297,7 @@ public class LayerRestTest extends DocumentationCommandBaseTest {
 		String id = source.getAggregateId();
 		
 		this.mockMvc
-				.perform(put(CATEGORY_PATH + "/refresh/" + id)
+				.perform(put(LAYER_PATH + "/refresh/" + id)
 						.header("Authorization", "Bearer " + getTokenOAGUser())
 						.content(mapper.writeValueAsString(request))
 						.contentType(MediaType.APPLICATION_JSON)
@@ -279,7 +329,7 @@ public class LayerRestTest extends DocumentationCommandBaseTest {
 		String id = LayerDataUtil.PREFIX + CODE;
 		
 		this.mockMvc
-				.perform(delete(CATEGORY_PATH + "/" + id)
+				.perform(delete(LAYER_PATH + "/" + id)
 						.header("Authorization", "Bearer " + getTokenOAGUser())
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -305,7 +355,7 @@ public class LayerRestTest extends DocumentationCommandBaseTest {
 
 		// @formatter:off
 		
-		this.mockMvc.perform(get(CATEGORY_PATH + editSchemaPath)
+		this.mockMvc.perform(get(LAYER_PATH + editSchemaPath)
 				.header("Authorization", "Bearer " + getTokenOAGUser())
 				.accept(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())

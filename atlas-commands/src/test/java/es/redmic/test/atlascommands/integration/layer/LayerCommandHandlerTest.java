@@ -62,6 +62,7 @@ import es.redmic.atlaslib.events.layer.create.CreateLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerFailedEvent;
+import es.redmic.atlaslib.events.layer.create.EnrichCreateLayerEvent;
 import es.redmic.atlaslib.events.layer.create.LayerCreatedEvent;
 import es.redmic.atlaslib.events.layer.delete.CheckDeleteLayerEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerCancelledEvent;
@@ -80,12 +81,14 @@ import es.redmic.atlaslib.events.layer.update.UpdateLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerFailedEvent;
+import es.redmic.atlaslib.events.themeinspire.create.ThemeInspireCreatedEvent;
 import es.redmic.brokerlib.avro.common.Event;
 import es.redmic.brokerlib.listener.SendListener;
 import es.redmic.exception.data.DeleteItemException;
 import es.redmic.exception.data.ItemAlreadyExistException;
 import es.redmic.exception.data.ItemNotFoundException;
 import es.redmic.test.atlascommands.integration.KafkaEmbeddedConfig;
+import es.redmic.test.atlascommands.integration.themeinspire.ThemeInspireDataUtil;
 import es.redmic.testutils.kafka.KafkaBaseIntegrationTest;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -106,6 +109,9 @@ public class LayerCommandHandlerTest extends KafkaBaseIntegrationTest {
 
 	@Value("${broker.topic.layer}")
 	private String layer_topic;
+
+	@Value("${broker.topic.theme-inspire}")
+	private String theme_inspire_topic;
 
 	@Autowired
 	private KafkaTemplate<String, Event> kafkaTemplate;
@@ -129,6 +135,43 @@ public class LayerCommandHandlerTest extends KafkaBaseIntegrationTest {
 	}
 
 	// Success cases
+
+	// Envía un evento de enriquecimiento de creación y debe provocar un evento
+	// Create con el item dentro
+	@Test
+	public void enrichCreateLayerEvent_SendCreateLayerEvent_IfReceivesSuccess() throws InterruptedException {
+
+		logger.debug("----> createLayerEvent");
+
+		String code = "cc";
+
+		// Envía themeInspireCreatedEvent
+		ThemeInspireCreatedEvent themeInspireCreatedEvent = ThemeInspireDataUtil.getThemeInspireCreatedEvent(code);
+		kafkaTemplate.send(theme_inspire_topic, themeInspireCreatedEvent.getAggregateId(), themeInspireCreatedEvent);
+
+		Thread.sleep(4000);
+
+		// Envía enrichCreateLayer con id del themeInspire igual al enviado
+
+		EnrichCreateLayerEvent enrichCreateLayerEvent = LayerDataUtil
+				.getEnrichCreateLayerEvent("layer-" + UUID.randomUUID().toString());
+		enrichCreateLayerEvent.setSessionId(UUID.randomUUID().toString());
+		enrichCreateLayerEvent.getLayer()
+				.setThemeInspire(ThemeInspireDataUtil.getThemeInspireCreatedEvent(code).getThemeInspire());
+		enrichCreateLayerEvent.getLayer().getThemeInspire().setName(null);
+		enrichCreateLayerEvent.getLayer().getThemeInspire().setName_en(null);
+		enrichCreateLayerEvent.getLayer().getThemeInspire().setCode(null);
+		kafkaTemplate.send(layer_topic, enrichCreateLayerEvent.getAggregateId(), enrichCreateLayerEvent);
+
+		// Comprueba que recibe createLayerEvent con themeInspire enriquecido
+		Event confirm = (Event) blockingQueue.poll(60, TimeUnit.SECONDS);
+
+		assertNotNull(confirm);
+		assertEquals(LayerEventTypes.CREATE, confirm.getType());
+
+		assertEquals(themeInspireCreatedEvent.getThemeInspire(),
+				((CreateLayerEvent) confirm).getLayer().getThemeInspire());
+	}
 
 	// Envía un evento de confirmación de creación y debe provocar un evento Created
 	// con el item dentro
@@ -389,6 +432,12 @@ public class LayerCommandHandlerTest extends KafkaBaseIntegrationTest {
 		assertNotNull(confirm);
 		assertEquals(LayerEventTypes.DELETE_CANCELLED, confirm.getType());
 		assertEquals(layerUpdateEvent.getLayer(), ((DeleteLayerCancelledEvent) confirm).getLayer());
+	}
+
+	@KafkaHandler
+	public void createLayerEvent(CreateLayerEvent createdLayerEvent) {
+
+		blockingQueue.offer(createdLayerEvent);
 	}
 
 	@KafkaHandler

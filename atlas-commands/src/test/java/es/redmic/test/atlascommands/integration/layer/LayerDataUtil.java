@@ -49,6 +49,7 @@ import es.redmic.atlaslib.events.layer.LayerEventTypes;
 import es.redmic.atlaslib.events.layer.create.CreateLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerFailedEvent;
+import es.redmic.atlaslib.events.layer.create.EnrichCreateLayerEvent;
 import es.redmic.atlaslib.events.layer.create.LayerCreatedEvent;
 import es.redmic.atlaslib.events.layer.delete.CheckDeleteLayerEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerConfirmedEvent;
@@ -92,6 +93,15 @@ public abstract class LayerDataUtil {
 		event.setLayer(getLayer(code));
 
 		return event;
+	}
+
+	public static EnrichCreateLayerEvent getEnrichCreateLayerEvent(String code) {
+
+		EnrichCreateLayerEvent enrichCreateLayerEvent = new EnrichCreateLayerEvent().buildFrom(getCreateEvent(code));
+
+		enrichCreateLayerEvent.setLayer(getLayer(code));
+
+		return enrichCreateLayerEvent;
 	}
 
 	public static CreateLayerConfirmedEvent getCreateLayerConfirmedEvent(String code) {
