@@ -41,8 +41,9 @@ import es.redmic.atlascommands.streams.LayerEventStreams;
 import es.redmic.atlaslib.dto.layer.LayerDTO;
 import es.redmic.atlaslib.events.layer.LayerEventFactory;
 import es.redmic.atlaslib.events.layer.LayerEventTypes;
+import es.redmic.atlaslib.events.layer.common.LayerEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerCancelledEvent;
-import es.redmic.atlaslib.events.layer.create.CreateLayerEvent;
+import es.redmic.atlaslib.events.layer.create.CreateLayerEnrichedEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerFailedEvent;
 import es.redmic.atlaslib.events.layer.create.LayerCreatedEvent;
 import es.redmic.atlaslib.events.layer.delete.CheckDeleteLayerEvent;
@@ -75,6 +76,9 @@ public class LayerCommandHandler extends CommandHandler {
 
 	@Value("${broker.topic.layer}")
 	private String layerTopic;
+
+	@Value("${broker.topic.theme-inspire}")
+	private String themeInspireTopic;
 
 	@Value("${broker.state.store.layer.dir}")
 	private String stateStoreLayerDir;
@@ -120,7 +124,7 @@ public class LayerCommandHandler extends CommandHandler {
 				config
 					.serviceId(layerEventsStreamId)
 					.windowsTime(streamWindowsTime)
-					.build(), alertService);
+					.build(), themeInspireTopic, alertService);
 		
 		// @formatter:on
 	}
@@ -132,7 +136,7 @@ public class LayerCommandHandler extends CommandHandler {
 		// Se procesa el comando, obteniendo el evento generado
 		logger.debug("Procesando CreateLayerCommand");
 
-		CreateLayerEvent event = agg.process(cmd);
+		LayerEvent event = agg.process(cmd);
 
 		// Si no se genera evento significa que no se debe aplicar
 		if (event == null)
@@ -232,6 +236,12 @@ public class LayerCommandHandler extends CommandHandler {
 
 		// Obtiene el resultado cuando se resuelva la espera
 		return getResult(event.getSessionId(), completableFuture);
+	}
+
+	@KafkaHandler
+	private void listen(CreateLayerEnrichedEvent event) {
+
+		publishToKafka(LayerEventFactory.getEvent(event, LayerEventTypes.CREATE, event.getLayer()), layerTopic);
 	}
 
 	@KafkaHandler
