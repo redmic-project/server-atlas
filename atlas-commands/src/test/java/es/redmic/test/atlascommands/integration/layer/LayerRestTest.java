@@ -241,11 +241,58 @@ public class LayerRestTest extends DocumentationCommandBaseTest {
 	}
 
 	@Test
-	public void updateLayer_SendUpdateLayerEvent_IfCommandWasSuccess() throws Exception {
+	public void updateLayer_SendUpdateLayerEvent_IfThemeInspireIsNull() throws Exception {
 
 		when(layerStateStore.getLayer(anyString())).thenReturn(LayerDataUtil.getLayerCreatedEvent(CODE));
 
 		String originalName = "batimetriaGlobal";
+
+		LayerInfoDTO layerInfoDTO = LayerDataUtil.getLayerInfo(CODE);
+
+		layerInfoDTO.setUrlSource(new File("src/test/resources/data/capabilities/wms.xml").toURI().toString());
+		layerInfoDTO.setName(originalName);
+
+		layerInfoDTO.setThemeInspire(null);
+
+		// @formatter:off
+		
+		String id = LayerDataUtil.PREFIX + CODE;
+		
+		this.mockMvc
+				.perform(put(LAYER_PATH + "/" + id)
+						.header("Authorization", "Bearer " + getTokenOAGUser())
+						.content(LayerDataUtil.getLayerInfoToSave(layerInfoDTO))
+						.contentType(MediaType.APPLICATION_JSON)
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.success", is(true)))
+				.andExpect(jsonPath("$.body", notNullValue()))
+				.andExpect(jsonPath("$.body.id", is(id)));
+		
+		// @formatter:on
+
+		UpdateLayerEvent event = (UpdateLayerEvent) blockingQueue.poll(50, TimeUnit.SECONDS);
+
+		UpdateLayerEvent expectedEvent = LayerDataUtil.getUpdateEvent(CODE);
+		assertNotNull(event);
+		assertEquals(event.getType(), expectedEvent.getType());
+		assertEquals(event.getVersion(), expectedEvent.getVersion());
+		assertEquals(event.getLayer().getName(), originalName);
+		assertEquals(event.getAggregateId(), expectedEvent.getAggregateId());
+	}
+
+	@Test
+	public void updateLayer_SendUpdateLayerEvent_IfThemeInspireIsNotNullAndDataIsEnriched() throws Exception {
+
+		when(layerStateStore.getLayer(anyString())).thenReturn(LayerDataUtil.getLayerCreatedEvent(CODE));
+
+		String originalName = "batimetriaGlobal";
+
+		ThemeInspireCreatedEvent themeInspireCreatedEvent = ThemeInspireDataUtil.getThemeInspireCreatedEvent("cc");
+
+		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(theme_inspire_topic,
+				themeInspireCreatedEvent.getAggregateId(), themeInspireCreatedEvent);
+		future.addCallback(new SendListener());
 
 		LayerInfoDTO layerInfoDTO = LayerDataUtil.getLayerInfo(CODE);
 

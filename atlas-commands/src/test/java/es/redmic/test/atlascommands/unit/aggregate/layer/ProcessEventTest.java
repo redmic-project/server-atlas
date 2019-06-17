@@ -46,7 +46,6 @@ import es.redmic.atlaslib.events.layer.LayerEventTypes;
 import es.redmic.atlaslib.events.layer.common.LayerEvent;
 import es.redmic.atlaslib.events.layer.delete.CheckDeleteLayerEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerEvent;
-import es.redmic.atlaslib.events.layer.update.UpdateLayerEvent;
 import es.redmic.commandslib.exceptions.ItemLockedException;
 import es.redmic.exception.data.ItemNotFoundException;
 import es.redmic.test.atlascommands.integration.layer.LayerDataUtil;
@@ -112,15 +111,16 @@ public class ProcessEventTest {
 	}
 
 	@Test
-	public void processUpdateLayerCommand_ReturnLayerUpdatedEvent_IfProcessIsOk() {
+	public void processUpdateLayerCommand_ReturnUpdateLayerEvent_IfThemeInspireIsNul() {
 
 		when(layerStateStore.getLayer(any())).thenReturn(LayerDataUtil.getLayerCreatedEvent(code));
 
 		LayerDTO layer = LayerDataUtil.getLayer(code);
+		layer.setThemeInspire(null);
 
 		UpdateLayerCommand command = new UpdateLayerCommand(layer);
 
-		UpdateLayerEvent evt = agg.process(command);
+		LayerEvent evt = agg.process(command);
 
 		assertNotNull(evt);
 		assertNotNull(evt.getDate());
@@ -129,6 +129,27 @@ public class ProcessEventTest {
 		assertNotNull(evt.getId());
 		assertEquals(evt.getAggregateId(), layer.getId());
 		assertEquals(evt.getType(), LayerEventTypes.UPDATE);
+		assertTrue(evt.getVersion().equals(2));
+	}
+
+	@Test
+	public void processUpdateLayerCommand_ReturnEnrichUpdateLayerEvent_IfThemeInspireIsNotNul() {
+
+		when(layerStateStore.getLayer(any())).thenReturn(LayerDataUtil.getLayerCreatedEvent(code));
+
+		LayerDTO layer = LayerDataUtil.getLayer(code);
+
+		UpdateLayerCommand command = new UpdateLayerCommand(layer);
+
+		LayerEvent evt = agg.process(command);
+
+		assertNotNull(evt);
+		assertNotNull(evt.getDate());
+		assertNotNull(evt.getLayer());
+		assertEquals(evt.getLayer(), layer);
+		assertNotNull(evt.getId());
+		assertEquals(evt.getAggregateId(), layer.getId());
+		assertEquals(evt.getType(), LayerEventTypes.ENRICH_UPDATE);
 		assertTrue(evt.getVersion().equals(2));
 	}
 

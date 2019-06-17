@@ -61,6 +61,7 @@ import es.redmic.atlaslib.events.layer.refresh.RefreshLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerFailedEvent;
+import es.redmic.atlaslib.events.layer.update.EnrichUpdateLayerEvent;
 import es.redmic.atlaslib.events.layer.update.LayerUpdatedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEvent;
@@ -145,6 +146,15 @@ public abstract class LayerDataUtil {
 		event.setSessionId("sessionIdB");
 		event.setLayer(getLayer(code));
 		return event;
+	}
+
+	public static EnrichUpdateLayerEvent getEnrichUpdateLayerEvent(String code) {
+
+		EnrichUpdateLayerEvent enrichUpdateLayerEvent = new EnrichUpdateLayerEvent().buildFrom(getUpdateEvent(code));
+
+		enrichUpdateLayerEvent.setLayer(getLayer(code));
+
+		return enrichUpdateLayerEvent;
 	}
 
 	public static UpdateLayerConfirmedEvent getUpdateLayerConfirmedEvent(String code) {

@@ -76,12 +76,14 @@ import es.redmic.atlaslib.events.layer.refresh.RefreshLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerFailedEvent;
+import es.redmic.atlaslib.events.layer.update.EnrichUpdateLayerEvent;
 import es.redmic.atlaslib.events.layer.update.LayerUpdatedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerFailedEvent;
 import es.redmic.atlaslib.events.themeinspire.create.ThemeInspireCreatedEvent;
+import es.redmic.atlaslib.events.themeinspire.update.ThemeInspireUpdatedEvent;
 import es.redmic.brokerlib.avro.common.Event;
 import es.redmic.brokerlib.listener.SendListener;
 import es.redmic.exception.data.DeleteItemException;
@@ -183,18 +185,56 @@ public class LayerCommandHandlerTest extends KafkaBaseIntegrationTest {
 		// Envía create para meterlo en el stream
 		CreateLayerEvent createLayerEvent = LayerDataUtil.getCreateEvent(code + "1");
 		kafkaTemplate.send(layer_topic, createLayerEvent.getAggregateId(), createLayerEvent);
+		Event request = (Event) blockingQueue.poll(60, TimeUnit.SECONDS);
+		assertNotNull(request);
 
 		// Envía confirmed y espera un evento de created con el layer original dentro
 		CreateLayerConfirmedEvent event = LayerDataUtil.getCreateLayerConfirmedEvent(code + "1");
-
 		kafkaTemplate.send(layer_topic, event.getAggregateId(), event);
-		Event confirm = (Event) blockingQueue.poll(120, TimeUnit.SECONDS);
+		Event confirm = (Event) blockingQueue.poll(60, TimeUnit.SECONDS);
 
 		assertNotNull(confirm);
 		assertEquals(LayerEventTypes.CREATED, confirm.getType());
 
 		JSONAssert.assertEquals(createLayerEvent.getLayer().toString(),
 				((LayerCreatedEvent) confirm).getLayer().toString(), false);
+	}
+
+	// Envía un evento de enriquecimiento de edición y debe provocar un evento
+	// Update con el item dentro
+	@Test
+	public void enrichUpdateLayerEvent_SendUpdateLayerEvent_IfReceivesSuccess() throws InterruptedException {
+
+		logger.debug("----> updateLayerEvent");
+
+		String code = "cc";
+
+		// Envía themeInspireUpdatedEvent
+		ThemeInspireUpdatedEvent themeInspireUpdatedEvent = ThemeInspireDataUtil.getThemeInspireUpdatedEvent(code);
+		kafkaTemplate.send(theme_inspire_topic, themeInspireUpdatedEvent.getAggregateId(), themeInspireUpdatedEvent);
+
+		Thread.sleep(4000);
+
+		// Envía enrichUpdateLayer con id del themeInspire igual al enviado
+
+		EnrichUpdateLayerEvent enrichUpdateLayerEvent = LayerDataUtil
+				.getEnrichUpdateLayerEvent("layer-" + UUID.randomUUID().toString());
+		enrichUpdateLayerEvent.setSessionId(UUID.randomUUID().toString());
+		enrichUpdateLayerEvent.getLayer()
+				.setThemeInspire(ThemeInspireDataUtil.getThemeInspireCreatedEvent(code).getThemeInspire());
+		enrichUpdateLayerEvent.getLayer().getThemeInspire().setName(null);
+		enrichUpdateLayerEvent.getLayer().getThemeInspire().setName_en(null);
+		enrichUpdateLayerEvent.getLayer().getThemeInspire().setCode(null);
+		kafkaTemplate.send(layer_topic, enrichUpdateLayerEvent.getAggregateId(), enrichUpdateLayerEvent);
+
+		// Comprueba que recibe createLayerEvent con themeInspire enriquecido
+		Event confirm = (Event) blockingQueue.poll(60, TimeUnit.SECONDS);
+
+		assertNotNull(confirm);
+		assertEquals(LayerEventTypes.UPDATE, confirm.getType());
+
+		assertEquals(themeInspireUpdatedEvent.getThemeInspire(),
+				((UpdateLayerEvent) confirm).getLayer().getThemeInspire());
 	}
 
 	// Envía un evento de confirmación de modificación y debe provocar un evento
@@ -208,6 +248,8 @@ public class LayerCommandHandlerTest extends KafkaBaseIntegrationTest {
 		// Envía update para meterlo en el stream
 		UpdateLayerEvent updateLayerEvent = LayerDataUtil.getUpdateEvent(code + "2");
 		kafkaTemplate.send(layer_topic, updateLayerEvent.getAggregateId(), updateLayerEvent);
+		Event request = (Event) blockingQueue.poll(60, TimeUnit.SECONDS);
+		assertNotNull(request);
 
 		// Envía confirmed y espera un evento de updated con el layer original dentro
 		UpdateLayerConfirmedEvent event = LayerDataUtil.getUpdateLayerConfirmedEvent(code + "2");
@@ -435,9 +477,9 @@ public class LayerCommandHandlerTest extends KafkaBaseIntegrationTest {
 	}
 
 	@KafkaHandler
-	public void createLayerEvent(CreateLayerEvent createdLayerEvent) {
+	public void createLayerEvent(CreateLayerEvent createLayerEvent) {
 
-		blockingQueue.offer(createdLayerEvent);
+		blockingQueue.offer(createLayerEvent);
 	}
 
 	@KafkaHandler
@@ -450,6 +492,12 @@ public class LayerCommandHandlerTest extends KafkaBaseIntegrationTest {
 	public void createLayerCancelledEvent(CreateLayerCancelledEvent createLayerCancelledEvent) {
 
 		blockingQueue.offer(createLayerCancelledEvent);
+	}
+
+	@KafkaHandler
+	public void updateLayerEvent(UpdateLayerEvent updateLayerEvent) {
+
+		blockingQueue.offer(updateLayerEvent);
 	}
 
 	@KafkaHandler
