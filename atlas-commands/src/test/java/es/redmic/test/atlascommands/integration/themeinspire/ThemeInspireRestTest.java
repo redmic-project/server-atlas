@@ -184,7 +184,7 @@ public class ThemeInspireRestTest extends DocumentationCommandBaseTest {
 	@Test
 	public void updateThemeInspire_SendUpdateThemeInspireEvent_IfCommandWasSuccess() throws Exception {
 
-		when(themeInspireStateStore.getThemeInspire(anyString()))
+		when(themeInspireStateStore.get(anyString()))
 				.thenReturn(ThemeInspireDataUtil.getThemeInspireCreatedEvent(CODE));
 
 		ThemeInspireDTO themeInspireDTO = ThemeInspireDataUtil.getThemeInspire(CODE);
@@ -221,7 +221,7 @@ public class ThemeInspireRestTest extends DocumentationCommandBaseTest {
 	// @Test
 	public void deleteThemeInspire_SendDeleteThemeInspireEvent_IfCommandWasSuccess() throws Exception {
 
-		when(themeInspireStateStore.getThemeInspire(anyString()))
+		when(themeInspireStateStore.get(anyString()))
 				.thenReturn(ThemeInspireDataUtil.getThemeInspireUpdatedEvent(CODE));
 
 		// @formatter:off

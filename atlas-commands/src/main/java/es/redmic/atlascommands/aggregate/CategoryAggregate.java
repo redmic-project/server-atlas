@@ -116,7 +116,7 @@ public class CategoryAggregate extends Aggregate {
 	@Override
 	protected Event getItemFromStateStore(String id) {
 
-		return categoryStateStore.getCategory(id);
+		return categoryStateStore.get(id);
 	}
 
 	@Override

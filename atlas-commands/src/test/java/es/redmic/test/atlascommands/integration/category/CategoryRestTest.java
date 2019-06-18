@@ -181,7 +181,7 @@ public class CategoryRestTest extends DocumentationCommandBaseTest {
 	@Test
 	public void updateCategory_SendUpdateCategoryEvent_IfCommandWasSuccess() throws Exception {
 
-		when(categoryStateStore.getCategory(anyString())).thenReturn(CategoryDataUtil.getCategoryCreatedEvent(CODE));
+		when(categoryStateStore.get(anyString())).thenReturn(CategoryDataUtil.getCategoryCreatedEvent(CODE));
 
 		CategoryDTO categoryDTO = CategoryDataUtil.getCategory(CODE);
 
@@ -215,7 +215,7 @@ public class CategoryRestTest extends DocumentationCommandBaseTest {
 	@Test
 	public void deleteCategory_SendDeleteCategoryEvent_IfCommandWasSuccess() throws Exception {
 
-		when(categoryStateStore.getCategory(anyString())).thenReturn(CategoryDataUtil.getCategoryUpdatedEvent(CODE));
+		when(categoryStateStore.get(anyString())).thenReturn(CategoryDataUtil.getCategoryUpdatedEvent(CODE));
 
 		// @formatter:off
 		

@@ -115,7 +115,7 @@ public class ThemeInspireAggregate extends Aggregate {
 	@Override
 	protected Event getItemFromStateStore(String id) {
 
-		return themeInspireStateStore.getThemeInspire(id);
+		return themeInspireStateStore.get(id);
 	}
 
 	@Override

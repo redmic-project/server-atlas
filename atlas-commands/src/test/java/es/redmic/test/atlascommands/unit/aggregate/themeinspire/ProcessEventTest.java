@@ -66,7 +66,7 @@ public class ProcessEventTest {
 	@Test
 	public void processCreateThemeInspireCommand_ReturnThemeInspireCreatedEvent_IfProcessIsOk() {
 
-		when(themeInspireStateStore.getThemeInspire(any())).thenReturn(null);
+		when(themeInspireStateStore.get(any())).thenReturn(null);
 
 		ThemeInspireDTO themeInspire = ThemeInspireDataUtil.getThemeInspire(code);
 
@@ -87,8 +87,7 @@ public class ProcessEventTest {
 	@Test
 	public void processUpdateThemeInspireCommand_ReturnThemeInspireUpdatedEvent_IfProcessIsOk() {
 
-		when(themeInspireStateStore.getThemeInspire(any()))
-				.thenReturn(ThemeInspireDataUtil.getThemeInspireCreatedEvent(code));
+		when(themeInspireStateStore.get(any())).thenReturn(ThemeInspireDataUtil.getThemeInspireCreatedEvent(code));
 
 		ThemeInspireDTO themeInspire = ThemeInspireDataUtil.getThemeInspire(code);
 
@@ -110,8 +109,7 @@ public class ProcessEventTest {
 	@Test(expected = ItemNotFoundException.class)
 	public void processUpdateThemeInspireCommand_ThrowItemNotFoundException_IfItemIsDeleted() {
 
-		when(themeInspireStateStore.getThemeInspire(any()))
-				.thenReturn(ThemeInspireDataUtil.getThemeInspireDeletedEvent(code));
+		when(themeInspireStateStore.get(any())).thenReturn(ThemeInspireDataUtil.getThemeInspireDeletedEvent(code));
 
 		ThemeInspireDTO themeInspire = ThemeInspireDataUtil.getThemeInspire(code);
 
@@ -122,7 +120,7 @@ public class ProcessEventTest {
 	@Test(expected = ItemLockedException.class)
 	public void processUpdateThemeInspireCommand_ThrowItemLockedException_IfItemIsLocked() {
 
-		when(themeInspireStateStore.getThemeInspire(any())).thenReturn(ThemeInspireDataUtil.getUpdateEvent(code));
+		when(themeInspireStateStore.get(any())).thenReturn(ThemeInspireDataUtil.getUpdateEvent(code));
 
 		ThemeInspireDTO themeInspire = ThemeInspireDataUtil.getThemeInspire(code);
 
@@ -132,8 +130,7 @@ public class ProcessEventTest {
 	@Test
 	public void processDeleteThemeInspireCommand_ReturnCheckDeleteThemeInspireEvent_IfProcessIsOk() {
 
-		when(themeInspireStateStore.getThemeInspire(any()))
-				.thenReturn(ThemeInspireDataUtil.getThemeInspireUpdatedEvent(code));
+		when(themeInspireStateStore.get(any())).thenReturn(ThemeInspireDataUtil.getThemeInspireUpdatedEvent(code));
 
 		ThemeInspireDTO themeInspire = ThemeInspireDataUtil.getThemeInspire(code);
 
@@ -153,8 +150,7 @@ public class ProcessEventTest {
 	@Test(expected = ItemNotFoundException.class)
 	public void processDeleteThemeInspireCommand_ThrowItemNotFoundException_IfItemIsDeleted() {
 
-		when(themeInspireStateStore.getThemeInspire(any()))
-				.thenReturn(ThemeInspireDataUtil.getThemeInspireDeletedEvent(code));
+		when(themeInspireStateStore.get(any())).thenReturn(ThemeInspireDataUtil.getThemeInspireDeletedEvent(code));
 
 		ThemeInspireDTO themeInspire = ThemeInspireDataUtil.getThemeInspire(code);
 
@@ -165,7 +161,7 @@ public class ProcessEventTest {
 	@Test(expected = ItemLockedException.class)
 	public void processDeleteThemeInspireCommand_ThrowItemLockedException_IfItemIsLocked() {
 
-		when(themeInspireStateStore.getThemeInspire(any())).thenReturn(ThemeInspireDataUtil.getUpdateEvent(code));
+		when(themeInspireStateStore.get(any())).thenReturn(ThemeInspireDataUtil.getUpdateEvent(code));
 
 		ThemeInspireDTO themeInspire = ThemeInspireDataUtil.getThemeInspire(code);
 

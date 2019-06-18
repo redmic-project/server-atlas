@@ -154,7 +154,7 @@ public class LayerAggregate extends Aggregate {
 	@Override
 	protected Event getItemFromStateStore(String id) {
 
-		return layerStateStore.getLayer(id);
+		return layerStateStore.get(id);
 	}
 
 	@Override

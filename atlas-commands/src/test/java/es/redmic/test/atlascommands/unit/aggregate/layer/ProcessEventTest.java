@@ -70,7 +70,7 @@ public class ProcessEventTest {
 	@Test
 	public void processCreateLayerCommand_ReturnCreateLayerEvent_IfThemeInspireIsNull() {
 
-		when(layerStateStore.getLayer(any())).thenReturn(null);
+		when(layerStateStore.get(any())).thenReturn(null);
 
 		LayerDTO layer = LayerDataUtil.getLayer(code);
 		layer.setThemeInspire(null);
@@ -92,7 +92,7 @@ public class ProcessEventTest {
 	@Test
 	public void processCreateLayerCommand_ReturnEnrichCreateLayerEvent_IfThemeInspireIsNotNull() {
 
-		when(layerStateStore.getLayer(any())).thenReturn(null);
+		when(layerStateStore.get(any())).thenReturn(null);
 
 		LayerDTO layer = LayerDataUtil.getLayer(code);
 
@@ -113,7 +113,7 @@ public class ProcessEventTest {
 	@Test
 	public void processUpdateLayerCommand_ReturnUpdateLayerEvent_IfThemeInspireIsNul() {
 
-		when(layerStateStore.getLayer(any())).thenReturn(LayerDataUtil.getLayerCreatedEvent(code));
+		when(layerStateStore.get(any())).thenReturn(LayerDataUtil.getLayerCreatedEvent(code));
 
 		LayerDTO layer = LayerDataUtil.getLayer(code);
 		layer.setThemeInspire(null);
@@ -135,7 +135,7 @@ public class ProcessEventTest {
 	@Test
 	public void processUpdateLayerCommand_ReturnEnrichUpdateLayerEvent_IfThemeInspireIsNotNul() {
 
-		when(layerStateStore.getLayer(any())).thenReturn(LayerDataUtil.getLayerCreatedEvent(code));
+		when(layerStateStore.get(any())).thenReturn(LayerDataUtil.getLayerCreatedEvent(code));
 
 		LayerDTO layer = LayerDataUtil.getLayer(code);
 
@@ -157,7 +157,7 @@ public class ProcessEventTest {
 	@Test(expected = ItemNotFoundException.class)
 	public void processUpdateLayerCommand_ThrowItemNotFoundException_IfItemIsDeleted() {
 
-		when(layerStateStore.getLayer(any())).thenReturn(LayerDataUtil.getLayerDeletedEvent(code));
+		when(layerStateStore.get(any())).thenReturn(LayerDataUtil.getLayerDeletedEvent(code));
 
 		LayerDTO layer = LayerDataUtil.getLayer(code);
 
@@ -168,7 +168,7 @@ public class ProcessEventTest {
 	@Test(expected = ItemLockedException.class)
 	public void processUpdateLayerCommand_ThrowItemLockedException_IfItemIsLocked() {
 
-		when(layerStateStore.getLayer(any())).thenReturn(LayerDataUtil.getUpdateEvent(code));
+		when(layerStateStore.get(any())).thenReturn(LayerDataUtil.getUpdateEvent(code));
 
 		LayerDTO layer = LayerDataUtil.getLayer(code);
 
@@ -178,7 +178,7 @@ public class ProcessEventTest {
 	@Test
 	public void processDeleteLayerCommand_ReturnCheckDeleteLayerEvent_IfProcessIsOk() {
 
-		when(layerStateStore.getLayer(any())).thenReturn(LayerDataUtil.getLayerUpdatedEvent(code));
+		when(layerStateStore.get(any())).thenReturn(LayerDataUtil.getLayerUpdatedEvent(code));
 
 		LayerDTO layer = LayerDataUtil.getLayer(code);
 
@@ -198,7 +198,7 @@ public class ProcessEventTest {
 	@Test(expected = ItemNotFoundException.class)
 	public void processDeleteLayerCommand_ThrowItemNotFoundException_IfItemIsDeleted() {
 
-		when(layerStateStore.getLayer(any())).thenReturn(LayerDataUtil.getLayerDeletedEvent(code));
+		when(layerStateStore.get(any())).thenReturn(LayerDataUtil.getLayerDeletedEvent(code));
 
 		LayerDTO layer = LayerDataUtil.getLayer(code);
 
@@ -209,7 +209,7 @@ public class ProcessEventTest {
 	@Test(expected = ItemLockedException.class)
 	public void processDeleteLayerCommand_ThrowItemLockedException_IfItemIsLocked() {
 
-		when(layerStateStore.getLayer(any())).thenReturn(LayerDataUtil.getUpdateEvent(code));
+		when(layerStateStore.get(any())).thenReturn(LayerDataUtil.getUpdateEvent(code));
 
 		LayerDTO layer = LayerDataUtil.getLayer(code);
 
@@ -219,7 +219,7 @@ public class ProcessEventTest {
 	@Test
 	public void processRefreshLayerCommand_ReturnLayerRefreshedEvent_IfProcessIsOk() {
 
-		when(layerStateStore.getLayer(any())).thenReturn(LayerDataUtil.getLayerCreatedEvent(code));
+		when(layerStateStore.get(any())).thenReturn(LayerDataUtil.getLayerCreatedEvent(code));
 
 		LayerWMSDTO layer = LayerDataUtil.getLayerWMS(code);
 
@@ -241,7 +241,7 @@ public class ProcessEventTest {
 	@Test(expected = ItemNotFoundException.class)
 	public void processRefreshLayerCommand_ThrowItemNotFoundException_IfItemIsDeleted() {
 
-		when(layerStateStore.getLayer(any())).thenReturn(LayerDataUtil.getLayerDeletedEvent(code));
+		when(layerStateStore.get(any())).thenReturn(LayerDataUtil.getLayerDeletedEvent(code));
 
 		LayerWMSDTO layer = LayerDataUtil.getLayerWMS(code);
 
@@ -252,7 +252,7 @@ public class ProcessEventTest {
 	@Test(expected = ItemLockedException.class)
 	public void processRefreshLayerCommand_ThrowItemLockedException_IfItemIsLocked() {
 
-		when(layerStateStore.getLayer(any())).thenReturn(LayerDataUtil.getUpdateEvent(code));
+		when(layerStateStore.get(any())).thenReturn(LayerDataUtil.getUpdateEvent(code));
 
 		LayerWMSDTO layer = LayerDataUtil.getLayerWMS(code);
 

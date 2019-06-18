@@ -68,7 +68,7 @@ public class ProcessEventTest {
 	@Test
 	public void processCreateCategoryCommand_ReturnCategoryCreatedEvent_IfProcessIsOk() {
 
-		when(categoryStateStore.getCategory(any())).thenReturn(null);
+		when(categoryStateStore.get(any())).thenReturn(null);
 
 		CategoryDTO category = CategoryDataUtil.getCategory(code);
 
@@ -89,7 +89,7 @@ public class ProcessEventTest {
 	@Test
 	public void processUpdateCategoryCommand_ReturnCategoryUpdatedEvent_IfProcessIsOk() {
 
-		when(categoryStateStore.getCategory(any())).thenReturn(CategoryDataUtil.getCategoryCreatedEvent(code));
+		when(categoryStateStore.get(any())).thenReturn(CategoryDataUtil.getCategoryCreatedEvent(code));
 
 		CategoryDTO category = CategoryDataUtil.getCategory(code);
 
@@ -111,7 +111,7 @@ public class ProcessEventTest {
 	@Test(expected = ItemNotFoundException.class)
 	public void processUpdateCategoryCommand_ThrowItemNotFoundException_IfItemIsDeleted() {
 
-		when(categoryStateStore.getCategory(any())).thenReturn(CategoryDataUtil.getCategoryDeletedEvent(code));
+		when(categoryStateStore.get(any())).thenReturn(CategoryDataUtil.getCategoryDeletedEvent(code));
 
 		CategoryDTO category = CategoryDataUtil.getCategory(code);
 
@@ -122,7 +122,7 @@ public class ProcessEventTest {
 	@Test(expected = ItemLockedException.class)
 	public void processUpdateCategoryCommand_ThrowItemLockedException_IfItemIsLocked() {
 
-		when(categoryStateStore.getCategory(any())).thenReturn(CategoryDataUtil.getUpdateEvent(code));
+		when(categoryStateStore.get(any())).thenReturn(CategoryDataUtil.getUpdateEvent(code));
 
 		CategoryDTO category = CategoryDataUtil.getCategory(code);
 
@@ -132,7 +132,7 @@ public class ProcessEventTest {
 	@Test
 	public void processDeleteCategoryCommand_ReturnCheckDeleteCategoryEvent_IfProcessIsOk() {
 
-		when(categoryStateStore.getCategory(any())).thenReturn(CategoryDataUtil.getCategoryUpdatedEvent(code));
+		when(categoryStateStore.get(any())).thenReturn(CategoryDataUtil.getCategoryUpdatedEvent(code));
 
 		CategoryDTO category = CategoryDataUtil.getCategory(code);
 
@@ -152,7 +152,7 @@ public class ProcessEventTest {
 	@Test(expected = ItemNotFoundException.class)
 	public void processDeleteCategoryCommand_ThrowItemNotFoundException_IfItemIsDeleted() {
 
-		when(categoryStateStore.getCategory(any())).thenReturn(CategoryDataUtil.getCategoryDeletedEvent(code));
+		when(categoryStateStore.get(any())).thenReturn(CategoryDataUtil.getCategoryDeletedEvent(code));
 
 		CategoryDTO category = CategoryDataUtil.getCategory(code);
 
@@ -163,7 +163,7 @@ public class ProcessEventTest {
 	@Test(expected = ItemLockedException.class)
 	public void processDeleteCategoryCommand_ThrowItemLockedException_IfItemIsLocked() {
 
-		when(categoryStateStore.getCategory(any())).thenReturn(CategoryDataUtil.getUpdateEvent(code));
+		when(categoryStateStore.get(any())).thenReturn(CategoryDataUtil.getUpdateEvent(code));
 
 		CategoryDTO category = CategoryDataUtil.getCategory(code);
 

@@ -243,7 +243,7 @@ public class LayerRestTest extends DocumentationCommandBaseTest {
 	@Test
 	public void updateLayer_SendUpdateLayerEvent_IfThemeInspireIsNull() throws Exception {
 
-		when(layerStateStore.getLayer(anyString())).thenReturn(LayerDataUtil.getLayerCreatedEvent(CODE));
+		when(layerStateStore.get(anyString())).thenReturn(LayerDataUtil.getLayerCreatedEvent(CODE));
 
 		String originalName = "batimetriaGlobal";
 
@@ -284,7 +284,7 @@ public class LayerRestTest extends DocumentationCommandBaseTest {
 	@Test
 	public void updateLayer_SendUpdateLayerEvent_IfThemeInspireIsNotNullAndDataIsEnriched() throws Exception {
 
-		when(layerStateStore.getLayer(anyString())).thenReturn(LayerDataUtil.getLayerCreatedEvent(CODE));
+		when(layerStateStore.get(anyString())).thenReturn(LayerDataUtil.getLayerCreatedEvent(CODE));
 
 		String originalName = "batimetriaGlobal";
 
@@ -331,7 +331,7 @@ public class LayerRestTest extends DocumentationCommandBaseTest {
 
 		LayerCreatedEvent source = LayerDataUtil.getLayerCreatedEvent(CODE);
 
-		when(layerStateStore.getLayer(anyString())).thenReturn(source);
+		when(layerStateStore.get(anyString())).thenReturn(source);
 
 		String originalName = "batimetriaGlobal";
 
@@ -369,7 +369,7 @@ public class LayerRestTest extends DocumentationCommandBaseTest {
 	@Test
 	public void deleteLayer_SendDeleteLayerEvent_IfCommandWasSuccess() throws Exception {
 
-		when(layerStateStore.getLayer(anyString())).thenReturn(LayerDataUtil.getLayerUpdatedEvent(CODE));
+		when(layerStateStore.get(anyString())).thenReturn(LayerDataUtil.getLayerUpdatedEvent(CODE));
 
 		// @formatter:off
 		
