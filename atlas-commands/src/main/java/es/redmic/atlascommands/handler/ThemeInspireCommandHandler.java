@@ -75,9 +75,6 @@ public class ThemeInspireCommandHandler extends CommandHandler {
 	@Value("${broker.topic.theme.inspire.updated}")
 	private String themeInspireUpdatedTopic;
 
-	@Value("${broker.topic.atlas.agg.by.themeinspire}")
-	private String atlasAggByThemeInspireTopic;
-
 	@Value("${broker.state.store.themeinspire.dir}")
 	private String stateStoreThemeInspireDir;
 
@@ -122,7 +119,7 @@ public class ThemeInspireCommandHandler extends CommandHandler {
 				config
 					.serviceId(themeInspireEventsStreamId)
 					.windowsTime(streamWindowsTime)
-					.build(), atlasAggByThemeInspireTopic, alertService);
+					.build(), alertService);
 		
 		// @formatter:on
 	}

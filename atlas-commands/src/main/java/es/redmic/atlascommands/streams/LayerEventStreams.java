@@ -272,15 +272,6 @@ public class LayerEventStreams extends EventSourcingStreams {
 		// En este caso no hay modificaciones parciales
 	}
 
-	/**
-	 * Función para procesar modificaciones de referencias
-	 */
-
-	@Override
-	protected void processPostUpdateStream(KStream<String, Event> events) {
-		// En este caso no hay modificación de relaciones
-	}
-
 	@Override
 	protected void processExtraStreams(KStream<String, Event> events, KStream<String, Event> snapshotEvents) {
 
