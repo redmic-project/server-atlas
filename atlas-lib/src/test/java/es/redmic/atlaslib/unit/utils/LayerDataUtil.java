@@ -57,6 +57,7 @@ import es.redmic.atlaslib.events.layer.delete.DeleteLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerFailedEvent;
 import es.redmic.atlaslib.events.layer.delete.LayerDeletedEvent;
+import es.redmic.atlaslib.events.layer.partialupdate.themeinspire.UpdateThemeInspireInLayerEvent;
 import es.redmic.atlaslib.events.layer.refresh.LayerRefreshedEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerConfirmedEvent;
@@ -317,6 +318,17 @@ public abstract class LayerDataUtil {
 		event.setType(LayerEventTypes.REFRESH_CANCELLED);
 		event.setExceptionType("ItemAlreadyExist");
 		event.setLayer(getLayer());
+		return event;
+	}
+
+	public static UpdateThemeInspireInLayerEvent getUpdateThemeInspireInLayerEvent() {
+
+		UpdateThemeInspireInLayerEvent event = new UpdateThemeInspireInLayerEvent();
+		event.setAggregateId(PREFIX + CODE);
+		event.setType(LayerEventTypes.UPDATE_THEMEINSPIRE);
+		event.setVersion(2);
+		event.setUserId(USER);
+		event.setThemeInspire(ThemeInspireDataUtil.getThemeInspire());
 		return event;
 	}
 

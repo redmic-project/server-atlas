@@ -42,6 +42,7 @@ import es.redmic.atlaslib.events.layer.delete.DeleteLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerFailedEvent;
 import es.redmic.atlaslib.events.layer.delete.LayerDeletedEvent;
+import es.redmic.atlaslib.events.layer.partialupdate.themeinspire.UpdateThemeInspireInLayerEvent;
 import es.redmic.atlaslib.events.layer.refresh.LayerRefreshedEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerConfirmedEvent;
@@ -53,6 +54,7 @@ import es.redmic.atlaslib.events.layer.update.UpdateLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEnrichedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerFailedEvent;
+import es.redmic.atlaslib.events.themeinspire.common.ThemeInspireEvent;
 import es.redmic.brokerlib.avro.common.Event;
 import es.redmic.brokerlib.avro.common.EventError;
 import es.redmic.exception.common.ExceptionType;
@@ -181,6 +183,24 @@ public class LayerEventFactory {
 			logger.error("Tipo de evento no soportado");
 			throw new InternalException(ExceptionType.INTERNAL_EXCEPTION);
 		}
+	}
+
+	public static Event getEvent(Event source, Event trigger, String type) {
+
+		if (type.equals(LayerEventTypes.UPDATE_THEMEINSPIRE)) {
+
+			logger.debug("Creando evento UpdateThemeInspireInLayerEvent para: " + source.getAggregateId());
+
+			UpdateThemeInspireInLayerEvent requestEvent = new UpdateThemeInspireInLayerEvent();
+			requestEvent.setAggregateId(source.getAggregateId());
+			requestEvent.setUserId(trigger.getUserId());
+			requestEvent.setVersion(source.getVersion() + 1);
+			requestEvent.setThemeInspire(((ThemeInspireEvent) trigger).getThemeInspire());
+			return requestEvent;
+		}
+
+		logger.error("Tipo de evento no soportado");
+		throw new InternalException(ExceptionType.INTERNAL_EXCEPTION);
 	}
 
 	public static Event getEvent(Event source, String type, String exceptionType,

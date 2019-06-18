@@ -40,6 +40,7 @@ import es.redmic.atlaslib.events.layer.delete.DeleteLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerFailedEvent;
 import es.redmic.atlaslib.events.layer.delete.LayerDeletedEvent;
+import es.redmic.atlaslib.events.layer.partialupdate.themeinspire.UpdateThemeInspireInLayerEvent;
 import es.redmic.atlaslib.events.layer.refresh.LayerRefreshedEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerConfirmedEvent;
@@ -412,6 +413,19 @@ public class LayerEventsCheckAvroSchemaTest extends AtlasAvroBaseTest {
 
 		assertTrue("El objeto obtenido debe ser una instancia de RefreshLayerCancelledEvent",
 				RefreshLayerCancelledEvent.class.isInstance(result));
+
+		assertEquals(result, event);
+	}
+
+	@Test
+	public void UpdateVesselTypeInVesselEventSerializeAndDeserialize_IsSuccessful_IfSchemaAndDataAreCorrect() {
+
+		UpdateThemeInspireInLayerEvent event = LayerDataUtil.getUpdateThemeInspireInLayerEvent();
+
+		Object result = serializerAndDeserializer(event);
+
+		assertTrue("El objeto obtenido debe ser una instancia de UpdateThemeInspireInLayerEvent",
+				UpdateThemeInspireInLayerEvent.class.isInstance(result));
 
 		assertEquals(result, event);
 	}

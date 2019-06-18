@@ -26,6 +26,7 @@ public abstract class LayerEventTypes extends EventTypes {
 
 	public static String
 	// @formatter:off
+		UPDATE_THEMEINSPIRE = "UPDATE_THEMEINSPIRE",
 		//REFRESH
 		REFRESH = "REFRESH",
 		REFRESH_CONFIRMED = "REFRESH_CONFIRMED",

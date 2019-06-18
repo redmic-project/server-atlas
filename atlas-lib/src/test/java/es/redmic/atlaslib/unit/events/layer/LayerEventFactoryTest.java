@@ -41,6 +41,7 @@ import es.redmic.atlaslib.events.layer.delete.DeleteLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerFailedEvent;
 import es.redmic.atlaslib.events.layer.delete.LayerDeletedEvent;
+import es.redmic.atlaslib.events.layer.partialupdate.themeinspire.UpdateThemeInspireInLayerEvent;
 import es.redmic.atlaslib.events.layer.refresh.LayerRefreshedEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerConfirmedEvent;
@@ -52,7 +53,9 @@ import es.redmic.atlaslib.events.layer.update.UpdateLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEnrichedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerFailedEvent;
+import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireEvent;
 import es.redmic.atlaslib.unit.utils.LayerDataUtil;
+import es.redmic.atlaslib.unit.utils.ThemeInspireDataUtil;
 import es.redmic.brokerlib.avro.common.Event;
 import es.redmic.brokerlib.avro.common.EventError;
 
@@ -257,6 +260,28 @@ public class LayerEventFactoryTest {
 		assertEquals(LayerEventTypes.REFRESH_CONFIRMED, event.getType());
 
 		checkMetadataFields(source, event);
+	}
+
+	///////////////////
+
+	@Test
+	public void GetEvent_ReturnUpdateThemeInspireInLayerEvent_IfTypeIsUpdateThemeInspireInLayer() {
+
+		Event source = LayerDataUtil.getLayerUpdatedEvent();
+
+		UpdateThemeInspireEvent themeInspireUpdated = ThemeInspireDataUtil.getUpdateEvent();
+
+		UpdateThemeInspireInLayerEvent event = (UpdateThemeInspireInLayerEvent) LayerEventFactory.getEvent(source,
+				themeInspireUpdated, LayerEventTypes.UPDATE_THEMEINSPIRE);
+
+		assertEquals(LayerEventTypes.UPDATE_THEMEINSPIRE, event.getType());
+		assertNotNull(event.getThemeInspire());
+		assertEquals(source.getAggregateId(), event.getAggregateId());
+
+		assertEquals(themeInspireUpdated.getUserId(), event.getUserId());
+
+		Integer versionExpected = source.getVersion() + 1;
+		assertEquals(versionExpected.toString(), event.getVersion().toString());
 	}
 
 	///////////////////
