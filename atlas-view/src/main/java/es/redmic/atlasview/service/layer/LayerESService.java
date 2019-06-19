@@ -31,6 +31,7 @@ import es.redmic.atlaslib.dto.layer.LayerDTO;
 import es.redmic.atlasview.mapper.layer.LayerESMapper;
 import es.redmic.atlasview.model.layer.Layer;
 import es.redmic.atlasview.model.layer.LayerWMS;
+import es.redmic.atlasview.model.themeinspire.ThemeInspire;
 import es.redmic.atlasview.repository.category.CategoryESRepository;
 import es.redmic.atlasview.repository.layer.LayerESRepository;
 import es.redmic.exception.common.ExceptionType;
@@ -92,6 +93,10 @@ public class LayerESService extends RDataService<Layer, LayerDTO, GeoDataQueryDT
 
 	public EventApplicationResult delete(String id) {
 		return repository.delete(id);
+	}
+
+	public EventApplicationResult updateThemeInspireInLayer(String id, ThemeInspire themeInspire) {
+		return repository.updateThemeInspireInLayer(id, themeInspire);
 	}
 
 	/**

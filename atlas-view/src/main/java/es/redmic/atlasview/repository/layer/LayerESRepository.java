@@ -1,5 +1,7 @@
 package es.redmic.atlasview.repository.layer;
 
+import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
+
 /*-
  * #%L
  * Atlas-query-endpoint
@@ -29,6 +31,7 @@ import org.elasticsearch.action.search.MultiSearchResponse;
 import org.elasticsearch.action.search.MultiSearchResponse.Item;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -39,6 +42,8 @@ import org.springframework.stereotype.Repository;
 import es.redmic.atlasview.common.query.LayerQueryUtils;
 import es.redmic.atlasview.model.layer.Layer;
 import es.redmic.atlasview.model.layer.LayerWMS;
+import es.redmic.atlasview.model.themeinspire.ThemeInspire;
+import es.redmic.elasticsearchlib.common.model.JoinIndex;
 import es.redmic.elasticsearchlib.common.utils.ElasticPersistenceUtils;
 import es.redmic.elasticsearchlib.data.repository.RWDataESRepository;
 import es.redmic.exception.common.ExceptionType;
@@ -70,6 +75,26 @@ public class LayerESRepository extends RWDataESRepository<Layer, GeoDataQueryDTO
 	public LayerESRepository() {
 		super(INDEX, TYPE);
 		setInternalQuery(getLayerQuery());
+	}
+
+	@SuppressWarnings("unchecked")
+	public EventApplicationResult updateThemeInspireInLayer(String layerId, ThemeInspire themeInspire) {
+
+		Layer source = (Layer) queryById(layerId).get_source();
+
+		JoinIndex joinIndex = source.getJoinIndex();
+
+		XContentBuilder doc;
+
+		try {
+			doc = jsonBuilder().startObject().field("jobIndex", objectMapper.convertValue(joinIndex, Map.class))
+					.field("themeInspire", objectMapper.convertValue(themeInspire, Map.class)).endObject();
+		} catch (IllegalArgumentException | IOException e1) {
+			LOGGER.debug("Error modificando el item con id " + layerId + " en " + getIndex()[0] + " " + getType());
+			return new EventApplicationResult(ExceptionType.ES_UPDATE_DOCUMENT.toString());
+		}
+
+		return update(layerId, source.getJoinIndex().getParent(), doc);
 	}
 
 	@Override
