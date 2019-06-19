@@ -24,6 +24,8 @@ import java.util.concurrent.CompletableFuture;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.kafka.streams.KeyValue;
+import org.apache.kafka.streams.state.KeyValueIterator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaHandler;
@@ -58,7 +60,9 @@ import es.redmic.atlaslib.events.layer.refresh.RefreshLayerEvent;
 import es.redmic.atlaslib.events.layer.update.LayerUpdatedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEnrichedEvent;
+import es.redmic.atlaslib.events.themeinspire.update.ThemeInspireUpdatedEvent;
 import es.redmic.brokerlib.alert.AlertService;
+import es.redmic.brokerlib.avro.common.Event;
 import es.redmic.commandslib.commands.CommandHandler;
 import es.redmic.commandslib.streaming.common.StreamConfig;
 import es.redmic.commandslib.streaming.common.StreamConfig.Builder;
@@ -354,5 +358,24 @@ public class LayerCommandHandler extends CommandHandler {
 
 		resolveCommand(event.getSessionId(),
 				ExceptionFactory.getException(event.getExceptionType(), event.getArguments()));
+	}
+
+	@KafkaListener(topics = "${broker.topic.theme.inspire.updated}")
+	private void listen(ThemeInspireUpdatedEvent event) {
+
+		KeyValueIterator<String, Event> iteratble = layerStateStore.getAll();
+		while (iteratble.hasNext()) {
+			final KeyValue<String, Event> next = iteratble.next();
+
+			Event layerEvent = next.value;
+
+			if (LayerEventTypes.isSnapshot(layerEvent.getType()) && ((LayerEvent) layerEvent).getLayer()
+					.getThemeInspire().getId().equals(event.getThemeInspire().getId())) {
+
+				publishToKafka(LayerEventFactory.getEvent(layerEvent, event, LayerEventTypes.UPDATE_THEMEINSPIRE),
+						layerTopic);
+			}
+		}
+		iteratble.close();
 	}
 }

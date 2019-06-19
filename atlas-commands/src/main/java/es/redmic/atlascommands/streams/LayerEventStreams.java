@@ -35,6 +35,7 @@ import es.redmic.atlaslib.events.layer.LayerEventFactory;
 import es.redmic.atlaslib.events.layer.LayerEventTypes;
 import es.redmic.atlaslib.events.layer.common.LayerEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerEnrichedEvent;
+import es.redmic.atlaslib.events.layer.partialupdate.themeinspire.UpdateThemeInspireInLayerEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEnrichedEvent;
 import es.redmic.atlaslib.events.themeinspire.ThemeInspireEventTypes;
 import es.redmic.atlaslib.events.themeinspire.common.ThemeInspireEvent;
@@ -93,8 +94,9 @@ public class LayerEventStreams extends EventSourcingStreams {
 								&& getThemeInspireIdFromLayer(event) != null))
 				.selectKey((k, v) -> getThemeInspireIdFromLayer(v));
 
-		enrichCreateEvents.leftJoin(themeInspire, (k, v) -> k,
-				(enrichCreateEvent, vesselTypeEvent) -> getEnrichCreateResultEvent(enrichCreateEvent, vesselTypeEvent))
+		enrichCreateEvents
+				.leftJoin(themeInspire, (k, v) -> k, (enrichCreateEvent,
+						themeInspireEvent) -> getEnrichCreateResultEvent(enrichCreateEvent, themeInspireEvent))
 				.selectKey((k, v) -> v.getAggregateId()).to(topic);
 	}
 
@@ -266,10 +268,59 @@ public class LayerEventStreams extends EventSourcingStreams {
 				eventError.getExceptionType(), eventError.getArguments());
 	}
 
+	/**
+	 * Función que a partir del último evento correcto + el evento de edición
+	 * parcial + la confirmación de la vista, envía evento modificado.
+	 */
 	@Override
 	protected void processPartialUpdatedStream(KStream<String, Event> layerEvents,
 			KStream<String, Event> updateConfirmedEvents) {
-		// En este caso no hay modificaciones parciales
+
+		// Table filtrado por eventos de petición de modificar themeInspire (Siempre el
+		// último evento)
+		KTable<String, Event> updateRequestEvents = layerEvents
+				.filter((id, event) -> (LayerEventTypes.UPDATE_THEMEINSPIRE.equals(event.getType()))).groupByKey()
+				.reduce((aggValue, newValue) -> newValue);
+
+		// Join por id, mandando a kafka el evento de éxito
+		KStream<String, UpdateThemeInspireInLayerEvent> partialUpdateEvent = updateConfirmedEvents.join(
+				updateRequestEvents,
+				(confirmedEvent, requestEvent) -> isSameSession(confirmedEvent, requestEvent)
+						? (UpdateThemeInspireInLayerEvent) requestEvent
+						: null);
+
+		// Stream filtrado por eventos de creaciones y modificaciones correctos (solo el
+		// último que se produzca por id)
+		KStream<String, Event> successEvents = layerEvents
+				.filter((id, event) -> (LayerEventTypes.isSnapshot(event.getType())
+						&& !LayerEventTypes.DELETED.equals(event.getType())));
+
+		KTable<String, Event> successEventsTable = successEvents.groupByKey().reduce((aggValue, newValue) -> newValue);
+
+		// Join por id, mandando a kafka el evento de confirmación
+		partialUpdateEvent.join(successEventsTable, (partialUpdateConfirmEvent,
+				lastSuccessEvent) -> getUpdatedEventFromPartialUpdate(partialUpdateConfirmEvent, lastSuccessEvent))
+				.filter((k, v) -> (v != null)).to(topic);
+	}
+
+	/**
+	 * Función que a partir del último evento correcto + el evento de edición
+	 * parcial + la confirmación de la vista, si todo es correcto, genera evento
+	 * updated
+	 */
+
+	private Event getUpdatedEventFromPartialUpdate(UpdateThemeInspireInLayerEvent partialUpdateConfirmEvent,
+			Event lastSuccessEvent) {
+
+		assert (LayerEventTypes.isSnapshot(lastSuccessEvent.getType())
+				&& !lastSuccessEvent.getType().equals(LayerEventTypes.DELETED));
+
+		assert partialUpdateConfirmEvent.getType().equals(LayerEventTypes.UPDATE_THEMEINSPIRE);
+
+		LayerDTO layer = ((LayerEvent) lastSuccessEvent).getLayer();
+		layer.setThemeInspire(partialUpdateConfirmEvent.getThemeInspire());
+
+		return LayerEventFactory.getEvent(partialUpdateConfirmEvent, LayerEventTypes.UPDATED, layer);
 	}
 
 	@Override
