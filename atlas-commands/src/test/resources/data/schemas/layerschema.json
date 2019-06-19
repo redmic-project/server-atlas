@@ -12,7 +12,7 @@
 			"maxLength": 500
 		},
 		"themeInspire": {
-			"type": ["integer", "null"],
+			"type": ["string", "null"],
 			"url": "/api/atlas/view/themeinspire"
 		},
 		"latLonBoundsImage": {
@@ -47,7 +47,7 @@
 			"type": "string"
 		},
 		"parent": {
-			"type": "integer",
+			"type": "string",
 			"url": "/api/atlas/view/category"
 		}
 	},
