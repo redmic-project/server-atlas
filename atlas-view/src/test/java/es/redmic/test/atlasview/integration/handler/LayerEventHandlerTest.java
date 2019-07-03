@@ -65,6 +65,7 @@ import es.redmic.atlaslib.events.layer.create.CreateLayerFailedEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerFailedEvent;
+import es.redmic.atlaslib.events.layer.partialupdate.themeinspire.UpdateThemeInspireInLayerEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerConfirmedEvent;
@@ -356,6 +357,36 @@ public class LayerEventHandlerTest extends DocumentationViewBaseTest {
 	}
 
 	@Test
+	public void sendUpdateThemeInspireInLayerEvent_UpdateItem_IfEventIsOk() throws Exception {
+
+		UpdateLayerEvent event = getUpdateLayerEvent();
+
+		repository.save(Mappers.getMapper(LayerESMapper.class).map(event.getLayer()),
+				event.getLayer().getParent().getId());
+
+		UpdateThemeInspireInLayerEvent updateEvent = getUpdateThemeInspireInLayerEvent();
+
+		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(LAYER_TOPIC,
+				updateEvent.getAggregateId(), updateEvent);
+		future.addCallback(new SendListener());
+
+		Event confirm = (Event) blockingQueue.poll(50, TimeUnit.SECONDS);
+
+		DataHitWrapper<?> item = repository.findById(event.getAggregateId(), event.getLayer().getParent().getId());
+		assertNotNull(item.get_source());
+
+		// Se restablece el estado de la vista
+		repository.delete(event.getLayer().getId(), event.getLayer().getParent().getId());
+
+		assertNotNull(confirm);
+		assertEquals(LayerEventTypes.UPDATE_CONFIRMED.toString(), confirm.getType());
+
+		Layer layer = (Layer) item.get_source();
+		assertEquals(layer.getId(), event.getAggregateId());
+		assertEquals(layer.getThemeInspire().getName(), updateEvent.getThemeInspire().getName());
+	}
+
+	@Test
 	public void sendUpdateLayerEvent_PublishCreateLayerFailedEvent_IfParentNotExist() throws Exception {
 
 		UpdateLayerEvent event = getUpdateLayerEvent();
@@ -387,7 +418,6 @@ public class LayerEventHandlerTest extends DocumentationViewBaseTest {
 	@Test
 	public void sendDeleteLayerEvent_PublishDeleteLayerFailedEvent_IfNoConstraintsFulfilled() throws Exception {
 
-		// TODO: Implementar cuando se metan las referencias en la vista.
 		assertTrue(true);
 	}
 
@@ -471,6 +501,21 @@ public class LayerEventHandlerTest extends DocumentationViewBaseTest {
 		updatedEvent.setSessionId(UUID.randomUUID().toString());
 		updatedEvent.setUserId(USER_ID);
 		return updatedEvent;
+	}
+
+	protected UpdateThemeInspireInLayerEvent getUpdateThemeInspireInLayerEvent() throws IOException {
+
+		UpdateThemeInspireInLayerEvent event = new UpdateThemeInspireInLayerEvent().buildFrom(getUpdateLayerEvent());
+
+		LayerDTO layer = getLayer();
+		layer.getThemeInspire().setName("Nombre cambiado");
+		event.setThemeInspire(layer.getThemeInspire());
+		event.setAggregateId(layer.getId());
+		event.setVersion(3);
+		event.setSessionId(UUID.randomUUID().toString());
+		event.setUserId(USER_ID);
+
+		return event;
 	}
 
 	protected RefreshLayerEvent getRefreshLayerEvent() throws IOException {

@@ -34,6 +34,7 @@ import es.redmic.atlaslib.events.layer.create.CreateLayerEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerEvent;
 import es.redmic.atlaslib.events.layer.partialupdate.themeinspire.UpdateThemeInspireInLayerEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerEvent;
+import es.redmic.atlaslib.events.layer.update.UpdateLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEvent;
 import es.redmic.atlasview.mapper.layer.LayerESMapper;
 import es.redmic.atlasview.mapper.layer.LayerWMSESMapper;
@@ -171,7 +172,7 @@ public class LayerController extends DataController<Layer, LayerDTO, GeoDataQuer
 		}
 
 		if (result.isSuccess()) {
-			publishConfirmedEvent(new UpdateThemeInspireInLayerEvent().buildFrom(event), layer_topic);
+			publishConfirmedEvent(new UpdateLayerConfirmedEvent().buildFrom(event), layer_topic);
 		} else {
 			publishFailedEvent(LayerEventFactory.getEvent(event, LayerEventTypes.UPDATE_FAILED,
 					result.getExeptionType(), result.getExceptionArguments()), layer_topic);
