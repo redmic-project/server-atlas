@@ -41,6 +41,7 @@ import es.redmic.atlascommands.config.UserService;
 import es.redmic.atlascommands.statestore.LayerStateStore;
 import es.redmic.atlascommands.streams.LayerEventStreams;
 import es.redmic.atlaslib.dto.layer.LayerDTO;
+import es.redmic.atlaslib.dto.themeinspire.ThemeInspireDTO;
 import es.redmic.atlaslib.events.layer.LayerEventFactory;
 import es.redmic.atlaslib.events.layer.LayerEventTypes;
 import es.redmic.atlaslib.events.layer.common.LayerEvent;
@@ -369,11 +370,16 @@ public class LayerCommandHandler extends CommandHandler {
 
 			Event layerEvent = next.value;
 
-			if (LayerEventTypes.isSnapshot(layerEvent.getType()) && ((LayerEvent) layerEvent).getLayer()
-					.getThemeInspire().getId().equals(event.getThemeInspire().getId())) {
+			if (LayerEventTypes.isSnapshot(layerEvent.getType())) {
 
-				publishToKafka(LayerEventFactory.getEvent(layerEvent, event, LayerEventTypes.UPDATE_THEMEINSPIRE),
-						layerTopic);
+				ThemeInspireDTO themeInspire = ((LayerEvent) layerEvent).getLayer().getThemeInspire();
+
+				if (themeInspire.getId().equals(event.getThemeInspire().getId())
+						&& !themeInspire.equals(event.getThemeInspire())) {
+
+					publishToKafka(LayerEventFactory.getEvent(layerEvent, event, LayerEventTypes.UPDATE_THEMEINSPIRE),
+							layerTopic);
+				}
 			}
 		}
 		iteratble.close();
