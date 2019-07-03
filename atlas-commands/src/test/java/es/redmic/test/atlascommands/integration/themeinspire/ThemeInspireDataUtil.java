@@ -33,11 +33,13 @@ import es.redmic.atlaslib.events.themeinspire.create.CreateThemeInspireEvent;
 import es.redmic.atlaslib.events.themeinspire.create.CreateThemeInspireFailedEvent;
 import es.redmic.atlaslib.events.themeinspire.create.ThemeInspireCreatedEvent;
 import es.redmic.atlaslib.events.themeinspire.delete.CheckDeleteThemeInspireEvent;
+import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireCancelledEvent;
 import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireConfirmedEvent;
 import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireEvent;
 import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireFailedEvent;
 import es.redmic.atlaslib.events.themeinspire.delete.ThemeInspireDeletedEvent;
 import es.redmic.atlaslib.events.themeinspire.update.ThemeInspireUpdatedEvent;
+import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireCancelledEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireConfirmedEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireFailedEvent;
@@ -126,6 +128,20 @@ public abstract class ThemeInspireDataUtil {
 		return event;
 	}
 
+	public static UpdateThemeInspireCancelledEvent getUpdateThemeInspireCancelledEvent(String code) {
+
+		UpdateThemeInspireCancelledEvent event = new UpdateThemeInspireCancelledEvent().buildFrom(getUpdateEvent(code));
+
+		event.setThemeInspire(getThemeInspire(code));
+
+		event.setExceptionType(ExceptionType.ES_UPDATE_DOCUMENT.name());
+
+		Map<String, String> arguments = new HashMap<>();
+		// arguments.put("A", "B");
+		event.setArguments(arguments);
+		return event;
+	}
+
 	public static UpdateThemeInspireFailedEvent getUpdateThemeInspireFailedEvent(String code) {
 
 		UpdateThemeInspireFailedEvent event = new UpdateThemeInspireFailedEvent().buildFrom(getUpdateEvent(code));
@@ -167,6 +183,21 @@ public abstract class ThemeInspireDataUtil {
 	public static ThemeInspireDeletedEvent getThemeInspireDeletedEvent(String code) {
 
 		return new ThemeInspireDeletedEvent().buildFrom(getDeleteEvent(code));
+	}
+
+	public static DeleteThemeInspireCancelledEvent getDeleteThemeInspireCancelledEvent(String code) {
+
+		DeleteThemeInspireCancelledEvent event = new DeleteThemeInspireCancelledEvent().buildFrom(getDeleteEvent(code));
+
+		event.setThemeInspire(getThemeInspire(code));
+
+		event.setExceptionType(ExceptionType.DELETE_ITEM_EXCEPTION.name());
+
+		Map<String, String> arguments = new HashMap<>();
+		// arguments.put("A", "B");
+		event.setArguments(arguments);
+
+		return event;
 	}
 
 	public static DeleteThemeInspireFailedEvent getDeleteThemeInspireFailedEvent(String code) {

@@ -34,10 +34,12 @@ import es.redmic.atlaslib.events.category.create.CreateCategoryEvent;
 import es.redmic.atlaslib.events.category.create.CreateCategoryFailedEvent;
 import es.redmic.atlaslib.events.category.delete.CategoryDeletedEvent;
 import es.redmic.atlaslib.events.category.delete.CheckDeleteCategoryEvent;
+import es.redmic.atlaslib.events.category.delete.DeleteCategoryCancelledEvent;
 import es.redmic.atlaslib.events.category.delete.DeleteCategoryConfirmedEvent;
 import es.redmic.atlaslib.events.category.delete.DeleteCategoryEvent;
 import es.redmic.atlaslib.events.category.delete.DeleteCategoryFailedEvent;
 import es.redmic.atlaslib.events.category.update.CategoryUpdatedEvent;
+import es.redmic.atlaslib.events.category.update.UpdateCategoryCancelledEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryConfirmedEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryFailedEvent;
@@ -126,6 +128,20 @@ public abstract class CategoryDataUtil {
 		return event;
 	}
 
+	public static UpdateCategoryCancelledEvent getUpdateCategoryCancelledEvent(String code) {
+
+		UpdateCategoryCancelledEvent event = new UpdateCategoryCancelledEvent().buildFrom(getUpdateEvent(code));
+
+		event.setCategory(getCategory(code));
+
+		event.setExceptionType(ExceptionType.ES_UPDATE_DOCUMENT.name());
+
+		Map<String, String> arguments = new HashMap<>();
+		// arguments.put("A", "B");
+		event.setArguments(arguments);
+		return event;
+	}
+
 	public static UpdateCategoryFailedEvent getUpdateCategoryFailedEvent(String code) {
 
 		UpdateCategoryFailedEvent event = new UpdateCategoryFailedEvent().buildFrom(getUpdateEvent(code));
@@ -167,6 +183,21 @@ public abstract class CategoryDataUtil {
 	public static CategoryDeletedEvent getCategoryDeletedEvent(String code) {
 
 		return new CategoryDeletedEvent().buildFrom(getDeleteEvent(code));
+	}
+
+	public static DeleteCategoryCancelledEvent getDeleteCategoryCancelledEvent(String code) {
+
+		DeleteCategoryCancelledEvent event = new DeleteCategoryCancelledEvent().buildFrom(getDeleteEvent(code));
+
+		event.setCategory(getCategory(code));
+
+		event.setExceptionType(ExceptionType.DELETE_ITEM_EXCEPTION.name());
+
+		Map<String, String> arguments = new HashMap<>();
+		// arguments.put("A", "B");
+		event.setArguments(arguments);
+
+		return event;
 	}
 
 	public static DeleteCategoryFailedEvent getDeleteCategoryFailedEvent(String code) {

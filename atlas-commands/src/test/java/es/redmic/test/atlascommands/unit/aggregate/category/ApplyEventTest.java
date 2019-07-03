@@ -36,6 +36,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import es.redmic.atlascommands.aggregate.CategoryAggregate;
 import es.redmic.atlascommands.statestore.CategoryStateStore;
+import es.redmic.atlaslib.events.category.common.CategoryCancelledEvent;
 import es.redmic.atlaslib.events.category.common.CategoryEvent;
 import es.redmic.atlaslib.events.category.create.CategoryCreatedEvent;
 import es.redmic.atlaslib.events.category.create.CreateCategoryEvent;
@@ -151,6 +152,44 @@ public class ApplyEventTest {
 		DeleteCategoryEvent evt = CategoryDataUtil.getDeleteEvent(code);
 
 		agg.loadFromHistory(evt);
+	}
+
+	@Test
+	public void loadFromHistory_ChangeAggregateStateToUpdateCancelled_IfLastEventIsUpdateCancelled() {
+
+		List<Event> history = new ArrayList<>();
+
+		history.add(CategoryDataUtil.getCategoryCreatedEvent(code));
+		history.add(CategoryDataUtil.getCategoryUpdatedEvent(code));
+
+		history.add(CategoryDataUtil.getUpdateCategoryCancelledEvent(code));
+
+		agg.loadFromHistory(history);
+
+		checkCancelledState((CategoryCancelledEvent) history.get(2));
+	}
+
+	@Test
+	public void loadFromHistory_ChangeAggregateStateToDeleteCancelled_IfLastEventIsDeleteCancelled() {
+
+		List<Event> history = new ArrayList<>();
+
+		history.add(CategoryDataUtil.getCategoryCreatedEvent(code));
+		history.add(CategoryDataUtil.getCategoryUpdatedEvent(code));
+
+		history.add(CategoryDataUtil.getDeleteCategoryCancelledEvent(code));
+
+		agg.loadFromHistory(history);
+
+		checkCancelledState((CategoryCancelledEvent) history.get(2));
+	}
+
+	private void checkCancelledState(CategoryCancelledEvent evt) {
+
+		assertEquals(agg.getVersion(), evt.getVersion());
+		assertEquals(agg.getAggregateId(), evt.getAggregateId());
+		assertEquals(agg.getCategory(), evt.getCategory());
+		assertFalse(agg.isDeleted());
 	}
 
 	private void checkCreatedOrUpdatedState(CategoryEvent evt) {

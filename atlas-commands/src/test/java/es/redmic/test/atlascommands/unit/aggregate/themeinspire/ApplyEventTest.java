@@ -35,6 +35,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import es.redmic.atlascommands.aggregate.ThemeInspireAggregate;
 import es.redmic.atlascommands.statestore.ThemeInspireStateStore;
+import es.redmic.atlaslib.events.themeinspire.common.ThemeInspireCancelledEvent;
 import es.redmic.atlaslib.events.themeinspire.common.ThemeInspireEvent;
 import es.redmic.atlaslib.events.themeinspire.create.CreateThemeInspireEvent;
 import es.redmic.atlaslib.events.themeinspire.create.ThemeInspireCreatedEvent;
@@ -48,13 +49,13 @@ import es.redmic.test.atlascommands.integration.themeinspire.ThemeInspireDataUti
 
 @RunWith(MockitoJUnitRunner.class)
 public class ApplyEventTest {
-	
+
 	private final String code = "gg";
-	
+
 	ThemeInspireStateStore themeInspireStateStore;
-	
+
 	ThemeInspireAggregate agg;
-	
+
 	@Before
 	public void setUp() {
 
@@ -62,7 +63,7 @@ public class ApplyEventTest {
 
 		agg = new ThemeInspireAggregate(themeInspireStateStore);
 	}
-	
+
 	@Test
 	public void applyThemeInspireCreatedEvent_ChangeAggrefateState_IfProcessIsOk() {
 
@@ -150,6 +151,44 @@ public class ApplyEventTest {
 		DeleteThemeInspireEvent evt = ThemeInspireDataUtil.getDeleteEvent(code);
 
 		agg.loadFromHistory(evt);
+	}
+
+	@Test
+	public void loadFromHistory_ChangeAggregateStateToUpdateCancelled_IfLastEventIsUpdateCancelled() {
+
+		List<Event> history = new ArrayList<>();
+
+		history.add(ThemeInspireDataUtil.getThemeInspireCreatedEvent(code));
+		history.add(ThemeInspireDataUtil.getThemeInspireUpdatedEvent(code));
+
+		history.add(ThemeInspireDataUtil.getUpdateThemeInspireCancelledEvent(code));
+
+		agg.loadFromHistory(history);
+
+		checkCancelledState((ThemeInspireCancelledEvent) history.get(2));
+	}
+
+	@Test
+	public void loadFromHistory_ChangeAggregateStateToDeleteCancelled_IfLastEventIsDeleteCancelled() {
+
+		List<Event> history = new ArrayList<>();
+
+		history.add(ThemeInspireDataUtil.getThemeInspireCreatedEvent(code));
+		history.add(ThemeInspireDataUtil.getThemeInspireUpdatedEvent(code));
+
+		history.add(ThemeInspireDataUtil.getDeleteThemeInspireCancelledEvent(code));
+
+		agg.loadFromHistory(history);
+
+		checkCancelledState((ThemeInspireCancelledEvent) history.get(2));
+	}
+
+	private void checkCancelledState(ThemeInspireCancelledEvent evt) {
+
+		assertEquals(agg.getVersion(), evt.getVersion());
+		assertEquals(agg.getAggregateId(), evt.getAggregateId());
+		assertEquals(agg.getThemeInspire(), evt.getThemeInspire());
+		assertFalse(agg.isDeleted());
 	}
 
 	private void checkCreatedOrUpdatedState(ThemeInspireEvent evt) {

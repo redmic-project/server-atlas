@@ -28,6 +28,7 @@ import es.redmic.atlascommands.statestore.LayerStateStore;
 
 import es.redmic.atlaslib.dto.layer.LayerDTO;
 import es.redmic.atlaslib.events.layer.LayerEventTypes;
+import es.redmic.atlaslib.events.layer.common.LayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.common.LayerEvent;
 import es.redmic.atlaslib.events.layer.common.LayerRefreshEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerCancelledEvent;
@@ -192,7 +193,7 @@ public class LayerAggregate extends Aggregate {
 		case "DELETE_CANCELLED":
 		case "REFRESH_CANCELLED":
 			logger.debug("Compensación por edición/borrado/refresco fallido");
-			apply((LayerEvent) event);
+			apply((LayerCancelledEvent) event);
 			break;
 		default:
 			logger.debug("Evento no manejado ", event.getType());
@@ -206,6 +207,11 @@ public class LayerAggregate extends Aggregate {
 
 	public void apply(LayerDeletedEvent event) {
 		this.deleted = true;
+		super.apply(event);
+	}
+
+	public void apply(LayerCancelledEvent event) {
+		this.layer = event.getLayer();
 		super.apply(event);
 	}
 

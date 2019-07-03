@@ -52,6 +52,7 @@ import es.redmic.atlaslib.events.layer.create.CreateLayerFailedEvent;
 import es.redmic.atlaslib.events.layer.create.EnrichCreateLayerEvent;
 import es.redmic.atlaslib.events.layer.create.LayerCreatedEvent;
 import es.redmic.atlaslib.events.layer.delete.CheckDeleteLayerEvent;
+import es.redmic.atlaslib.events.layer.delete.DeleteLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerFailedEvent;
@@ -63,6 +64,7 @@ import es.redmic.atlaslib.events.layer.refresh.RefreshLayerEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerFailedEvent;
 import es.redmic.atlaslib.events.layer.update.EnrichUpdateLayerEvent;
 import es.redmic.atlaslib.events.layer.update.LayerUpdatedEvent;
+import es.redmic.atlaslib.events.layer.update.UpdateLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerFailedEvent;
@@ -171,6 +173,20 @@ public abstract class LayerDataUtil {
 		return event;
 	}
 
+	public static UpdateLayerCancelledEvent getUpdateLayerCancelledEvent(String code) {
+
+		UpdateLayerCancelledEvent event = new UpdateLayerCancelledEvent().buildFrom(getUpdateEvent(code));
+
+		event.setLayer(getLayer(code));
+
+		event.setExceptionType(ExceptionType.ES_UPDATE_DOCUMENT.name());
+
+		Map<String, String> arguments = new HashMap<>();
+		// arguments.put("A", "B");
+		event.setArguments(arguments);
+		return event;
+	}
+
 	public static UpdateLayerFailedEvent getUpdateLayerFailedEvent(String code) {
 
 		UpdateLayerFailedEvent event = new UpdateLayerFailedEvent().buildFrom(getUpdateEvent(code));
@@ -180,7 +196,6 @@ public abstract class LayerDataUtil {
 		Map<String, String> arguments = new HashMap<String, String>();
 		arguments.put("a", "b");
 		event.setArguments(arguments);
-
 		return event;
 	}
 
@@ -212,6 +227,21 @@ public abstract class LayerDataUtil {
 	public static LayerDeletedEvent getLayerDeletedEvent(String code) {
 
 		return new LayerDeletedEvent().buildFrom(getDeleteEvent(code));
+	}
+
+	public static DeleteLayerCancelledEvent getDeleteLayerCancelledEvent(String code) {
+
+		DeleteLayerCancelledEvent event = new DeleteLayerCancelledEvent().buildFrom(getDeleteEvent(code));
+
+		event.setLayer(getLayer(code));
+
+		event.setExceptionType(ExceptionType.DELETE_ITEM_EXCEPTION.name());
+
+		Map<String, String> arguments = new HashMap<>();
+		// arguments.put("A", "B");
+		event.setArguments(arguments);
+
+		return event;
 	}
 
 	public static DeleteLayerFailedEvent getDeleteLayerFailedEvent(String code) {

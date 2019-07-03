@@ -27,6 +27,7 @@ import es.redmic.atlascommands.statestore.CategoryStateStore;
 
 import es.redmic.atlaslib.dto.category.CategoryDTO;
 import es.redmic.atlaslib.events.category.CategoryEventTypes;
+import es.redmic.atlaslib.events.category.common.CategoryCancelledEvent;
 import es.redmic.atlaslib.events.category.common.CategoryEvent;
 import es.redmic.atlaslib.events.category.create.CreateCategoryCancelledEvent;
 import es.redmic.atlaslib.events.category.create.CreateCategoryEvent;
@@ -149,7 +150,7 @@ public class CategoryAggregate extends Aggregate {
 		case "UPDATE_CANCELLED":
 		case "DELETE_CANCELLED":
 			logger.debug("Compensación por edición/borrado fallido");
-			apply((CategoryEvent) event);
+			apply((CategoryCancelledEvent) event);
 			break;
 		default:
 			logger.debug("Evento no manejado ", event.getType());
@@ -163,6 +164,11 @@ public class CategoryAggregate extends Aggregate {
 
 	public void apply(CategoryDeletedEvent event) {
 		this.deleted = true;
+		super.apply(event);
+	}
+
+	public void apply(CategoryCancelledEvent event) {
+		this.category = event.getCategory();
 		super.apply(event);
 	}
 

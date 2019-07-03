@@ -36,6 +36,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import es.redmic.atlascommands.aggregate.LayerAggregate;
 import es.redmic.atlascommands.statestore.LayerStateStore;
+import es.redmic.atlaslib.events.layer.common.LayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.common.LayerEvent;
 import es.redmic.atlaslib.events.layer.create.CreateLayerEvent;
 import es.redmic.atlaslib.events.layer.create.LayerCreatedEvent;
@@ -181,6 +182,44 @@ public class ApplyEventTest {
 		DeleteLayerEvent evt = LayerDataUtil.getDeleteEvent(code);
 
 		agg.loadFromHistory(evt);
+	}
+
+	@Test
+	public void loadFromHistory_ChangeAggregateStateToUpdateCancelled_IfLastEventIsUpdateCancelled() {
+
+		List<Event> history = new ArrayList<>();
+
+		history.add(LayerDataUtil.getLayerCreatedEvent(code));
+		history.add(LayerDataUtil.getLayerUpdatedEvent(code));
+
+		history.add(LayerDataUtil.getUpdateLayerCancelledEvent(code));
+
+		agg.loadFromHistory(history);
+
+		checkCancelledState((LayerCancelledEvent) history.get(2));
+	}
+
+	@Test
+	public void loadFromHistory_ChangeAggregateStateToDeleteCancelled_IfLastEventIsDeleteCancelled() {
+
+		List<Event> history = new ArrayList<>();
+
+		history.add(LayerDataUtil.getLayerCreatedEvent(code));
+		history.add(LayerDataUtil.getLayerUpdatedEvent(code));
+
+		history.add(LayerDataUtil.getDeleteLayerCancelledEvent(code));
+
+		agg.loadFromHistory(history);
+
+		checkCancelledState((LayerCancelledEvent) history.get(2));
+	}
+
+	private void checkCancelledState(LayerCancelledEvent evt) {
+
+		assertEquals(agg.getVersion(), evt.getVersion());
+		assertEquals(agg.getAggregateId(), evt.getAggregateId());
+		assertEquals(agg.getLayer(), evt.getLayer());
+		assertFalse(agg.isDeleted());
 	}
 
 	private void checkCreatedUpdatedOrRefreshedState(LayerEvent evt) {

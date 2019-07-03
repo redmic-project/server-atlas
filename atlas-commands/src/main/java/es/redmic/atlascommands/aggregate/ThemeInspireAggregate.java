@@ -26,6 +26,7 @@ import es.redmic.atlascommands.commands.themeinspire.UpdateThemeInspireCommand;
 import es.redmic.atlascommands.statestore.ThemeInspireStateStore;
 import es.redmic.atlaslib.dto.themeinspire.ThemeInspireDTO;
 import es.redmic.atlaslib.events.themeinspire.ThemeInspireEventTypes;
+import es.redmic.atlaslib.events.themeinspire.common.ThemeInspireCancelledEvent;
 import es.redmic.atlaslib.events.themeinspire.common.ThemeInspireEvent;
 import es.redmic.atlaslib.events.themeinspire.create.CreateThemeInspireCancelledEvent;
 import es.redmic.atlaslib.events.themeinspire.create.CreateThemeInspireEvent;
@@ -148,7 +149,7 @@ public class ThemeInspireAggregate extends Aggregate {
 		case "UPDATE_CANCELLED":
 		case "DELETE_CANCELLED":
 			logger.debug("Compensación por edición/borrado fallido");
-			apply((ThemeInspireEvent) event);
+			apply((ThemeInspireCancelledEvent) event);
 			break;
 		default:
 			logger.debug("Evento no manejado ", event.getType());
@@ -162,6 +163,11 @@ public class ThemeInspireAggregate extends Aggregate {
 
 	public void apply(ThemeInspireDeletedEvent event) {
 		this.deleted = true;
+		super.apply(event);
+	}
+
+	public void apply(ThemeInspireCancelledEvent event) {
+		this.themeInspire = event.getThemeInspire();
 		super.apply(event);
 	}
 
