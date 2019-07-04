@@ -148,7 +148,9 @@ public class CategoryESRepository extends RWDataESRepository<Category, SimpleQue
 
 		MultiSearchRequest request = new MultiSearchRequest();
 
-		SearchSourceBuilder requestBuilderHasChild = new SearchSourceBuilder().query(hasChildTerm).size(1);
+		SearchSourceBuilder requestBuilderHasChild = new SearchSourceBuilder().query(
+				QueryBuilders.boolQuery().must(QueryBuilders.termQuery(ID_PROPERTY, modelToIndexId)).must(hasChildTerm))
+				.size(1);
 
 		request.add(new SearchRequest().indices(getIndex()).source(requestBuilderHasChild));
 
