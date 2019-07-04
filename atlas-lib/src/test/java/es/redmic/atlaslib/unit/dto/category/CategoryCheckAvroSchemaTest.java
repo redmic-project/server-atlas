@@ -28,10 +28,10 @@ import org.json.JSONException;
 import org.junit.Test;
 
 import es.redmic.atlaslib.dto.category.CategoryDTO;
-import es.redmic.atlaslib.unit.utils.AtlasAvroBaseTest;
 import es.redmic.atlaslib.unit.utils.CategoryDataUtil;
+import es.redmic.testutils.utils.AvroBaseTest;
 
-public class CategoryCheckAvroSchemaTest extends AtlasAvroBaseTest {
+public class CategoryCheckAvroSchemaTest extends AvroBaseTest {
 
 	@Test
 	public void serializeAndDeserialize_IsSuccessful_IfSchemaAndDataAreCorrect() throws JSONException {

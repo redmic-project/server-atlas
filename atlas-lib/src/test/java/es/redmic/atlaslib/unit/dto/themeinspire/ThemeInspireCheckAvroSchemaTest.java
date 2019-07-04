@@ -26,10 +26,10 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import es.redmic.atlaslib.dto.themeinspire.ThemeInspireDTO;
-import es.redmic.atlaslib.unit.utils.AtlasAvroBaseTest;
 import es.redmic.atlaslib.unit.utils.ThemeInspireDataUtil;
+import es.redmic.testutils.utils.AvroBaseTest;
 
-public class ThemeInspireCheckAvroSchemaTest extends AtlasAvroBaseTest {
+public class ThemeInspireCheckAvroSchemaTest extends AvroBaseTest {
 
 	@Test
 	public void serializeAndDeserialize_IsSuccessful_IfSchemaAndDataAreCorrect() {

@@ -27,10 +27,10 @@ import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import es.redmic.atlaslib.dto.layerwms.LayerWMSDTO;
-import es.redmic.atlaslib.unit.utils.AtlasAvroBaseTest;
 import es.redmic.atlaslib.unit.utils.LayerDataUtil;
+import es.redmic.testutils.utils.AvroBaseTest;
 
-public class LayerWMSCheckAvroSchemaTest extends AtlasAvroBaseTest {
+public class LayerWMSCheckAvroSchemaTest extends AvroBaseTest {
 
 	@Test
 	public void serializeAndDeserialize_IsSuccessful_IfSchemaAndDataAreCorrect() throws JSONException {

@@ -43,10 +43,10 @@ import es.redmic.atlaslib.events.category.update.UpdateCategoryCancelledEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryConfirmedEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryFailedEvent;
-import es.redmic.atlaslib.unit.utils.AtlasAvroBaseTest;
 import es.redmic.atlaslib.unit.utils.CategoryDataUtil;
+import es.redmic.testutils.utils.AvroBaseTest;
 
-public class CategoryEventsCheckAvroSchemaTest extends AtlasAvroBaseTest {
+public class CategoryEventsCheckAvroSchemaTest extends AvroBaseTest {
 
 	// Create
 

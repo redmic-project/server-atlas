@@ -53,10 +53,10 @@ import es.redmic.atlaslib.events.layer.update.UpdateLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEnrichedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerFailedEvent;
-import es.redmic.atlaslib.unit.utils.AtlasAvroBaseTest;
 import es.redmic.atlaslib.unit.utils.LayerDataUtil;
+import es.redmic.testutils.utils.AvroBaseTest;
 
-public class LayerEventsCheckAvroSchemaTest extends AtlasAvroBaseTest {
+public class LayerEventsCheckAvroSchemaTest extends AvroBaseTest {
 
 	// Create
 

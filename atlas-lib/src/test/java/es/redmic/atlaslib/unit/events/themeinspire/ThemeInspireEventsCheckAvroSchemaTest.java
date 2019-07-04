@@ -43,10 +43,10 @@ import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireCancelled
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireConfirmedEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireFailedEvent;
-import es.redmic.atlaslib.unit.utils.AtlasAvroBaseTest;
 import es.redmic.atlaslib.unit.utils.ThemeInspireDataUtil;
+import es.redmic.testutils.utils.AvroBaseTest;
 
-public class ThemeInspireEventsCheckAvroSchemaTest extends AtlasAvroBaseTest {
+public class ThemeInspireEventsCheckAvroSchemaTest extends AvroBaseTest {
 
 	// Create
 
