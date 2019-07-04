@@ -230,6 +230,9 @@ public interface LayerWMSMapper {
 
 		Dimension source = layer.getDimension(property);
 
+		if (source == null)
+			return null;
+
 		dimension.setName(source.getName());
 		dimension.setUnits(source.getUnits());
 		dimension.setUnitSymbol(source.getUnitSymbol());
