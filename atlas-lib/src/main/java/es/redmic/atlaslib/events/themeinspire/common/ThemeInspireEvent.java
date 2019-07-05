@@ -34,7 +34,6 @@ public abstract class ThemeInspireEvent extends Event {
 
 	public ThemeInspireEvent(String type) {
 		super(type);
-		this.setThemeInspire(themeInspire);
 	}
 
 	public ThemeInspireDTO getThemeInspire() {

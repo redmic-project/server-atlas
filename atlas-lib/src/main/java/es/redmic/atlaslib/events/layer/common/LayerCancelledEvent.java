@@ -36,7 +36,6 @@ public abstract class LayerCancelledEvent extends EventError {
 
 	public LayerCancelledEvent(String type) {
 		super(type);
-		this.setLayer(layer);
 	}
 
 	public LayerDTO getLayer() {

@@ -34,7 +34,6 @@ public abstract class LayerEvent extends Event {
 
 	public LayerEvent(String type) {
 		super(type);
-		this.setLayer(layer);
 	}
 
 	public LayerDTO getLayer() {

@@ -36,7 +36,6 @@ public abstract class CategoryCancelledEvent extends EventError {
 
 	public CategoryCancelledEvent(String type) {
 		super(type);
-		this.setCategory(category);
 	}
 
 	public CategoryDTO getCategory() {

@@ -36,7 +36,6 @@ public abstract class ThemeInspireCancelledEvent extends EventError {
 
 	public ThemeInspireCancelledEvent(String type) {
 		super(type);
-		this.setThemeInspire(themeInspire);
 	}
 
 	public ThemeInspireDTO getThemeInspire() {

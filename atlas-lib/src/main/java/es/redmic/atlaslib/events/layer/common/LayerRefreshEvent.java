@@ -34,7 +34,6 @@ public abstract class LayerRefreshEvent extends Event {
 
 	public LayerRefreshEvent(String type) {
 		super(type);
-		this.setLayer(layer);
 	}
 
 	public LayerWMSDTO getLayer() {

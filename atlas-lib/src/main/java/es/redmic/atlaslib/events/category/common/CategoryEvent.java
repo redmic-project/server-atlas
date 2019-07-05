@@ -34,7 +34,6 @@ public abstract class CategoryEvent extends Event {
 
 	public CategoryEvent(String type) {
 		super(type);
-		this.setCategory(category);
 	}
 
 	public CategoryDTO getCategory() {
