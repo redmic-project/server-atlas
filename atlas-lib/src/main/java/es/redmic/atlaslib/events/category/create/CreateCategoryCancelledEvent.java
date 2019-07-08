@@ -22,7 +22,6 @@ package es.redmic.atlaslib.events.category.create;
 
 import org.apache.avro.Schema;
 
-import es.redmic.atlaslib.dto.category.CategoryDTO;
 import es.redmic.atlaslib.events.category.CategoryEventTypes;
 import es.redmic.brokerlib.avro.common.EventError;
 
@@ -40,10 +39,6 @@ public class CreateCategoryCancelledEvent extends EventError {
 	static String type = CategoryEventTypes.CREATE_CANCELLED;
 
 	public CreateCategoryCancelledEvent() {
-		super(type);
-	}
-
-	public CreateCategoryCancelledEvent(CategoryDTO themeInspireType) {
 		super(type);
 	}
 

@@ -22,7 +22,6 @@ package es.redmic.atlaslib.events.themeinspire.create;
 
 import org.apache.avro.Schema;
 
-import es.redmic.atlaslib.dto.themeinspire.ThemeInspireDTO;
 import es.redmic.atlaslib.events.themeinspire.ThemeInspireEventTypes;
 import es.redmic.brokerlib.avro.common.EventError;
 
@@ -40,10 +39,6 @@ public class CreateThemeInspireCancelledEvent extends EventError {
 	static String type = ThemeInspireEventTypes.CREATE_CANCELLED;
 
 	public CreateThemeInspireCancelledEvent() {
-		super(type);
-	}
-
-	public CreateThemeInspireCancelledEvent(ThemeInspireDTO themeInspireType) {
 		super(type);
 	}
 
