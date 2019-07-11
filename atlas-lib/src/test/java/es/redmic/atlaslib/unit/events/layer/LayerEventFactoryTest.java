@@ -58,8 +58,9 @@ import es.redmic.atlaslib.unit.utils.LayerDataUtil;
 import es.redmic.atlaslib.unit.utils.ThemeInspireDataUtil;
 import es.redmic.brokerlib.avro.common.Event;
 import es.redmic.brokerlib.avro.common.EventError;
+import es.redmic.testutils.utils.AvroBaseTest;
 
-public class LayerEventFactoryTest {
+public class LayerEventFactoryTest extends AvroBaseTest {
 
 	@Test
 	public void GetEvent_ReturnDeleteLayerEvent_IfTypeIsDelete() {
@@ -446,12 +447,16 @@ public class LayerEventFactoryTest {
 		assertEquals(source.getVersion(), evt.getVersion());
 		assertEquals(source.getSessionId(), evt.getSessionId());
 		assertEquals(source.getUserId(), evt.getUserId());
+
+		serializerAndDeserializer(evt);
 	}
 
 	private void checkErrorFields(EventError source, EventError evt) {
 
 		assertEquals(source.getExceptionType(), evt.getExceptionType());
 		assertEquals(source.getArguments(), evt.getArguments());
+
+		serializerAndDeserializer(evt);
 	}
 
 }
