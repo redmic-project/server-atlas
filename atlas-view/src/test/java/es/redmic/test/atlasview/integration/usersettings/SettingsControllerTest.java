@@ -1,4 +1,17 @@
-package es.redmic.test.atlasview.integration.settings;
+package es.redmic.test.atlasview.integration.usersettings;
+
+import javax.annotation.PostConstruct;
+
+import org.junit.ClassRule;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.kafka.test.rule.EmbeddedKafkaRule;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import es.redmic.atlasview.AtlasViewApplication;
+import es.redmic.viewlib.usersettings.common.SettingsControllerBase;
 
 /*-
  * #%L
@@ -20,28 +33,11 @@ package es.redmic.test.atlasview.integration.settings;
  * #L%
  */
 
-import javax.annotation.PostConstruct;
-
-import org.junit.ClassRule;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.test.rule.EmbeddedKafkaRule;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import es.redmic.atlasview.AtlasViewApplication;
-import es.redmic.viewlib.usersettings.common.SettingsEventHandlerBase;
-
 @SpringBootTest(classes = { AtlasViewApplication.class })
 @RunWith(SpringJUnit4ClassRunner.class)
-@KafkaListener(topics = "${broker.topic.settings}", groupId = "test")
-@TestPropertySource(properties = { "schema.registry.port=19004" })
+@TestPropertySource(properties = { "schema.registry.port=19099" })
 @DirtiesContext
-@ActiveProfiles("test")
-public class SettingsEventHandlerTest extends SettingsEventHandlerBase {
+public class SettingsControllerTest extends SettingsControllerBase {
 
 	@ClassRule
 	public static EmbeddedKafkaRule embeddedKafka = new EmbeddedKafkaRule(1);
