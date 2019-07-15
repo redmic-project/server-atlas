@@ -76,7 +76,7 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 
 	private static final String PARENT_ID = "category-333";
 
-	@Value("${documentation.ATLAS_HOST}")
+	@Value("${documentation.MICROSERVICE_HOST}")
 	private String HOST;
 
 	@Value("${controller.mapping.LAYER}")

@@ -67,7 +67,7 @@ import es.redmic.testutils.utils.JsonToBeanTestUtil;
 @DirtiesContext
 public class CategoryControllerTest extends DocumentationViewBaseTest {
 
-	@Value("${documentation.ATLAS_HOST}")
+	@Value("${documentation.MICROSERVICE_HOST}")
 	private String HOST;
 
 	@Value("${controller.mapping.CATEGORY}")
