@@ -103,11 +103,12 @@ public class LayerRestTest extends DocumentationCommandBaseTest {
 
 	private final String CODE = UUID.randomUUID().toString();
 
-	// @formatter:off
-	
-	private final String HOST = "redmic.es/api/atlas/commands",
-			LAYER_PATH = "/layer";
-	
+	@Value("${documentation.MICROSERVICE_HOST}")
+	private String HOST;
+
+	@Value("${controller.mapping.LAYER}")
+	private String LAYER_PATH;
+
 	// @formatter:on
 
 	@Autowired

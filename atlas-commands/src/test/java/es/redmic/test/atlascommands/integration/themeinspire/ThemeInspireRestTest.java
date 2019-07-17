@@ -93,12 +93,11 @@ public class ThemeInspireRestTest extends DocumentationCommandBaseTest {
 
 	private final String CODE = "gg";
 
-	// @formatter:off
-	
-	private final String HOST = "redmic.es/api/atlas/commands",
-			THEMEINSPIRE_PATH = "/themeinspire";
-	
-	// @formatter:on
+	@Value("${documentation.MICROSERVICE_HOST}")
+	private String HOST;
+
+	@Value("${controller.mapping.THEME_INSPIRE}")
+	private String THEMEINSPIRE_PATH;
 
 	@Autowired
 	ThemeInspireCommandHandler themeInspireCommandHandler;

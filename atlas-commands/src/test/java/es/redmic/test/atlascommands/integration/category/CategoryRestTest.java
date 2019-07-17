@@ -94,12 +94,11 @@ public class CategoryRestTest extends DocumentationCommandBaseTest {
 
 	private final String CODE = UUID.randomUUID().toString();
 
-	// @formatter:off
-	
-	private final String HOST = "redmic.es/api/atlas/commands",
-			CATEGORY_PATH = "/category";
-	
-	// @formatter:on
+	@Value("${documentation.MICROSERVICE_HOST}")
+	private String HOST;
+
+	@Value("${controller.mapping.CATEGORY}")
+	private String CATEGORY_PATH;
 
 	@Autowired
 	CategoryCommandHandler categoryCommandHandler;
