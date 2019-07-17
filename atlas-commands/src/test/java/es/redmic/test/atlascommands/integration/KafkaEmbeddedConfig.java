@@ -36,7 +36,9 @@ public class KafkaEmbeddedConfig {
 		"layer",
 		"layer-snapshot",
 		"category",
-		"category-snapshot"
+		"category-snapshot",
+		"user-settings",
+		"user-settings-snapshot"
 	};
 	
 	// @formatter:on
