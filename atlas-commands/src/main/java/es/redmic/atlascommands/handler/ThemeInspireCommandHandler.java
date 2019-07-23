@@ -34,7 +34,6 @@ import es.redmic.atlascommands.aggregate.ThemeInspireAggregate;
 import es.redmic.atlascommands.commands.themeinspire.CreateThemeInspireCommand;
 import es.redmic.atlascommands.commands.themeinspire.DeleteThemeInspireCommand;
 import es.redmic.atlascommands.commands.themeinspire.UpdateThemeInspireCommand;
-import es.redmic.atlascommands.config.UserService;
 import es.redmic.atlascommands.statestore.ThemeInspireStateStore;
 import es.redmic.atlascommands.streams.ThemeInspireEventStreams;
 import es.redmic.atlaslib.dto.themeinspire.ThemeInspireDTO;
@@ -58,6 +57,7 @@ import es.redmic.commandslib.commands.CommandHandler;
 import es.redmic.commandslib.streaming.common.StreamConfig;
 import es.redmic.commandslib.streaming.common.StreamConfig.Builder;
 import es.redmic.exception.factory.ExceptionFactory;
+import es.redmic.restlib.config.UserService;
 
 @Component
 @KafkaListener(topics = "${broker.topic.theme-inspire}")

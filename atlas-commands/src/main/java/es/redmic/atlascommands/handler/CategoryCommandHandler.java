@@ -34,7 +34,6 @@ import es.redmic.atlascommands.aggregate.CategoryAggregate;
 import es.redmic.atlascommands.commands.category.CreateCategoryCommand;
 import es.redmic.atlascommands.commands.category.DeleteCategoryCommand;
 import es.redmic.atlascommands.commands.category.UpdateCategoryCommand;
-import es.redmic.atlascommands.config.UserService;
 import es.redmic.atlascommands.statestore.CategoryStateStore;
 import es.redmic.atlascommands.streams.CategoryEventStreams;
 import es.redmic.atlaslib.dto.category.CategoryDTO;
@@ -58,6 +57,7 @@ import es.redmic.commandslib.commands.CommandHandler;
 import es.redmic.commandslib.streaming.common.StreamConfig;
 import es.redmic.commandslib.streaming.common.StreamConfig.Builder;
 import es.redmic.exception.factory.ExceptionFactory;
+import es.redmic.restlib.config.UserService;
 
 @Component
 @KafkaListener(topics = "${broker.topic.category}")

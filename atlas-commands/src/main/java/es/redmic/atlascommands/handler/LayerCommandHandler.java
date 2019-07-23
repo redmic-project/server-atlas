@@ -37,7 +37,6 @@ import es.redmic.atlascommands.commands.layer.CreateLayerCommand;
 import es.redmic.atlascommands.commands.layer.DeleteLayerCommand;
 import es.redmic.atlascommands.commands.layer.RefreshLayerCommand;
 import es.redmic.atlascommands.commands.layer.UpdateLayerCommand;
-import es.redmic.atlascommands.config.UserService;
 import es.redmic.atlascommands.statestore.LayerStateStore;
 import es.redmic.atlascommands.streams.LayerEventStreams;
 import es.redmic.atlaslib.dto.layer.LayerDTO;
@@ -68,6 +67,7 @@ import es.redmic.commandslib.commands.CommandHandler;
 import es.redmic.commandslib.streaming.common.StreamConfig;
 import es.redmic.commandslib.streaming.common.StreamConfig.Builder;
 import es.redmic.exception.factory.ExceptionFactory;
+import es.redmic.restlib.config.UserService;
 
 @Component
 @KafkaListener(topics = "${broker.topic.layer}")
