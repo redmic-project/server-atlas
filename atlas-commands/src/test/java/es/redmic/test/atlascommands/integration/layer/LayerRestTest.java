@@ -342,7 +342,7 @@ public class LayerRestTest extends DocumentationCommandBaseTest {
 
 		// @formatter:off
 		
-		String id = source.getAggregateId();
+		String id = LayerDataUtil.PREFIX + CODE;
 		
 		this.mockMvc
 				.perform(put(LAYER_PATH + "/refresh/" + id)
@@ -439,6 +439,8 @@ public class LayerRestTest extends DocumentationCommandBaseTest {
 	public void refreshLayer(RefreshLayerEvent refreshLayerEvent) throws IOException {
 
 		LayerDTO layerExpected = (LayerDTO) JsonToBeanTestUtil.getBean("/data/layers/layerDTO.json", LayerDTO.class);
+
+		layerExpected.setId(refreshLayerEvent.getLayer().getId());
 
 		RefreshLayerConfirmedEvent refreshConfirmEvent = new RefreshLayerConfirmedEvent().buildFrom(refreshLayerEvent);
 		refreshConfirmEvent.setLayer(layerExpected);

@@ -40,7 +40,7 @@ import es.redmic.test.atlascommands.integration.KafkaEmbeddedConfig;
 @SpringBootTest(classes = { AtlasCommandsApplication.class })
 @ActiveProfiles("test")
 @DirtiesContext
-@TestPropertySource(properties = { "spring.kafka.consumer.group-id=SettingsRest", "schema.registry.port=19197" })
+@TestPropertySource(properties = { "spring.kafka.consumer.group-id=SettingsRest", "schema.registry.port=20197" })
 @KafkaListener(topics = "${broker.topic.settings}", groupId = "SettingsRestTest")
 public class SettingsRestTest extends SettingsRestBase {
 
