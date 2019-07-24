@@ -142,8 +142,7 @@ public class CategoryCommandHandler extends CommandHandler {
 		logger.debug("Aplicado evento: " + event.getType());
 
 		// Crea la espera hasta que se responda con evento completado
-		CompletableFuture<CategoryDTO> completableFuture = getCompletableFeature(event.getSessionId(),
-				agg.getCategory());
+		CompletableFuture<CategoryDTO> completableFuture = getCompletableFeature(event.getSessionId());
 
 		// Emite evento para enviar a kafka
 		publishToKafka(event, categoryTopic);
@@ -169,8 +168,7 @@ public class CategoryCommandHandler extends CommandHandler {
 		agg.apply(event);
 
 		// Crea la espera hasta que se responda con evento completado
-		CompletableFuture<CategoryDTO> completableFuture = getCompletableFeature(event.getSessionId(),
-				agg.getCategory());
+		CompletableFuture<CategoryDTO> completableFuture = getCompletableFeature(event.getSessionId());
 
 		// Emite evento para enviar a kafka
 		publishToKafka(event, categoryTopic);
@@ -197,8 +195,7 @@ public class CategoryCommandHandler extends CommandHandler {
 		agg.apply(event);
 
 		// Crea la espera hasta que se responda con evento completado
-		CompletableFuture<CategoryDTO> completableFuture = getCompletableFeature(event.getSessionId(),
-				agg.getCategory());
+		CompletableFuture<CategoryDTO> completableFuture = getCompletableFeature(event.getSessionId());
 
 		// Emite evento para enviar a kafka
 		publishToKafka(event, categoryTopic);
@@ -214,7 +211,7 @@ public class CategoryCommandHandler extends CommandHandler {
 
 		// El evento Creado se envía desde el stream
 
-		resolveCommand(event.getSessionId());
+		resolveCommand(event.getSessionId(), event.getCategory());
 	}
 
 	@KafkaHandler
@@ -224,7 +221,7 @@ public class CategoryCommandHandler extends CommandHandler {
 
 		// El evento Modificado se envía desde el stream
 
-		resolveCommand(event.getSessionId());
+		resolveCommand(event.getSessionId(), event.getCategory());
 	}
 
 	@KafkaHandler

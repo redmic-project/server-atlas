@@ -145,8 +145,7 @@ public class ThemeInspireCommandHandler extends CommandHandler {
 		logger.debug("Aplicado evento: " + event.getType());
 
 		// Crea la espera hasta que se responda con evento completado
-		CompletableFuture<ThemeInspireDTO> completableFuture = getCompletableFeature(event.getSessionId(),
-				agg.getThemeInspire());
+		CompletableFuture<ThemeInspireDTO> completableFuture = getCompletableFeature(event.getSessionId());
 
 		// Emite evento para enviar a kafka
 		publishToKafka(event, themeInspireTopic);
@@ -172,8 +171,7 @@ public class ThemeInspireCommandHandler extends CommandHandler {
 		agg.apply(event);
 
 		// Crea la espera hasta que se responda con evento completado
-		CompletableFuture<ThemeInspireDTO> completableFuture = getCompletableFeature(event.getSessionId(),
-				agg.getThemeInspire());
+		CompletableFuture<ThemeInspireDTO> completableFuture = getCompletableFeature(event.getSessionId());
 
 		// Emite evento para enviar a kafka
 		publishToKafka(event, themeInspireTopic);
@@ -200,8 +198,7 @@ public class ThemeInspireCommandHandler extends CommandHandler {
 		agg.apply(event);
 
 		// Crea la espera hasta que se responda con evento completado
-		CompletableFuture<ThemeInspireDTO> completableFuture = getCompletableFeature(event.getSessionId(),
-				agg.getThemeInspire());
+		CompletableFuture<ThemeInspireDTO> completableFuture = getCompletableFeature(event.getSessionId());
 
 		// Emite evento para enviar a kafka
 		publishToKafka(event, themeInspireTopic);
@@ -217,7 +214,7 @@ public class ThemeInspireCommandHandler extends CommandHandler {
 
 		// El evento Creado se envía desde el stream
 
-		resolveCommand(event.getSessionId());
+		resolveCommand(event.getSessionId(), event.getThemeInspire());
 	}
 
 	@KafkaHandler
@@ -231,7 +228,7 @@ public class ThemeInspireCommandHandler extends CommandHandler {
 
 		// El evento Modificado se envía desde el stream
 
-		resolveCommand(event.getSessionId());
+		resolveCommand(event.getSessionId(), event.getThemeInspire());
 	}
 
 	@KafkaHandler

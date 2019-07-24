@@ -155,7 +155,7 @@ public class LayerCommandHandler extends CommandHandler {
 		logger.debug("Aplicado evento: " + event.getType());
 
 		// Crea la espera hasta que se responda con evento completado
-		CompletableFuture<LayerDTO> completableFuture = getCompletableFeature(event.getSessionId(), agg.getLayer());
+		CompletableFuture<LayerDTO> completableFuture = getCompletableFeature(event.getSessionId());
 
 		// Emite evento para enviar a kafka
 		publishToKafka(event, layerTopic);
@@ -181,7 +181,7 @@ public class LayerCommandHandler extends CommandHandler {
 		agg.apply(event);
 
 		// Crea la espera hasta que se responda con evento completado
-		CompletableFuture<LayerDTO> completableFuture = getCompletableFeature(event.getSessionId(), agg.getLayer());
+		CompletableFuture<LayerDTO> completableFuture = getCompletableFeature(event.getSessionId());
 
 		// Emite evento para enviar a kafka
 		publishToKafka(event, layerTopic);
@@ -208,7 +208,7 @@ public class LayerCommandHandler extends CommandHandler {
 		agg.apply(event);
 
 		// Crea la espera hasta que se responda con evento completado
-		CompletableFuture<LayerDTO> completableFuture = getCompletableFeature(event.getSessionId(), agg.getLayer());
+		CompletableFuture<LayerDTO> completableFuture = getCompletableFeature(event.getSessionId());
 
 		// Emite evento para enviar a kafka
 		publishToKafka(event, layerTopic);
@@ -234,7 +234,7 @@ public class LayerCommandHandler extends CommandHandler {
 		agg.apply(event);
 
 		// Crea la espera hasta que se responda con evento completado
-		CompletableFuture<LayerDTO> completableFuture = getCompletableFeature(event.getSessionId(), agg.getLayer());
+		CompletableFuture<LayerDTO> completableFuture = getCompletableFeature(event.getSessionId());
 
 		// Emite evento para enviar a kafka
 		publishToKafka(event, layerTopic);
@@ -256,7 +256,7 @@ public class LayerCommandHandler extends CommandHandler {
 
 		// El evento Creado se envía desde el stream
 
-		resolveCommand(event.getSessionId());
+		resolveCommand(event.getSessionId(), event.getLayer());
 	}
 
 	@KafkaHandler
@@ -272,7 +272,7 @@ public class LayerCommandHandler extends CommandHandler {
 
 		// El evento Modificado se envía desde el stream
 
-		resolveCommand(event.getSessionId());
+		resolveCommand(event.getSessionId(), event.getLayer());
 	}
 
 	@KafkaHandler
@@ -282,7 +282,7 @@ public class LayerCommandHandler extends CommandHandler {
 
 		// El evento Refrescado se envía desde el stream
 
-		resolveCommand(event.getSessionId());
+		resolveCommand(event.getSessionId(), event.getLayer());
 	}
 
 	@KafkaHandler

@@ -223,7 +223,7 @@ public class CategoryCommandHandlerTest extends KafkaBaseIntegrationTest {
 
 		// Añade completableFeature para que se resuelva al recibir el mensaje.
 		CompletableFuture<CategoryDTO> completableFuture = Whitebox.invokeMethod(categoryCommandHandler,
-				"getCompletableFeature", event.getSessionId(), CategoryDataUtil.getCategory(code + "4"));
+				"getCompletableFeature", event.getSessionId());
 
 		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(category_topic, event.getAggregateId(),
 				event);
@@ -265,7 +265,7 @@ public class CategoryCommandHandlerTest extends KafkaBaseIntegrationTest {
 
 		// Añade completableFeature para que se resuelva al recibir el mensaje.
 		CompletableFuture<CategoryDTO> completableFuture = Whitebox.invokeMethod(categoryCommandHandler,
-				"getCompletableFeature", event.getSessionId(), CategoryDataUtil.getCategory(code + "5"));
+				"getCompletableFeature", event.getSessionId());
 
 		kafkaTemplate.send(category_topic, event.getAggregateId(), event);
 		Event confirm = (Event) blockingQueue.poll(30, TimeUnit.SECONDS);
@@ -305,7 +305,7 @@ public class CategoryCommandHandlerTest extends KafkaBaseIntegrationTest {
 
 		// Añade completableFeature para que se resuelva al recibir el mensaje.
 		CompletableFuture<CategoryDTO> completableFuture = Whitebox.invokeMethod(categoryCommandHandler,
-				"getCompletableFeature", event.getSessionId(), categoryUpdateEvent.getCategory());
+				"getCompletableFeature", event.getSessionId());
 
 		kafkaTemplate.send(category_topic, event.getAggregateId(), event);
 

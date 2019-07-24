@@ -228,7 +228,7 @@ public class ThemeInspireCommandHandlerTest extends KafkaBaseIntegrationTest {
 
 		// Añade completableFeature para que se resuelva al recibir el mensaje.
 		CompletableFuture<ThemeInspireDTO> completableFuture = Whitebox.invokeMethod(themeInspireCommandHandler,
-				"getCompletableFeature", event.getSessionId(), ThemeInspireDataUtil.getThemeInspire(code + "4"));
+				"getCompletableFeature", event.getSessionId());
 
 		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(theme_inspire_topic,
 				event.getAggregateId(), event);
@@ -271,7 +271,7 @@ public class ThemeInspireCommandHandlerTest extends KafkaBaseIntegrationTest {
 
 		// Añade completableFeature para que se resuelva al recibir el mensaje.
 		CompletableFuture<ThemeInspireDTO> completableFuture = Whitebox.invokeMethod(themeInspireCommandHandler,
-				"getCompletableFeature", event.getSessionId(), ThemeInspireDataUtil.getThemeInspire(code + "5"));
+				"getCompletableFeature", event.getSessionId());
 
 		kafkaTemplate.send(theme_inspire_topic, event.getAggregateId(), event);
 		Event confirm = (Event) blockingQueue.poll(30, TimeUnit.SECONDS);
@@ -343,7 +343,7 @@ public class ThemeInspireCommandHandlerTest extends KafkaBaseIntegrationTest {
 
 		// Añade completableFeature para que se resuelva al recibir el mensaje.
 		CompletableFuture<ThemeInspireDTO> completableFuture = Whitebox.invokeMethod(themeInspireCommandHandler,
-				"getCompletableFeature", event.getSessionId(), themeInspireUpdateEvent.getThemeInspire());
+				"getCompletableFeature", event.getSessionId());
 
 		kafkaTemplate.send(theme_inspire_topic, event.getAggregateId(), event);
 

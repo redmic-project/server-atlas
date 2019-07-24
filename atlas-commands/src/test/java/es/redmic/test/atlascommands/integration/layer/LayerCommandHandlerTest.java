@@ -340,7 +340,7 @@ public class LayerCommandHandlerTest extends KafkaBaseIntegrationTest {
 
 		// Añade completableFeature para que se resuelva al recibir el mensaje.
 		CompletableFuture<LayerDTO> completableFuture = Whitebox.invokeMethod(layerCommandHandler,
-				"getCompletableFeature", event.getSessionId(), LayerDataUtil.getLayer(code + "4"));
+				"getCompletableFeature", event.getSessionId());
 
 		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(layer_topic, event.getAggregateId(),
 				event);
@@ -382,7 +382,7 @@ public class LayerCommandHandlerTest extends KafkaBaseIntegrationTest {
 
 		// Añade completableFeature para que se resuelva al recibir el mensaje.
 		CompletableFuture<LayerDTO> completableFuture = Whitebox.invokeMethod(layerCommandHandler,
-				"getCompletableFeature", event.getSessionId(), LayerDataUtil.getLayer(code + "5"));
+				"getCompletableFeature", event.getSessionId());
 
 		kafkaTemplate.send(layer_topic, event.getAggregateId(), event);
 		Event confirm = (Event) blockingQueue.poll(30, TimeUnit.SECONDS);
@@ -422,7 +422,7 @@ public class LayerCommandHandlerTest extends KafkaBaseIntegrationTest {
 
 		// Añade completableFeature para que se resuelva al recibir el mensaje.
 		CompletableFuture<LayerDTO> completableFuture = Whitebox.invokeMethod(layerCommandHandler,
-				"getCompletableFeature", event.getSessionId(), LayerDataUtil.getLayer(code + "5a"));
+				"getCompletableFeature", event.getSessionId());
 
 		kafkaTemplate.send(layer_topic, event.getAggregateId(), event);
 		Event confirm = (Event) blockingQueue.poll(30, TimeUnit.SECONDS);
@@ -462,7 +462,7 @@ public class LayerCommandHandlerTest extends KafkaBaseIntegrationTest {
 
 		// Añade completableFeature para que se resuelva al recibir el mensaje.
 		CompletableFuture<LayerDTO> completableFuture = Whitebox.invokeMethod(layerCommandHandler,
-				"getCompletableFeature", event.getSessionId(), layerUpdateEvent.getLayer());
+				"getCompletableFeature", event.getSessionId());
 
 		kafkaTemplate.send(layer_topic, event.getAggregateId(), event);
 
