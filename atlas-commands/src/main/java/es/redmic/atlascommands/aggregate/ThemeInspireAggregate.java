@@ -35,6 +35,7 @@ import es.redmic.atlaslib.events.themeinspire.delete.ThemeInspireDeletedEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireEvent;
 import es.redmic.brokerlib.avro.common.Event;
 import es.redmic.commandslib.aggregate.Aggregate;
+import es.redmic.commandslib.exceptions.ItemLockedException;
 
 public class ThemeInspireAggregate extends Aggregate {
 
@@ -152,13 +153,13 @@ public class ThemeInspireAggregate extends Aggregate {
 			apply((ThemeInspireCancelledEvent) event);
 			break;
 		default:
-			logger.debug("Evento no manejado ", event.getType());
+			throw new ItemLockedException("id", event.getAggregateId());
 		}
 	}
 
 	public void apply(CreateThemeInspireCancelledEvent event) {
 		this.deleted = true;
-		apply(event);
+		super.apply(event);
 	}
 
 	public void apply(ThemeInspireDeletedEvent event) {

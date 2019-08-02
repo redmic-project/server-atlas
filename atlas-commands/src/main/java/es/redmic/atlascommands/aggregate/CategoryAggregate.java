@@ -36,6 +36,7 @@ import es.redmic.atlaslib.events.category.delete.CheckDeleteCategoryEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryEvent;
 import es.redmic.brokerlib.avro.common.Event;
 import es.redmic.commandslib.aggregate.Aggregate;
+import es.redmic.commandslib.exceptions.ItemLockedException;
 
 public class CategoryAggregate extends Aggregate {
 
@@ -153,13 +154,13 @@ public class CategoryAggregate extends Aggregate {
 			apply((CategoryCancelledEvent) event);
 			break;
 		default:
-			logger.debug("Evento no manejado ", event.getType());
+			throw new ItemLockedException("id", event.getAggregateId());
 		}
 	}
 
 	public void apply(CreateCategoryCancelledEvent event) {
 		this.deleted = true;
-		apply(event);
+		super.apply(event);
 	}
 
 	public void apply(CategoryDeletedEvent event) {

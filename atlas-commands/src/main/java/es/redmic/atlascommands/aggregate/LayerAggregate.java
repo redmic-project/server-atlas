@@ -41,6 +41,7 @@ import es.redmic.atlaslib.events.layer.update.EnrichUpdateLayerEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEvent;
 import es.redmic.brokerlib.avro.common.Event;
 import es.redmic.commandslib.aggregate.Aggregate;
+import es.redmic.commandslib.exceptions.ItemLockedException;
 
 public class LayerAggregate extends Aggregate {
 
@@ -196,13 +197,13 @@ public class LayerAggregate extends Aggregate {
 			apply((LayerCancelledEvent) event);
 			break;
 		default:
-			logger.debug("Evento no manejado ", event.getType());
+			throw new ItemLockedException("id", event.getAggregateId());
 		}
 	}
 
 	public void apply(CreateLayerCancelledEvent event) {
 		this.deleted = true;
-		apply(event);
+		super.apply(event);
 	}
 
 	public void apply(LayerDeletedEvent event) {
