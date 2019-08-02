@@ -46,6 +46,7 @@ import es.redmic.atlaslib.events.category.delete.CheckDeleteCategoryEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryEvent;
 import es.redmic.commandslib.exceptions.ItemLockedException;
 import es.redmic.exception.data.ItemNotFoundException;
+import es.redmic.restlib.config.UserService;
 import es.redmic.test.atlascommands.integration.category.CategoryDataUtil;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -55,6 +56,8 @@ public class ProcessEventTest {
 
 	CategoryStateStore categoryStateStore;
 
+	UserService userService;
+
 	CategoryAggregate agg;
 
 	@Before
@@ -62,7 +65,11 @@ public class ProcessEventTest {
 
 		categoryStateStore = Mockito.mock(CategoryStateStore.class);
 
-		agg = new CategoryAggregate(categoryStateStore);
+		userService = Mockito.mock(UserService.class);
+
+		agg = new CategoryAggregate(categoryStateStore, userService);
+
+		when(userService.getUserId()).thenReturn("13");
 	}
 
 	@Test

@@ -136,10 +136,7 @@ public class LayerCommandHandler extends CommandHandler {
 
 	public LayerDTO save(CreateLayerCommand cmd) {
 
-		LayerAggregate agg = new LayerAggregate(layerStateStore);
-
-		// Se procesa el comando, obteniendo el evento generado
-		logger.debug("Procesando CreateLayerCommand");
+		LayerAggregate agg = new LayerAggregate(layerStateStore, userService);
 
 		LayerEvent event = agg.process(cmd);
 
@@ -147,12 +144,8 @@ public class LayerCommandHandler extends CommandHandler {
 		if (event == null)
 			return null;
 
-		event.setUserId(userService.getUserId());
-
 		// Se aplica el evento
 		agg.apply(event);
-
-		logger.debug("Aplicado evento: " + event.getType());
 
 		// Crea la espera hasta que se responda con evento completado
 		CompletableFuture<LayerDTO> completableFuture = getCompletableFeature(event.getSessionId());
@@ -166,7 +159,7 @@ public class LayerCommandHandler extends CommandHandler {
 
 	public LayerDTO update(String id, UpdateLayerCommand cmd) {
 
-		LayerAggregate agg = new LayerAggregate(layerStateStore);
+		LayerAggregate agg = new LayerAggregate(layerStateStore, userService);
 
 		// Se procesa el comando, obteniendo el evento generado
 		LayerEvent event = agg.process(cmd);
@@ -174,8 +167,6 @@ public class LayerCommandHandler extends CommandHandler {
 		// Si no se genera evento significa que no se va a aplicar
 		if (event == null)
 			return null;
-
-		event.setUserId(userService.getUserId());
 
 		// Si no existen excepciones, se aplica el comando
 		agg.apply(event);
@@ -192,7 +183,7 @@ public class LayerCommandHandler extends CommandHandler {
 
 	public LayerDTO update(String id, DeleteLayerCommand cmd) {
 
-		LayerAggregate agg = new LayerAggregate(layerStateStore);
+		LayerAggregate agg = new LayerAggregate(layerStateStore, userService);
 		agg.setAggregateId(id);
 
 		// Se procesa el comando, obteniendo el evento generado
@@ -201,8 +192,6 @@ public class LayerCommandHandler extends CommandHandler {
 		// Si no se genera evento significa que no se va a aplicar
 		if (event == null)
 			return null;
-
-		event.setUserId(userService.getUserId());
 
 		// Si no existen excepciones, se aplica el comando
 		agg.apply(event);
@@ -219,7 +208,7 @@ public class LayerCommandHandler extends CommandHandler {
 
 	public LayerDTO refresh(RefreshLayerCommand cmd) {
 
-		LayerAggregate agg = new LayerAggregate(layerStateStore);
+		LayerAggregate agg = new LayerAggregate(layerStateStore, userService);
 
 		// Se procesa el comando, obteniendo el evento generado
 		RefreshLayerEvent event = agg.process(cmd);
@@ -227,8 +216,6 @@ public class LayerCommandHandler extends CommandHandler {
 		// Si no se genera evento significa que no se va a aplicar
 		if (event == null)
 			return null;
-
-		event.setUserId(userService.getUserId());
 
 		// Si no existen excepciones, se aplica el comando
 		agg.apply(event);
@@ -252,10 +239,7 @@ public class LayerCommandHandler extends CommandHandler {
 	@KafkaHandler
 	private void listen(LayerCreatedEvent event) {
 
-		logger.debug("Layer creado " + event.getAggregateId());
-
 		// El evento Creado se envía desde el stream
-
 		resolveCommand(event.getSessionId(), event.getLayer());
 	}
 
@@ -268,20 +252,14 @@ public class LayerCommandHandler extends CommandHandler {
 	@KafkaHandler
 	private void listen(LayerUpdatedEvent event) {
 
-		logger.debug("Layer modificado " + event.getAggregateId());
-
 		// El evento Modificado se envía desde el stream
-
 		resolveCommand(event.getSessionId(), event.getLayer());
 	}
 
 	@KafkaHandler
 	private void listen(LayerRefreshedEvent event) {
 
-		logger.debug("Layer refrescado " + event.getAggregateId());
-
 		// El evento Refrescado se envía desde el stream
-
 		resolveCommand(event.getSessionId(), event.getLayer());
 	}
 
@@ -300,8 +278,6 @@ public class LayerCommandHandler extends CommandHandler {
 	@KafkaHandler
 	private void listen(LayerDeletedEvent event) {
 
-		logger.debug("Layer eliminado " + event.getAggregateId());
-
 		resolveCommand(event.getSessionId());
 	}
 
@@ -315,8 +291,6 @@ public class LayerCommandHandler extends CommandHandler {
 	@KafkaHandler
 	private void listen(CreateLayerCancelledEvent event) {
 
-		logger.debug("Error creando Layer " + event.getAggregateId());
-
 		resolveCommand(event.getSessionId(),
 				ExceptionFactory.getException(event.getExceptionType(), event.getArguments()));
 	}
@@ -324,10 +298,7 @@ public class LayerCommandHandler extends CommandHandler {
 	@KafkaHandler
 	private void listen(UpdateLayerCancelledEvent event) {
 
-		logger.debug("Error modificando Layer " + event.getAggregateId());
-
 		// El evento Cancelled se envía desde el stream
-
 		resolveCommand(event.getSessionId(),
 				ExceptionFactory.getException(event.getExceptionType(), event.getArguments()));
 	}
@@ -335,10 +306,7 @@ public class LayerCommandHandler extends CommandHandler {
 	@KafkaHandler
 	private void listen(RefreshLayerCancelledEvent event) {
 
-		logger.debug("Error refrescando Layer " + event.getAggregateId());
-
 		// El evento Cancelled se envía desde el stream
-
 		resolveCommand(event.getSessionId(),
 				ExceptionFactory.getException(event.getExceptionType(), event.getArguments()));
 	}
@@ -353,10 +321,7 @@ public class LayerCommandHandler extends CommandHandler {
 	@KafkaHandler
 	private void listen(DeleteLayerCancelledEvent event) {
 
-		logger.debug("Error eliminando Layer " + event.getAggregateId());
-
 		// El evento Cancelled se envía desde el stream
-
 		resolveCommand(event.getSessionId(),
 				ExceptionFactory.getException(event.getExceptionType(), event.getArguments()));
 	}

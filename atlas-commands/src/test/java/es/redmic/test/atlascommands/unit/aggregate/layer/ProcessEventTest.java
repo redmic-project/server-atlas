@@ -48,6 +48,7 @@ import es.redmic.atlaslib.events.layer.delete.CheckDeleteLayerEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerEvent;
 import es.redmic.commandslib.exceptions.ItemLockedException;
 import es.redmic.exception.data.ItemNotFoundException;
+import es.redmic.restlib.config.UserService;
 import es.redmic.test.atlascommands.integration.layer.LayerDataUtil;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -57,6 +58,8 @@ public class ProcessEventTest {
 
 	LayerStateStore layerStateStore;
 
+	UserService userService;
+
 	LayerAggregate agg;
 
 	@Before
@@ -64,7 +67,11 @@ public class ProcessEventTest {
 
 		layerStateStore = Mockito.mock(LayerStateStore.class);
 
-		agg = new LayerAggregate(layerStateStore);
+		userService = Mockito.mock(UserService.class);
+
+		agg = new LayerAggregate(layerStateStore, userService);
+
+		when(userService.getUserId()).thenReturn("13");
 	}
 
 	@Test

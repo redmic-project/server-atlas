@@ -44,6 +44,7 @@ import es.redmic.atlaslib.events.themeinspire.delete.CheckDeleteThemeInspireEven
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireEvent;
 import es.redmic.commandslib.exceptions.ItemLockedException;
 import es.redmic.exception.data.ItemNotFoundException;
+import es.redmic.restlib.config.UserService;
 import es.redmic.test.atlascommands.integration.themeinspire.ThemeInspireDataUtil;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -53,6 +54,8 @@ public class ProcessEventTest {
 
 	ThemeInspireStateStore themeInspireStateStore;
 
+	UserService userService;
+
 	ThemeInspireAggregate agg;
 
 	@Before
@@ -60,7 +63,11 @@ public class ProcessEventTest {
 
 		themeInspireStateStore = Mockito.mock(ThemeInspireStateStore.class);
 
-		agg = new ThemeInspireAggregate(themeInspireStateStore);
+		userService = Mockito.mock(UserService.class);
+
+		agg = new ThemeInspireAggregate(themeInspireStateStore, userService);
+
+		when(userService.getUserId()).thenReturn("13");
 	}
 
 	@Test

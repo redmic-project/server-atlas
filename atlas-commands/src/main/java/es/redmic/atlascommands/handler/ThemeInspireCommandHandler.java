@@ -126,10 +126,7 @@ public class ThemeInspireCommandHandler extends CommandHandler {
 
 	public ThemeInspireDTO save(CreateThemeInspireCommand cmd) {
 
-		ThemeInspireAggregate agg = new ThemeInspireAggregate(themeInspireStateStore);
-
-		// Se procesa el comando, obteniendo el evento generado
-		logger.debug("Procesando CreateThemeInspireCommand");
+		ThemeInspireAggregate agg = new ThemeInspireAggregate(themeInspireStateStore, userService);
 
 		CreateThemeInspireEvent event = agg.process(cmd);
 
@@ -137,12 +134,8 @@ public class ThemeInspireCommandHandler extends CommandHandler {
 		if (event == null)
 			return null;
 
-		event.setUserId(userService.getUserId());
-
 		// Se aplica el evento
 		agg.apply(event);
-
-		logger.debug("Aplicado evento: " + event.getType());
 
 		// Crea la espera hasta que se responda con evento completado
 		CompletableFuture<ThemeInspireDTO> completableFuture = getCompletableFeature(event.getSessionId());
@@ -156,7 +149,7 @@ public class ThemeInspireCommandHandler extends CommandHandler {
 
 	public ThemeInspireDTO update(String id, UpdateThemeInspireCommand cmd) {
 
-		ThemeInspireAggregate agg = new ThemeInspireAggregate(themeInspireStateStore);
+		ThemeInspireAggregate agg = new ThemeInspireAggregate(themeInspireStateStore, userService);
 
 		// Se procesa el comando, obteniendo el evento generado
 		UpdateThemeInspireEvent event = agg.process(cmd);
@@ -164,8 +157,6 @@ public class ThemeInspireCommandHandler extends CommandHandler {
 		// Si no se genera evento significa que no se va a aplicar
 		if (event == null)
 			return null;
-
-		event.setUserId(userService.getUserId());
 
 		// Si no existen excepciones, se aplica el comando
 		agg.apply(event);
@@ -182,7 +173,7 @@ public class ThemeInspireCommandHandler extends CommandHandler {
 
 	public ThemeInspireDTO update(String id, DeleteThemeInspireCommand cmd) {
 
-		ThemeInspireAggregate agg = new ThemeInspireAggregate(themeInspireStateStore);
+		ThemeInspireAggregate agg = new ThemeInspireAggregate(themeInspireStateStore, userService);
 		agg.setAggregateId(id);
 
 		// Se procesa el comando, obteniendo el evento generado
@@ -191,8 +182,6 @@ public class ThemeInspireCommandHandler extends CommandHandler {
 		// Si no se genera evento significa que no se va a aplicar
 		if (event == null)
 			return null;
-
-		event.setUserId(userService.getUserId());
 
 		// Si no existen excepciones, se aplica el comando
 		agg.apply(event);
@@ -210,17 +199,12 @@ public class ThemeInspireCommandHandler extends CommandHandler {
 	@KafkaHandler
 	private void listen(ThemeInspireCreatedEvent event) {
 
-		logger.debug("ThemeInspire creado " + event.getAggregateId());
-
 		// El evento Creado se envía desde el stream
-
 		resolveCommand(event.getSessionId(), event.getThemeInspire());
 	}
 
 	@KafkaHandler
 	private void listen(ThemeInspireUpdatedEvent event) {
-
-		logger.debug("ThemeInspire modificado " + event.getAggregateId());
 
 		// Envía los editados satisfactoriamente para tenerlos en cuenta en el
 		// postupdate
@@ -246,8 +230,6 @@ public class ThemeInspireCommandHandler extends CommandHandler {
 	@KafkaHandler
 	private void listen(ThemeInspireDeletedEvent event) {
 
-		logger.debug("ThemeInspire eliminado " + event.getAggregateId());
-
 		resolveCommand(event.getSessionId());
 	}
 
@@ -261,8 +243,6 @@ public class ThemeInspireCommandHandler extends CommandHandler {
 	@KafkaHandler
 	private void listen(CreateThemeInspireCancelledEvent event) {
 
-		logger.debug("Error creando ThemeInspire " + event.getAggregateId());
-
 		resolveCommand(event.getSessionId(),
 				ExceptionFactory.getException(event.getExceptionType(), event.getArguments()));
 	}
@@ -270,10 +250,7 @@ public class ThemeInspireCommandHandler extends CommandHandler {
 	@KafkaHandler
 	private void listen(UpdateThemeInspireCancelledEvent event) {
 
-		logger.debug("Error modificando ThemeInspire " + event.getAggregateId());
-
 		// El evento Cancelled se envía desde el stream
-
 		resolveCommand(event.getSessionId(),
 				ExceptionFactory.getException(event.getExceptionType(), event.getArguments()));
 	}
@@ -288,10 +265,7 @@ public class ThemeInspireCommandHandler extends CommandHandler {
 	@KafkaHandler
 	private void listen(DeleteThemeInspireCancelledEvent event) {
 
-		logger.debug("Error eliminando ThemeInspire " + event.getAggregateId());
-
 		// El evento Cancelled se envía desde el stream
-
 		resolveCommand(event.getSessionId(),
 				ExceptionFactory.getException(event.getExceptionType(), event.getArguments()));
 	}

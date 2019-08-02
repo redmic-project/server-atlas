@@ -123,10 +123,7 @@ public class CategoryCommandHandler extends CommandHandler {
 
 	public CategoryDTO save(CreateCategoryCommand cmd) {
 
-		CategoryAggregate agg = new CategoryAggregate(categoryStateStore);
-
-		// Se procesa el comando, obteniendo el evento generado
-		logger.debug("Procesando CreateCategoryCommand");
+		CategoryAggregate agg = new CategoryAggregate(categoryStateStore, userService);
 
 		CreateCategoryEvent event = agg.process(cmd);
 
@@ -134,12 +131,8 @@ public class CategoryCommandHandler extends CommandHandler {
 		if (event == null)
 			return null;
 
-		event.setUserId(userService.getUserId());
-
 		// Se aplica el evento
 		agg.apply(event);
-
-		logger.debug("Aplicado evento: " + event.getType());
 
 		// Crea la espera hasta que se responda con evento completado
 		CompletableFuture<CategoryDTO> completableFuture = getCompletableFeature(event.getSessionId());
@@ -153,7 +146,7 @@ public class CategoryCommandHandler extends CommandHandler {
 
 	public CategoryDTO update(String id, UpdateCategoryCommand cmd) {
 
-		CategoryAggregate agg = new CategoryAggregate(categoryStateStore);
+		CategoryAggregate agg = new CategoryAggregate(categoryStateStore, userService);
 
 		// Se procesa el comando, obteniendo el evento generado
 		UpdateCategoryEvent event = agg.process(cmd);
@@ -161,8 +154,6 @@ public class CategoryCommandHandler extends CommandHandler {
 		// Si no se genera evento significa que no se va a aplicar
 		if (event == null)
 			return null;
-
-		event.setUserId(userService.getUserId());
 
 		// Si no existen excepciones, se aplica el comando
 		agg.apply(event);
@@ -179,7 +170,7 @@ public class CategoryCommandHandler extends CommandHandler {
 
 	public CategoryDTO update(String id, DeleteCategoryCommand cmd) {
 
-		CategoryAggregate agg = new CategoryAggregate(categoryStateStore);
+		CategoryAggregate agg = new CategoryAggregate(categoryStateStore, userService);
 		agg.setAggregateId(id);
 
 		// Se procesa el comando, obteniendo el evento generado
@@ -188,8 +179,6 @@ public class CategoryCommandHandler extends CommandHandler {
 		// Si no se genera evento significa que no se va a aplicar
 		if (event == null)
 			return null;
-
-		event.setUserId(userService.getUserId());
 
 		// Si no existen excepciones, se aplica el comando
 		agg.apply(event);
@@ -207,20 +196,14 @@ public class CategoryCommandHandler extends CommandHandler {
 	@KafkaHandler
 	private void listen(CategoryCreatedEvent event) {
 
-		logger.debug("Category creado " + event.getAggregateId());
-
 		// El evento Creado se envía desde el stream
-
 		resolveCommand(event.getSessionId(), event.getCategory());
 	}
 
 	@KafkaHandler
 	private void listen(CategoryUpdatedEvent event) {
 
-		logger.debug("Category modificado " + event.getAggregateId());
-
 		// El evento Modificado se envía desde el stream
-
 		resolveCommand(event.getSessionId(), event.getCategory());
 	}
 
@@ -239,8 +222,6 @@ public class CategoryCommandHandler extends CommandHandler {
 	@KafkaHandler
 	private void listen(CategoryDeletedEvent event) {
 
-		logger.debug("Category eliminado " + event.getAggregateId());
-
 		resolveCommand(event.getSessionId());
 	}
 
@@ -254,8 +235,6 @@ public class CategoryCommandHandler extends CommandHandler {
 	@KafkaHandler
 	private void listen(CreateCategoryCancelledEvent event) {
 
-		logger.debug("Error creando Category " + event.getAggregateId());
-
 		resolveCommand(event.getSessionId(),
 				ExceptionFactory.getException(event.getExceptionType(), event.getArguments()));
 	}
@@ -263,10 +242,7 @@ public class CategoryCommandHandler extends CommandHandler {
 	@KafkaHandler
 	private void listen(UpdateCategoryCancelledEvent event) {
 
-		logger.debug("Error modificando Category " + event.getAggregateId());
-
 		// El evento Cancelled se envía desde el stream
-
 		resolveCommand(event.getSessionId(),
 				ExceptionFactory.getException(event.getExceptionType(), event.getArguments()));
 	}
@@ -281,10 +257,7 @@ public class CategoryCommandHandler extends CommandHandler {
 	@KafkaHandler
 	private void listen(DeleteCategoryCancelledEvent event) {
 
-		logger.debug("Error eliminando Category " + event.getAggregateId());
-
 		// El evento Cancelled se envía desde el stream
-
 		resolveCommand(event.getSessionId(),
 				ExceptionFactory.getException(event.getExceptionType(), event.getArguments()));
 	}

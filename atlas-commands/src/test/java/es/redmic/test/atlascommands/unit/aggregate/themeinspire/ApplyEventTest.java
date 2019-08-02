@@ -45,6 +45,7 @@ import es.redmic.atlaslib.events.themeinspire.update.ThemeInspireUpdatedEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireEvent;
 import es.redmic.brokerlib.avro.common.Event;
 import es.redmic.commandslib.exceptions.ItemLockedException;
+import es.redmic.restlib.config.UserService;
 import es.redmic.test.atlascommands.integration.themeinspire.ThemeInspireDataUtil;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -54,6 +55,8 @@ public class ApplyEventTest {
 
 	ThemeInspireStateStore themeInspireStateStore;
 
+	UserService userService;
+
 	ThemeInspireAggregate agg;
 
 	@Before
@@ -61,7 +64,9 @@ public class ApplyEventTest {
 
 		themeInspireStateStore = Mockito.mock(ThemeInspireStateStore.class);
 
-		agg = new ThemeInspireAggregate(themeInspireStateStore);
+		userService = Mockito.mock(UserService.class);
+
+		agg = new ThemeInspireAggregate(themeInspireStateStore, userService);
 	}
 
 	@Test

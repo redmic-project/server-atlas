@@ -48,6 +48,7 @@ import es.redmic.atlaslib.events.layer.update.LayerUpdatedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEvent;
 import es.redmic.brokerlib.avro.common.Event;
 import es.redmic.commandslib.exceptions.ItemLockedException;
+import es.redmic.restlib.config.UserService;
 import es.redmic.test.atlascommands.integration.layer.LayerDataUtil;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -57,6 +58,8 @@ public class ApplyEventTest {
 
 	LayerStateStore layerStateStore;
 
+	UserService userService;
+
 	LayerAggregate agg;
 
 	@Before
@@ -64,7 +67,9 @@ public class ApplyEventTest {
 
 		layerStateStore = Mockito.mock(LayerStateStore.class);
 
-		agg = new LayerAggregate(layerStateStore);
+		userService = Mockito.mock(UserService.class);
+
+		agg = new LayerAggregate(layerStateStore, userService);
 	}
 
 	@Test
