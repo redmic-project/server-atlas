@@ -20,8 +20,6 @@ package es.redmic.atlascommands.handler;
  * #L%
  */
 
-import java.util.concurrent.CompletableFuture;
-
 import javax.annotation.PostConstruct;
 
 import org.apache.kafka.streams.KeyValue;
@@ -147,14 +145,7 @@ public class LayerCommandHandler extends CommandHandler {
 		// Se aplica el evento
 		agg.apply(event);
 
-		// Crea la espera hasta que se responda con evento completado
-		CompletableFuture<LayerDTO> completableFuture = getCompletableFeature(event.getSessionId());
-
-		// Emite evento para enviar a kafka
-		publishToKafka(event, layerTopic);
-
-		// Obtiene el resultado cuando se resuelva la espera
-		return getResult(event.getSessionId(), completableFuture);
+		return sendEventAndWaitResult(event, layerTopic);
 	}
 
 	public LayerDTO update(String id, UpdateLayerCommand cmd) {
@@ -171,20 +162,12 @@ public class LayerCommandHandler extends CommandHandler {
 		// Si no existen excepciones, se aplica el comando
 		agg.apply(event);
 
-		// Crea la espera hasta que se responda con evento completado
-		CompletableFuture<LayerDTO> completableFuture = getCompletableFeature(event.getSessionId());
-
-		// Emite evento para enviar a kafka
-		publishToKafka(event, layerTopic);
-
-		// Obtiene el resultado cuando se resuelva la espera
-		return getResult(event.getSessionId(), completableFuture);
+		return sendEventAndWaitResult(event, layerTopic);
 	}
 
 	public LayerDTO update(String id, DeleteLayerCommand cmd) {
 
 		LayerAggregate agg = new LayerAggregate(layerStateStore, userService);
-		agg.setAggregateId(id);
 
 		// Se procesa el comando, obteniendo el evento generado
 		CheckDeleteLayerEvent event = agg.process(cmd);
@@ -196,14 +179,7 @@ public class LayerCommandHandler extends CommandHandler {
 		// Si no existen excepciones, se aplica el comando
 		agg.apply(event);
 
-		// Crea la espera hasta que se responda con evento completado
-		CompletableFuture<LayerDTO> completableFuture = getCompletableFeature(event.getSessionId());
-
-		// Emite evento para enviar a kafka
-		publishToKafka(event, layerTopic);
-
-		// Obtiene el resultado cuando se resuelva la espera
-		return getResult(event.getSessionId(), completableFuture);
+		return sendEventAndWaitResult(event, layerTopic);
 	}
 
 	public LayerDTO refresh(RefreshLayerCommand cmd) {
@@ -220,14 +196,7 @@ public class LayerCommandHandler extends CommandHandler {
 		// Si no existen excepciones, se aplica el comando
 		agg.apply(event);
 
-		// Crea la espera hasta que se responda con evento completado
-		CompletableFuture<LayerDTO> completableFuture = getCompletableFeature(event.getSessionId());
-
-		// Emite evento para enviar a kafka
-		publishToKafka(event, layerTopic);
-
-		// Obtiene el resultado cuando se resuelva la espera
-		return getResult(event.getSessionId(), completableFuture);
+		return sendEventAndWaitResult(event, layerTopic);
 	}
 
 	@KafkaHandler

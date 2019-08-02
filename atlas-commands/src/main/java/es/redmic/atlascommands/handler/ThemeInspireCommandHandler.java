@@ -20,8 +20,6 @@ package es.redmic.atlascommands.handler;
  * #L%
  */
 
-import java.util.concurrent.CompletableFuture;
-
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -137,14 +135,7 @@ public class ThemeInspireCommandHandler extends CommandHandler {
 		// Se aplica el evento
 		agg.apply(event);
 
-		// Crea la espera hasta que se responda con evento completado
-		CompletableFuture<ThemeInspireDTO> completableFuture = getCompletableFeature(event.getSessionId());
-
-		// Emite evento para enviar a kafka
-		publishToKafka(event, themeInspireTopic);
-
-		// Obtiene el resultado cuando se resuelva la espera
-		return getResult(event.getSessionId(), completableFuture);
+		return sendEventAndWaitResult(event, themeInspireTopic);
 	}
 
 	public ThemeInspireDTO update(String id, UpdateThemeInspireCommand cmd) {
@@ -161,20 +152,12 @@ public class ThemeInspireCommandHandler extends CommandHandler {
 		// Si no existen excepciones, se aplica el comando
 		agg.apply(event);
 
-		// Crea la espera hasta que se responda con evento completado
-		CompletableFuture<ThemeInspireDTO> completableFuture = getCompletableFeature(event.getSessionId());
-
-		// Emite evento para enviar a kafka
-		publishToKafka(event, themeInspireTopic);
-
-		// Obtiene el resultado cuando se resuelva la espera
-		return getResult(event.getSessionId(), completableFuture);
+		return sendEventAndWaitResult(event, themeInspireTopic);
 	}
 
 	public ThemeInspireDTO update(String id, DeleteThemeInspireCommand cmd) {
 
 		ThemeInspireAggregate agg = new ThemeInspireAggregate(themeInspireStateStore, userService);
-		agg.setAggregateId(id);
 
 		// Se procesa el comando, obteniendo el evento generado
 		CheckDeleteThemeInspireEvent event = agg.process(cmd);
@@ -186,14 +169,7 @@ public class ThemeInspireCommandHandler extends CommandHandler {
 		// Si no existen excepciones, se aplica el comando
 		agg.apply(event);
 
-		// Crea la espera hasta que se responda con evento completado
-		CompletableFuture<ThemeInspireDTO> completableFuture = getCompletableFeature(event.getSessionId());
-
-		// Emite evento para enviar a kafka
-		publishToKafka(event, themeInspireTopic);
-
-		// Obtiene el resultado cuando se resuelva la espera
-		return getResult(event.getSessionId(), completableFuture);
+		return sendEventAndWaitResult(event, themeInspireTopic);
 	}
 
 	@KafkaHandler

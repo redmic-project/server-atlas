@@ -20,8 +20,6 @@ package es.redmic.atlascommands.handler;
  * #L%
  */
 
-import java.util.concurrent.CompletableFuture;
-
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -134,14 +132,7 @@ public class CategoryCommandHandler extends CommandHandler {
 		// Se aplica el evento
 		agg.apply(event);
 
-		// Crea la espera hasta que se responda con evento completado
-		CompletableFuture<CategoryDTO> completableFuture = getCompletableFeature(event.getSessionId());
-
-		// Emite evento para enviar a kafka
-		publishToKafka(event, categoryTopic);
-
-		// Obtiene el resultado cuando se resuelva la espera
-		return getResult(event.getSessionId(), completableFuture);
+		return sendEventAndWaitResult(event, categoryTopic);
 	}
 
 	public CategoryDTO update(String id, UpdateCategoryCommand cmd) {
@@ -158,14 +149,7 @@ public class CategoryCommandHandler extends CommandHandler {
 		// Si no existen excepciones, se aplica el comando
 		agg.apply(event);
 
-		// Crea la espera hasta que se responda con evento completado
-		CompletableFuture<CategoryDTO> completableFuture = getCompletableFeature(event.getSessionId());
-
-		// Emite evento para enviar a kafka
-		publishToKafka(event, categoryTopic);
-
-		// Obtiene el resultado cuando se resuelva la espera
-		return getResult(event.getSessionId(), completableFuture);
+		return sendEventAndWaitResult(event, categoryTopic);
 	}
 
 	public CategoryDTO update(String id, DeleteCategoryCommand cmd) {
@@ -183,14 +167,7 @@ public class CategoryCommandHandler extends CommandHandler {
 		// Si no existen excepciones, se aplica el comando
 		agg.apply(event);
 
-		// Crea la espera hasta que se responda con evento completado
-		CompletableFuture<CategoryDTO> completableFuture = getCompletableFeature(event.getSessionId());
-
-		// Emite evento para enviar a kafka
-		publishToKafka(event, categoryTopic);
-
-		// Obtiene el resultado cuando se resuelva la espera
-		return getResult(event.getSessionId(), completableFuture);
+		return sendEventAndWaitResult(event, categoryTopic);
 	}
 
 	@KafkaHandler
