@@ -42,6 +42,7 @@ import es.redmic.atlaslib.events.layer.update.UpdateLayerEvent;
 import es.redmic.brokerlib.avro.common.Event;
 import es.redmic.commandslib.aggregate.Aggregate;
 import es.redmic.commandslib.exceptions.ItemLockedException;
+import es.redmic.restlib.config.UserService;
 
 public class LayerAggregate extends Aggregate {
 
@@ -49,9 +50,12 @@ public class LayerAggregate extends Aggregate {
 
 	private LayerStateStore layerStateStore;
 
-	public LayerAggregate(LayerStateStore layerStateStore) {
+	private UserService userService;
+
+	public LayerAggregate(LayerStateStore layerStateStore, UserService userService) {
 
 		this.layerStateStore = layerStateStore;
+		this.userService = userService;
 	}
 
 	public LayerEvent process(CreateLayerCommand cmd) {
@@ -77,6 +81,7 @@ public class LayerAggregate extends Aggregate {
 
 		evt.setAggregateId(id);
 		evt.setVersion(1);
+		evt.setUserId(userService.getUserId());
 		return evt;
 	}
 
@@ -102,6 +107,7 @@ public class LayerAggregate extends Aggregate {
 
 		evt.setAggregateId(id);
 		evt.setVersion(getVersion() + 1);
+		evt.setUserId(userService.getUserId());
 		return evt;
 	}
 
@@ -120,7 +126,7 @@ public class LayerAggregate extends Aggregate {
 		CheckDeleteLayerEvent evt = new CheckDeleteLayerEvent();
 		evt.setAggregateId(id);
 		evt.setVersion(getVersion() + 1);
-
+		evt.setUserId(userService.getUserId());
 		return evt;
 	}
 
@@ -139,7 +145,7 @@ public class LayerAggregate extends Aggregate {
 		RefreshLayerEvent evt = new RefreshLayerEvent(cmd.getLayer());
 		evt.setAggregateId(id);
 		evt.setVersion(getVersion() + 1);
-
+		evt.setUserId(userService.getUserId());
 		return evt;
 	}
 

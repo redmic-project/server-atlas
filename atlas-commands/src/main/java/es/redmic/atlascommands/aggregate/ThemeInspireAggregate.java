@@ -36,6 +36,7 @@ import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireEvent;
 import es.redmic.brokerlib.avro.common.Event;
 import es.redmic.commandslib.aggregate.Aggregate;
 import es.redmic.commandslib.exceptions.ItemLockedException;
+import es.redmic.restlib.config.UserService;
 
 public class ThemeInspireAggregate extends Aggregate {
 
@@ -43,9 +44,12 @@ public class ThemeInspireAggregate extends Aggregate {
 
 	private ThemeInspireStateStore themeInspireStateStore;
 
-	public ThemeInspireAggregate(ThemeInspireStateStore themeInspireStateStore) {
+	private UserService userService;
+
+	public ThemeInspireAggregate(ThemeInspireStateStore themeInspireStateStore, UserService userService) {
 
 		this.themeInspireStateStore = themeInspireStateStore;
+		this.userService = userService;
 	}
 
 	public CreateThemeInspireEvent process(CreateThemeInspireCommand cmd) {
@@ -64,6 +68,7 @@ public class ThemeInspireAggregate extends Aggregate {
 		CreateThemeInspireEvent evt = new CreateThemeInspireEvent(cmd.getThemeInspire());
 		evt.setAggregateId(id);
 		evt.setVersion(1);
+		evt.setUserId(userService.getUserId());
 		return evt;
 	}
 
@@ -82,6 +87,7 @@ public class ThemeInspireAggregate extends Aggregate {
 		UpdateThemeInspireEvent evt = new UpdateThemeInspireEvent(cmd.getThemeInspire());
 		evt.setAggregateId(id);
 		evt.setVersion(getVersion() + 1);
+		evt.setUserId(userService.getUserId());
 		return evt;
 	}
 
@@ -100,7 +106,7 @@ public class ThemeInspireAggregate extends Aggregate {
 		CheckDeleteThemeInspireEvent evt = new CheckDeleteThemeInspireEvent();
 		evt.setAggregateId(id);
 		evt.setVersion(getVersion() + 1);
-
+		evt.setUserId(userService.getUserId());
 		return evt;
 	}
 

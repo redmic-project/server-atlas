@@ -37,6 +37,7 @@ import es.redmic.atlaslib.events.category.update.UpdateCategoryEvent;
 import es.redmic.brokerlib.avro.common.Event;
 import es.redmic.commandslib.aggregate.Aggregate;
 import es.redmic.commandslib.exceptions.ItemLockedException;
+import es.redmic.restlib.config.UserService;
 
 public class CategoryAggregate extends Aggregate {
 
@@ -44,9 +45,12 @@ public class CategoryAggregate extends Aggregate {
 
 	private CategoryStateStore categoryStateStore;
 
-	public CategoryAggregate(CategoryStateStore categoryStateStore) {
+	private UserService userService;
+
+	public CategoryAggregate(CategoryStateStore categoryStateStore, UserService userService) {
 
 		this.categoryStateStore = categoryStateStore;
+		this.userService = userService;
 	}
 
 	public CreateCategoryEvent process(CreateCategoryCommand cmd) {
@@ -65,6 +69,7 @@ public class CategoryAggregate extends Aggregate {
 		CreateCategoryEvent evt = new CreateCategoryEvent(cmd.getCategory());
 		evt.setAggregateId(id);
 		evt.setVersion(1);
+		evt.setUserId(userService.getUserId());
 		return evt;
 	}
 
@@ -83,6 +88,7 @@ public class CategoryAggregate extends Aggregate {
 		UpdateCategoryEvent evt = new UpdateCategoryEvent(cmd.getCategory());
 		evt.setAggregateId(id);
 		evt.setVersion(getVersion() + 1);
+		evt.setUserId(userService.getUserId());
 		return evt;
 	}
 
@@ -101,7 +107,7 @@ public class CategoryAggregate extends Aggregate {
 		CheckDeleteCategoryEvent evt = new CheckDeleteCategoryEvent();
 		evt.setAggregateId(id);
 		evt.setVersion(getVersion() + 1);
-
+		evt.setUserId(userService.getUserId());
 		return evt;
 	}
 
