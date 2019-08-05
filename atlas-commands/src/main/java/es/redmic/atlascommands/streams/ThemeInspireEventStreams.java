@@ -101,13 +101,11 @@ public class ThemeInspireEventStreams extends EventSourcingStreams {
 	}
 
 	/**
-	 * Comprueba si themeInspire está referenciado en atlas para cancelar el borrado
+	 * En este caso el borrado se compueba en el handler de layer
 	 */
 
 	@Override
 	protected void processDeleteStream(KStream<String, Event> events) {
-		// TODO Auto-generated method stub
-
 	}
 
 	/**

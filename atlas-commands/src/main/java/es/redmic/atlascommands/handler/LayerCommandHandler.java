@@ -58,12 +58,15 @@ import es.redmic.atlaslib.events.layer.refresh.RefreshLayerEvent;
 import es.redmic.atlaslib.events.layer.update.LayerUpdatedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEnrichedEvent;
+import es.redmic.atlaslib.events.themeinspire.ThemeInspireEventFactory;
+import es.redmic.atlaslib.events.themeinspire.ThemeInspireEventTypes;
 import es.redmic.atlaslib.events.themeinspire.update.ThemeInspireUpdatedEvent;
 import es.redmic.brokerlib.alert.AlertService;
 import es.redmic.brokerlib.avro.common.Event;
 import es.redmic.commandslib.commands.CommandHandler;
 import es.redmic.commandslib.streaming.common.StreamConfig;
 import es.redmic.commandslib.streaming.common.StreamConfig.Builder;
+import es.redmic.exception.common.ExceptionType;
 import es.redmic.exception.factory.ExceptionFactory;
 import es.redmic.restlib.config.UserService;
 
@@ -295,7 +298,7 @@ public class LayerCommandHandler extends CommandHandler {
 				ExceptionFactory.getException(event.getExceptionType(), event.getArguments()));
 	}
 
-	@KafkaListener(topics = "${broker.topic.theme.inspire.updated}")
+	@KafkaListener(topics = "${broker.topic.theme.inspire.updated}", groupId = "LayerCommandHandlerPostUpdate")
 	private void listen(ThemeInspireUpdatedEvent event) {
 
 		KeyValueIterator<String, Event> iteratble = layerStateStore.getAll();
@@ -317,5 +320,38 @@ public class LayerCommandHandler extends CommandHandler {
 			}
 		}
 		iteratble.close();
+	}
+
+	@KafkaListener(topics = "${broker.topic.theme-inspire}", groupId = "LayerCommandHandlerCheckDelete")
+	private void listen(Event event) {
+
+		if (event.getType().equals(ThemeInspireEventTypes.CHECK_DELETE)) {
+
+			KeyValueIterator<String, Event> iteratble = layerStateStore.getAll();
+			while (iteratble.hasNext()) {
+				final KeyValue<String, Event> next = iteratble.next();
+
+				Event layerEvent = next.value;
+
+				if (LayerEventTypes.isSnapshot(layerEvent.getType())) {
+
+					ThemeInspireDTO themeInspire = ((LayerEvent) layerEvent).getLayer().getThemeInspire();
+
+					if (themeInspire.getId().equals(event.getAggregateId())) {
+
+						publishToKafka(
+								ThemeInspireEventFactory.getEvent(event, ThemeInspireEventTypes.DELETE_CHECK_FAILED,
+										ExceptionType.ES_DELETE_ITEM_REFERENCED_ERROR.name(), null),
+								themeInspireTopic);
+
+						return;
+					}
+				}
+			}
+			publishToKafka(ThemeInspireEventFactory.getEvent(event, ThemeInspireEventTypes.DELETE_CHECKED),
+					themeInspireTopic);
+			iteratble.close();
+
+		}
 	}
 }

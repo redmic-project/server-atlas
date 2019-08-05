@@ -55,6 +55,7 @@ import org.springframework.util.concurrent.ListenableFuture;
 import es.redmic.atlascommands.AtlasCommandsApplication;
 import es.redmic.atlascommands.handler.ThemeInspireCommandHandler;
 import es.redmic.atlaslib.dto.themeinspire.ThemeInspireDTO;
+import es.redmic.atlaslib.events.layer.create.LayerCreatedEvent;
 import es.redmic.atlaslib.events.themeinspire.ThemeInspireEventTypes;
 import es.redmic.atlaslib.events.themeinspire.create.CreateThemeInspireCancelledEvent;
 import es.redmic.atlaslib.events.themeinspire.create.CreateThemeInspireConfirmedEvent;
@@ -73,9 +74,11 @@ import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireCancelled
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireConfirmedEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireFailedEvent;
+import es.redmic.atlaslib.unit.utils.LayerDataUtil;
 import es.redmic.atlaslib.unit.utils.ThemeInspireDataUtil;
 import es.redmic.brokerlib.avro.common.Event;
 import es.redmic.brokerlib.listener.SendListener;
+import es.redmic.exception.common.ExceptionType;
 import es.redmic.exception.data.DeleteItemException;
 import es.redmic.exception.data.ItemAlreadyExistException;
 import es.redmic.exception.data.ItemNotFoundException;
@@ -102,8 +105,8 @@ public class ThemeInspireCommandHandlerTest extends KafkaBaseIntegrationTest {
 	@Value("${broker.topic.theme-inspire}")
 	private String theme_inspire_topic;
 
-	@Value("${broker.topic.atlas}")
-	private String atlas_topic;
+	@Value("${broker.topic.layer}")
+	private String layer_topic;
 
 	@Autowired
 	private KafkaTemplate<String, Event> kafkaTemplate;
@@ -289,32 +292,35 @@ public class ThemeInspireCommandHandlerTest extends KafkaBaseIntegrationTest {
 	// Envía un evento de comprobación de que el elemento puede ser borrado y debe
 	// provocar un evento DeleteThemeInspireCheckFailedEvent ya que está
 	// referenciado
-	/*-@Test
+	@Test
 	public void checkDeleteThemeInspireEvent_SendDeleteThemeInspireCheckFailedEvent_IfReceivesSuccess()
 			throws InterruptedException {
-	
+
 		logger.debug("----> DeleteThemeInspireCheckFailedEvent");
-	
+
 		CheckDeleteThemeInspireEvent event = ThemeInspireDataUtil.getCheckDeleteThemeInspireEvent(code + "5a");
-	
-		AtlasCreatedEvent atlasWithThemeInspireEvent = AtlasDataUtil.getAtlasCreatedEvent(1);
-		atlasWithThemeInspireEvent.getAtlas().setType(ThemeInspireDataUtil.getThemeInspire(code + "5a"));
-	
-		kafkaTemplate.send(atlas_topic, atlasWithThemeInspireEvent.getAggregateId(), atlasWithThemeInspireEvent);
-	
+
+		LayerCreatedEvent layerEvent = LayerDataUtil.getLayerCreatedEvent();
+		layerEvent.getLayer().setThemeInspire(ThemeInspireDataUtil.getThemeInspire(code + "5a"));
+
+		kafkaTemplate.send(layer_topic, layerEvent.getAggregateId(), layerEvent);
+
 		Thread.sleep(4000);
-	
+
 		kafkaTemplate.send(theme_inspire_topic, event.getAggregateId(), event);
-	
-		Event confirm = (Event) blockingQueue.poll(60, TimeUnit.SECONDS);
-	
+
+		DeleteThemeInspireCheckFailedEvent confirm = (DeleteThemeInspireCheckFailedEvent) blockingQueue.poll(60,
+				TimeUnit.SECONDS);
+
 		assertNotNull(confirm);
 		assertEquals(ThemeInspireEventTypes.DELETE_CHECK_FAILED, confirm.getType());
 		assertEquals(event.getAggregateId(), confirm.getAggregateId());
 		assertEquals(event.getUserId(), confirm.getUserId());
 		assertEquals(event.getSessionId(), confirm.getSessionId());
 		assertEquals(event.getVersion(), confirm.getVersion());
-	}-*/
+		assertEquals(ExceptionType.ES_DELETE_ITEM_REFERENCED_ERROR.name(), confirm.getExceptionType());
+
+	}
 
 	// Envía un evento de error de borrado y debe provocar un evento Cancelled con
 	// el item dentro

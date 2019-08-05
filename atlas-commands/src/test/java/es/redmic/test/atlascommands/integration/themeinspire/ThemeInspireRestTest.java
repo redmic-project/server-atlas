@@ -46,6 +46,7 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.powermock.reflect.Whitebox;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +67,7 @@ import org.springframework.util.concurrent.ListenableFuture;
 
 import es.redmic.atlascommands.AtlasCommandsApplication;
 import es.redmic.atlascommands.handler.ThemeInspireCommandHandler;
+import es.redmic.atlascommands.statestore.LayerStateStore;
 import es.redmic.atlascommands.statestore.ThemeInspireStateStore;
 import es.redmic.atlaslib.dto.themeinspire.ThemeInspireDTO;
 import es.redmic.atlaslib.events.themeinspire.create.CreateThemeInspireConfirmedEvent;
@@ -104,6 +106,9 @@ public class ThemeInspireRestTest extends DocumentationCommandBaseTest {
 	ThemeInspireCommandHandler themeInspireCommandHandler;
 
 	ThemeInspireStateStore themeInspireStateStore;
+
+	@Mock
+	LayerStateStore layerStateStore;
 
 	protected static BlockingQueue<Object> blockingQueue;
 
@@ -218,11 +223,13 @@ public class ThemeInspireRestTest extends DocumentationCommandBaseTest {
 		assertEquals(event.getAggregateId(), expectedEvent.getAggregateId());
 	}
 
-	// @Test
+	@Test
 	public void deleteThemeInspire_SendDeleteThemeInspireEvent_IfCommandWasSuccess() throws Exception {
 
 		when(themeInspireStateStore.get(anyString()))
 				.thenReturn(ThemeInspireDataUtil.getThemeInspireUpdatedEvent(CODE));
+
+		when(layerStateStore.get(anyString())).thenReturn(null);
 
 		// @formatter:off
 		
