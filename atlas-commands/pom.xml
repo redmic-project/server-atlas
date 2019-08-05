@@ -83,6 +83,14 @@
 		</dependency>
 		
 		<dependency>
+			<groupId>es.redmic.atlas</groupId>
+			<artifactId>atlas-lib</artifactId>
+			<version>${redmic.atlas-lib.version}</version>
+			<type>test-jar</type>
+  			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
 			<groupId>es.redmic.lib</groupId>
 			<artifactId>user-settings-lib</artifactId>
 			<version>${redmic.user-settings-lib.version}</version>
