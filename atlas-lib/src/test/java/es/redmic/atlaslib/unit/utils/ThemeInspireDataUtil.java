@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import es.redmic.atlaslib.dto.themeinspire.ThemeInspireDTO;
-import es.redmic.atlaslib.events.themeinspire.ThemeInspireEventTypes;
 import es.redmic.atlaslib.events.themeinspire.create.CreateThemeInspireCancelledEvent;
 import es.redmic.atlaslib.events.themeinspire.create.CreateThemeInspireConfirmedEvent;
 import es.redmic.atlaslib.events.themeinspire.create.CreateThemeInspireEvent;
@@ -43,6 +42,7 @@ import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireCancelled
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireConfirmedEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireFailedEvent;
+import es.redmic.exception.common.ExceptionType;
 
 public abstract class ThemeInspireDataUtil {
 
@@ -62,9 +62,9 @@ public abstract class ThemeInspireDataUtil {
 
 		CreateThemeInspireEvent event = new CreateThemeInspireEvent();
 		event.setAggregateId(PREFIX + code);
-		event.setType(ThemeInspireEventTypes.CREATE);
 		event.setVersion(1);
 		event.setUserId(USER);
+		event.setSessionId("sessionIdA");
 		event.setThemeInspire(getThemeInspire(code));
 
 		return event;
@@ -76,9 +76,7 @@ public abstract class ThemeInspireDataUtil {
 
 	public static CreateThemeInspireConfirmedEvent getCreateThemeInspireConfirmedEvent(String code) {
 
-		CreateThemeInspireConfirmedEvent event = new CreateThemeInspireConfirmedEvent().buildFrom(getCreateEvent(code));
-		event.setType(ThemeInspireEventTypes.CREATE_CONFIRMED);
-		return event;
+		return new CreateThemeInspireConfirmedEvent().buildFrom(getCreateEvent(code));
 	}
 
 	public static ThemeInspireCreatedEvent getThemeInspireCreatedEvent() {
@@ -88,7 +86,6 @@ public abstract class ThemeInspireDataUtil {
 	public static ThemeInspireCreatedEvent getThemeInspireCreatedEvent(String code) {
 
 		ThemeInspireCreatedEvent event = new ThemeInspireCreatedEvent().buildFrom(getCreateEvent(code));
-		event.setType(ThemeInspireEventTypes.CREATED);
 		event.setThemeInspire(getThemeInspire(code));
 		return event;
 	}
@@ -100,8 +97,13 @@ public abstract class ThemeInspireDataUtil {
 	public static CreateThemeInspireFailedEvent getCreateThemeInspireFailedEvent(String code) {
 
 		CreateThemeInspireFailedEvent event = new CreateThemeInspireFailedEvent().buildFrom(getCreateEvent(code));
-		event.setType(ThemeInspireEventTypes.CREATE_FAILED);
-		event.setExceptionType("ItemAlreadyExist");
+
+		event.setExceptionType(ExceptionType.ITEM_ALREADY_EXIST_EXCEPTION.name());
+
+		Map<String, String> arguments = new HashMap<>();
+		arguments.put("A", "B");
+		event.setArguments(arguments);
+
 		return event;
 	}
 
@@ -112,8 +114,12 @@ public abstract class ThemeInspireDataUtil {
 	public static CreateThemeInspireCancelledEvent getCreateThemeInspireCancelledEvent(String code) {
 
 		CreateThemeInspireCancelledEvent event = new CreateThemeInspireCancelledEvent().buildFrom(getCreateEvent(code));
-		event.setType(ThemeInspireEventTypes.CREATE_CANCELLED);
-		event.setExceptionType("ItemAlreadyExist");
+
+		event.setExceptionType(ExceptionType.ITEM_ALREADY_EXIST_EXCEPTION.name());
+
+		Map<String, String> arguments = new HashMap<>();
+		arguments.put("A", "B");
+		event.setArguments(arguments);
 		return event;
 	}
 
@@ -127,9 +133,9 @@ public abstract class ThemeInspireDataUtil {
 
 		UpdateThemeInspireEvent event = new UpdateThemeInspireEvent();
 		event.setAggregateId(PREFIX + code);
-		event.setType(ThemeInspireEventTypes.UPDATE);
 		event.setVersion(2);
 		event.setUserId(USER);
+		event.setSessionId("sessionIdB");
 		event.setThemeInspire(getThemeInspire(code));
 		return event;
 	}
@@ -140,9 +146,7 @@ public abstract class ThemeInspireDataUtil {
 
 	public static UpdateThemeInspireConfirmedEvent getUpdateThemeInspireConfirmedEvent(String code) {
 
-		UpdateThemeInspireConfirmedEvent event = new UpdateThemeInspireConfirmedEvent().buildFrom(getUpdateEvent(code));
-		event.setType(ThemeInspireEventTypes.UPDATE_CONFIRMED);
-		return event;
+		return new UpdateThemeInspireConfirmedEvent().buildFrom(getUpdateEvent(code));
 	}
 
 	public static ThemeInspireUpdatedEvent getThemeInspireUpdatedEvent() {
@@ -152,7 +156,6 @@ public abstract class ThemeInspireDataUtil {
 	public static ThemeInspireUpdatedEvent getThemeInspireUpdatedEvent(String code) {
 
 		ThemeInspireUpdatedEvent event = new ThemeInspireUpdatedEvent().buildFrom(getUpdateEvent(code));
-		event.setType(ThemeInspireEventTypes.UPDATED);
 		event.setThemeInspire(getThemeInspire(code));
 		return event;
 	}
@@ -164,9 +167,9 @@ public abstract class ThemeInspireDataUtil {
 	public static UpdateThemeInspireFailedEvent getUpdateThemeInspireFailedEvent(String code) {
 
 		UpdateThemeInspireFailedEvent event = new UpdateThemeInspireFailedEvent().buildFrom(getUpdateEvent(code));
-		event.setType(ThemeInspireEventTypes.UPDATE_FAILED);
-		event.setExceptionType("ItemNotFound");
-		Map<String, String> arguments = new HashMap<String, String>();
+		event.setExceptionType(ExceptionType.ITEM_NOT_FOUND.name());
+
+		Map<String, String> arguments = new HashMap<>();
 		arguments.put("a", "b");
 		event.setArguments(arguments);
 		return event;
@@ -179,11 +182,10 @@ public abstract class ThemeInspireDataUtil {
 	public static UpdateThemeInspireCancelledEvent getUpdateThemeInspireCancelledEvent(String code) {
 
 		UpdateThemeInspireCancelledEvent event = new UpdateThemeInspireCancelledEvent().buildFrom(getUpdateEvent(code));
-		event.setType(ThemeInspireEventTypes.UPDATE_FAILED);
 		event.setThemeInspire(getThemeInspire(code));
-		event.setExceptionType("ItemNotFound");
-		Map<String, String> arguments = new HashMap<String, String>();
-		arguments.put("a", "b");
+		event.setExceptionType(ExceptionType.ES_UPDATE_DOCUMENT.name());
+
+		Map<String, String> arguments = new HashMap<>();
 		event.setArguments(arguments);
 		return event;
 	}
@@ -198,9 +200,9 @@ public abstract class ThemeInspireDataUtil {
 
 		DeleteThemeInspireEvent event = new DeleteThemeInspireEvent();
 		event.setAggregateId(PREFIX + code);
-		event.setType(ThemeInspireEventTypes.DELETE);
 		event.setVersion(3);
 		event.setUserId(USER);
+		event.setSessionId("sessionIdC");
 		return event;
 	}
 
@@ -243,12 +245,7 @@ public abstract class ThemeInspireDataUtil {
 
 	public static DeleteThemeInspireConfirmedEvent getDeleteThemeInspireConfirmedEvent(String code) {
 
-		DeleteThemeInspireConfirmedEvent event = new DeleteThemeInspireConfirmedEvent().buildFrom(getDeleteEvent(code));
-		event.setAggregateId(PREFIX + CODE);
-		event.setType(ThemeInspireEventTypes.DELETE_CONFIRMED);
-		event.setVersion(3);
-
-		return event;
+		return new DeleteThemeInspireConfirmedEvent().buildFrom(getDeleteEvent(code));
 	}
 
 	public static ThemeInspireDeletedEvent getThemeInspireDeletedEvent() {
@@ -257,9 +254,7 @@ public abstract class ThemeInspireDataUtil {
 
 	public static ThemeInspireDeletedEvent getThemeInspireDeletedEvent(String code) {
 
-		ThemeInspireDeletedEvent event = new ThemeInspireDeletedEvent().buildFrom(getDeleteEvent(code));
-		event.setType(ThemeInspireEventTypes.DELETED);
-		return event;
+		return new ThemeInspireDeletedEvent().buildFrom(getDeleteEvent(code));
 	}
 
 	public static DeleteThemeInspireFailedEvent getDeleteThemeInspireFailedEvent() {
@@ -269,8 +264,10 @@ public abstract class ThemeInspireDataUtil {
 	public static DeleteThemeInspireFailedEvent getDeleteThemeInspireFailedEvent(String code) {
 
 		DeleteThemeInspireFailedEvent event = new DeleteThemeInspireFailedEvent().buildFrom(getDeleteEvent(code));
-		event.setType(ThemeInspireEventTypes.DELETE_FAILED);
-		event.setExceptionType("ItemNotFound");
+		event.setExceptionType(ExceptionType.DELETE_ITEM_EXCEPTION.name());
+
+		Map<String, String> arguments = new HashMap<>();
+		event.setArguments(arguments);
 		return event;
 	}
 
@@ -281,9 +278,11 @@ public abstract class ThemeInspireDataUtil {
 	public static DeleteThemeInspireCancelledEvent getDeleteThemeInspireCancelledEvent(String code) {
 
 		DeleteThemeInspireCancelledEvent event = new DeleteThemeInspireCancelledEvent().buildFrom(getDeleteEvent(code));
-		event.setType(ThemeInspireEventTypes.DELETE_CONFIRMED);
 		event.setThemeInspire(getThemeInspire(code));
-		event.setExceptionType("ItemNotFound");
+		event.setExceptionType(ExceptionType.DELETE_ITEM_EXCEPTION.name());
+
+		Map<String, String> arguments = new HashMap<>();
+		event.setArguments(arguments);
 		return event;
 	}
 

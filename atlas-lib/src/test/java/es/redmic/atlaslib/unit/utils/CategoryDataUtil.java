@@ -44,6 +44,7 @@ import es.redmic.atlaslib.events.category.update.UpdateCategoryCancelledEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryConfirmedEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryFailedEvent;
+import es.redmic.exception.common.ExceptionType;
 
 public abstract class CategoryDataUtil {
 
@@ -56,81 +57,120 @@ public abstract class CategoryDataUtil {
 	// Create
 
 	public static CreateCategoryEvent getCreateEvent() {
+		return getCreateEvent(CODE);
+	}
+
+	public static CreateCategoryEvent getCreateEvent(String code) {
 
 		CreateCategoryEvent event = new CreateCategoryEvent();
-		event.setAggregateId(PREFIX + CODE);
-		event.setType(CategoryEventTypes.CREATE);
+		event.setAggregateId(PREFIX + code);
 		event.setVersion(1);
 		event.setUserId(USER);
-		event.setCategory(getCategory());
+		event.setSessionId("sessionIdA");
+		event.setCategory(getCategory(code));
 
 		return event;
 	}
 
 	public static CreateCategoryConfirmedEvent getCreateCategoryConfirmedEvent() {
+		return getCreateCategoryConfirmedEvent(CODE);
+	}
 
-		CreateCategoryConfirmedEvent event = new CreateCategoryConfirmedEvent().buildFrom(getCreateEvent());
-		event.setType(CategoryEventTypes.CREATE_CONFIRMED);
-		return event;
+	public static CreateCategoryConfirmedEvent getCreateCategoryConfirmedEvent(String code) {
+
+		return new CreateCategoryConfirmedEvent().buildFrom(getCreateEvent(code));
 	}
 
 	public static CategoryCreatedEvent getCategoryCreatedEvent() {
+		return getCategoryCreatedEvent(CODE);
+	}
+
+	public static CategoryCreatedEvent getCategoryCreatedEvent(String code) {
 
 		CategoryCreatedEvent event = new CategoryCreatedEvent().buildFrom(getCreateEvent());
-		event.setType(CategoryEventTypes.CREATED);
-		event.setCategory(getCategory());
+		event.setCategory(getCategory(code));
 		return event;
 	}
 
 	public static CreateCategoryFailedEvent getCreateCategoryFailedEvent() {
+		return getCreateCategoryFailedEvent(CODE);
+	}
 
-		CreateCategoryFailedEvent event = new CreateCategoryFailedEvent().buildFrom(getCreateEvent());
-		event.setType(CategoryEventTypes.CREATE_FAILED);
-		event.setExceptionType("ItemAlreadyExist");
+	public static CreateCategoryFailedEvent getCreateCategoryFailedEvent(String code) {
+
+		CreateCategoryFailedEvent event = new CreateCategoryFailedEvent().buildFrom(getCreateEvent(code));
+
+		event.setExceptionType(ExceptionType.ITEM_ALREADY_EXIST_EXCEPTION.name());
+
+		Map<String, String> arguments = new HashMap<>();
+		arguments.put("A", "B");
+		event.setArguments(arguments);
 		return event;
 	}
 
 	public static CreateCategoryCancelledEvent getCreateCategoryCancelledEvent() {
+		return getCreateCategoryCancelledEvent(CODE);
+	}
 
-		CreateCategoryCancelledEvent event = new CreateCategoryCancelledEvent().buildFrom(getCreateEvent());
-		event.setType(CategoryEventTypes.CREATE_CANCELLED);
-		event.setExceptionType("ItemAlreadyExist");
+	public static CreateCategoryCancelledEvent getCreateCategoryCancelledEvent(String code) {
+
+		CreateCategoryCancelledEvent event = new CreateCategoryCancelledEvent().buildFrom(getCreateEvent(code));
+
+		event.setExceptionType(ExceptionType.ITEM_ALREADY_EXIST_EXCEPTION.name());
+
+		Map<String, String> arguments = new HashMap<>();
+		arguments.put("A", "B");
+		event.setArguments(arguments);
 		return event;
 	}
 
 	// Update
 
 	public static UpdateCategoryEvent getUpdateEvent() {
+		return getUpdateEvent(CODE);
+	}
+
+	public static UpdateCategoryEvent getUpdateEvent(String code) {
 
 		UpdateCategoryEvent event = new UpdateCategoryEvent();
-		event.setAggregateId(PREFIX + CODE);
-		event.setType(CategoryEventTypes.UPDATE);
+		event.setAggregateId(PREFIX + code);
 		event.setVersion(2);
 		event.setUserId(USER);
-		event.setCategory(getCategory());
+		event.setSessionId("sessionIdB");
+		event.setCategory(getCategory(code));
 		return event;
 	}
 
 	public static UpdateCategoryConfirmedEvent getUpdateCategoryConfirmedEvent() {
+		return getUpdateCategoryConfirmedEvent(CODE);
+	}
 
-		UpdateCategoryConfirmedEvent event = new UpdateCategoryConfirmedEvent().buildFrom(getUpdateEvent());
-		event.setType(CategoryEventTypes.UPDATE_CONFIRMED);
-		return event;
+	public static UpdateCategoryConfirmedEvent getUpdateCategoryConfirmedEvent(String code) {
+
+		return new UpdateCategoryConfirmedEvent().buildFrom(getUpdateEvent(code));
 	}
 
 	public static CategoryUpdatedEvent getCategoryUpdatedEvent() {
+		return getCategoryUpdatedEvent(CODE);
+	}
 
-		CategoryUpdatedEvent event = new CategoryUpdatedEvent().buildFrom(getUpdateEvent());
-		event.setType(CategoryEventTypes.UPDATED);
-		event.setCategory(getCategory());
+	public static CategoryUpdatedEvent getCategoryUpdatedEvent(String code) {
+
+		CategoryUpdatedEvent event = new CategoryUpdatedEvent().buildFrom(getUpdateEvent(code));
+		event.setCategory(getCategory(code));
 		return event;
 	}
 
 	public static UpdateCategoryFailedEvent getUpdateCategoryFailedEvent() {
+		return getUpdateCategoryFailedEvent(CODE);
+	}
 
-		UpdateCategoryFailedEvent event = new UpdateCategoryFailedEvent().buildFrom(getUpdateEvent());
-		event.setType(CategoryEventTypes.UPDATE_FAILED);
-		event.setExceptionType("ItemNotFound");
+	public static UpdateCategoryFailedEvent getUpdateCategoryFailedEvent(String code) {
+
+		UpdateCategoryFailedEvent event = new UpdateCategoryFailedEvent().buildFrom(getUpdateEvent(code));
+
+		event.setExceptionType(ExceptionType.ITEM_NOT_FOUND.name());
+
 		Map<String, String> arguments = new HashMap<String, String>();
 		arguments.put("a", "b");
 		event.setArguments(arguments);
@@ -139,12 +179,18 @@ public abstract class CategoryDataUtil {
 
 	public static UpdateCategoryCancelledEvent getUpdateCategoryCancelledEvent() {
 
-		UpdateCategoryCancelledEvent event = new UpdateCategoryCancelledEvent().buildFrom(getUpdateEvent());
-		event.setType(CategoryEventTypes.UPDATE_FAILED);
-		event.setCategory(getCategory());
-		event.setExceptionType("ItemNotFound");
-		Map<String, String> arguments = new HashMap<String, String>();
-		arguments.put("a", "b");
+		return getUpdateCategoryCancelledEvent(CODE);
+	}
+
+	public static UpdateCategoryCancelledEvent getUpdateCategoryCancelledEvent(String code) {
+
+		UpdateCategoryCancelledEvent event = new UpdateCategoryCancelledEvent().buildFrom(getUpdateEvent(code));
+
+		event.setCategory(getCategory(code));
+
+		event.setExceptionType(ExceptionType.ES_UPDATE_DOCUMENT.name());
+
+		Map<String, String> arguments = new HashMap<>();
 		event.setArguments(arguments);
 		return event;
 	}
@@ -152,28 +198,45 @@ public abstract class CategoryDataUtil {
 	// Delete
 
 	public static DeleteCategoryEvent getDeleteEvent() {
+		return getDeleteEvent(CODE);
+	}
+
+	public static DeleteCategoryEvent getDeleteEvent(String code) {
 
 		DeleteCategoryEvent event = new DeleteCategoryEvent();
-		event.setAggregateId(PREFIX + CODE);
+		event.setAggregateId(PREFIX + code);
 		event.setType(CategoryEventTypes.DELETE);
 		event.setVersion(3);
 		event.setUserId(USER);
+		event.setSessionId("sessionIdC");
 		return event;
 	}
 
 	public static CheckDeleteCategoryEvent getCheckDeleteCategoryEvent() {
+		return getCheckDeleteCategoryEvent(CODE);
+	}
 
-		return new CheckDeleteCategoryEvent().buildFrom(getDeleteEvent());
+	public static CheckDeleteCategoryEvent getCheckDeleteCategoryEvent(String code) {
+
+		return new CheckDeleteCategoryEvent().buildFrom(getDeleteEvent(code));
 	}
 
 	public static DeleteCategoryCheckedEvent getDeleteCategoryCheckedEvent() {
+		return getDeleteCategoryCheckedEvent(CODE);
+	}
 
-		return new DeleteCategoryCheckedEvent().buildFrom(getDeleteEvent());
+	public static DeleteCategoryCheckedEvent getDeleteCategoryCheckedEvent(String code) {
+
+		return new DeleteCategoryCheckedEvent().buildFrom(getDeleteEvent(code));
 	}
 
 	public static DeleteCategoryCheckFailedEvent getDeleteCategoryCheckFailedEvent() {
+		return getDeleteCategoryCheckFailedEvent(CODE);
+	}
 
-		DeleteCategoryCheckFailedEvent event = new DeleteCategoryCheckFailedEvent().buildFrom(getDeleteEvent());
+	public static DeleteCategoryCheckFailedEvent getDeleteCategoryCheckFailedEvent(String code) {
+
+		DeleteCategoryCheckFailedEvent event = new DeleteCategoryCheckFailedEvent().buildFrom(getDeleteEvent(code));
 		event.setExceptionType("ItemIsReferenced");
 		Map<String, String> arguments = new HashMap<String, String>();
 		arguments.put("a", "b");
@@ -182,43 +245,60 @@ public abstract class CategoryDataUtil {
 	}
 
 	public static DeleteCategoryConfirmedEvent getDeleteCategoryConfirmedEvent() {
+		return getDeleteCategoryConfirmedEvent(CODE);
+	}
 
-		DeleteCategoryConfirmedEvent event = new DeleteCategoryConfirmedEvent().buildFrom(getDeleteEvent());
-		event.setAggregateId(PREFIX + CODE);
-		event.setType(CategoryEventTypes.DELETE_CONFIRMED);
-		event.setVersion(3);
+	public static DeleteCategoryConfirmedEvent getDeleteCategoryConfirmedEvent(String code) {
 
-		return event;
+		return new DeleteCategoryConfirmedEvent().buildFrom(getDeleteEvent(code));
 	}
 
 	public static CategoryDeletedEvent getCategoryDeletedEvent() {
+		return getCategoryDeletedEvent(CODE);
+	}
 
-		CategoryDeletedEvent event = new CategoryDeletedEvent().buildFrom(getDeleteEvent());
-		event.setType(CategoryEventTypes.DELETED);
-		return event;
+	public static CategoryDeletedEvent getCategoryDeletedEvent(String code) {
+
+		return new CategoryDeletedEvent().buildFrom(getDeleteEvent(code));
 	}
 
 	public static DeleteCategoryFailedEvent getDeleteCategoryFailedEvent() {
+		return getDeleteCategoryFailedEvent(CODE);
+	}
 
-		DeleteCategoryFailedEvent event = new DeleteCategoryFailedEvent().buildFrom(getDeleteEvent());
-		event.setType(CategoryEventTypes.DELETE_FAILED);
-		event.setExceptionType("ItemNotFound");
+	public static DeleteCategoryFailedEvent getDeleteCategoryFailedEvent(String code) {
+
+		DeleteCategoryFailedEvent event = new DeleteCategoryFailedEvent().buildFrom(getDeleteEvent(code));
+		event.setExceptionType(ExceptionType.DELETE_ITEM_EXCEPTION.name());
+
+		Map<String, String> arguments = new HashMap<>();
+		event.setArguments(arguments);
 		return event;
 	}
 
 	public static DeleteCategoryCancelledEvent getDeleteCategoryCancelledEvent() {
+		return getDeleteCategoryCancelledEvent(CODE);
+	}
 
-		DeleteCategoryCancelledEvent event = new DeleteCategoryCancelledEvent().buildFrom(getDeleteEvent());
-		event.setType(CategoryEventTypes.DELETE_CONFIRMED);
-		event.setCategory(getCategory());
-		event.setExceptionType("ItemNotFound");
+	public static DeleteCategoryCancelledEvent getDeleteCategoryCancelledEvent(String code) {
+
+		DeleteCategoryCancelledEvent event = new DeleteCategoryCancelledEvent().buildFrom(getDeleteEvent(code));
+		event.setCategory(getCategory(code));
+		event.setExceptionType(ExceptionType.DELETE_ITEM_EXCEPTION.name());
+
+		Map<String, String> arguments = new HashMap<>();
+		event.setArguments(arguments);
 		return event;
 	}
 
 	public static CategoryDTO getCategory() {
+		return getCategory(CODE);
+	}
+
+	public static CategoryDTO getCategory(String code) {
 
 		CategoryDTO category = new CategoryDTO();
-		category.setId("1");
+		category.setId(PREFIX + code);
 		category.setName("AIS");
 
 		return category;

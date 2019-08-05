@@ -31,6 +31,9 @@ import org.joda.time.DateTime;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Polygon;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import es.redmic.atlaslib.dto.layer.ActivityDTO;
 import es.redmic.atlaslib.dto.layer.AttributionDTO;
 import es.redmic.atlaslib.dto.layer.ContactDTO;
@@ -70,6 +73,7 @@ import es.redmic.atlaslib.events.layer.update.UpdateLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEnrichedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerFailedEvent;
+import es.redmic.exception.common.ExceptionType;
 
 public abstract class LayerDataUtil {
 
@@ -82,114 +86,162 @@ public abstract class LayerDataUtil {
 	// Create
 
 	public static CreateLayerEvent getCreateEvent() {
+		return getCreateEvent(CODE);
+	}
+
+	public static CreateLayerEvent getCreateEvent(String code) {
 
 		CreateLayerEvent event = new CreateLayerEvent();
-		event.setAggregateId(PREFIX + CODE);
+		event.setAggregateId(PREFIX + code);
 		event.setType(LayerEventTypes.CREATE);
 		event.setVersion(1);
 		event.setUserId(USER);
-		event.setLayer(getLayer());
+		event.setSessionId("sessionIdA");
+		event.setLayer(getLayer(code));
 
 		return event;
 	}
 
 	public static EnrichCreateLayerEvent getEnrichCreateLayerEvent() {
+		return getEnrichCreateLayerEvent(CODE);
+	}
 
-		EnrichCreateLayerEvent event = new EnrichCreateLayerEvent().buildFrom(getCreateEvent());
-		event.setType(LayerEventTypes.ENRICH_CREATE);
-		event.setLayer(getLayer());
+	public static EnrichCreateLayerEvent getEnrichCreateLayerEvent(String code) {
+
+		EnrichCreateLayerEvent event = new EnrichCreateLayerEvent().buildFrom(getCreateEvent(code));
+		event.setLayer(getLayer(code));
 		return event;
 	}
 
 	public static CreateLayerEnrichedEvent getCreateLayerEnrichedEvent() {
+		return getCreateLayerEnrichedEvent(CODE);
+	}
 
-		CreateLayerEnrichedEvent event = new CreateLayerEnrichedEvent().buildFrom(getCreateEvent());
-		event.setType(LayerEventTypes.CREATE_ENRICHED);
-		event.setLayer(getLayer());
+	public static CreateLayerEnrichedEvent getCreateLayerEnrichedEvent(String code) {
+
+		CreateLayerEnrichedEvent event = new CreateLayerEnrichedEvent().buildFrom(getCreateEvent(code));
+		event.setLayer(getLayer(code));
 		return event;
 	}
 
 	public static CreateLayerConfirmedEvent getCreateLayerConfirmedEvent() {
+		return getCreateLayerConfirmedEvent(CODE);
+	}
 
-		CreateLayerConfirmedEvent event = new CreateLayerConfirmedEvent().buildFrom(getCreateEvent());
-		event.setType(LayerEventTypes.CREATE_CONFIRMED);
-		return event;
+	public static CreateLayerConfirmedEvent getCreateLayerConfirmedEvent(String code) {
+
+		return new CreateLayerConfirmedEvent().buildFrom(getCreateEvent(code));
 	}
 
 	public static LayerCreatedEvent getLayerCreatedEvent() {
+		return getLayerCreatedEvent(CODE);
+	}
 
-		LayerCreatedEvent event = new LayerCreatedEvent().buildFrom(getCreateEvent());
-		event.setType(LayerEventTypes.CREATED);
-		event.setLayer(getLayer());
+	public static LayerCreatedEvent getLayerCreatedEvent(String code) {
+
+		LayerCreatedEvent event = new LayerCreatedEvent().buildFrom(getCreateEvent(code));
+		event.setLayer(getLayer(code));
 		return event;
 	}
 
 	public static CreateLayerFailedEvent getCreateLayerFailedEvent() {
+		return getCreateLayerFailedEvent(CODE);
+	}
 
-		CreateLayerFailedEvent event = new CreateLayerFailedEvent().buildFrom(getCreateEvent());
-		event.setType(LayerEventTypes.CREATE_FAILED);
-		event.setExceptionType("ItemAlreadyExist");
+	public static CreateLayerFailedEvent getCreateLayerFailedEvent(String code) {
+
+		CreateLayerFailedEvent event = new CreateLayerFailedEvent().buildFrom(getCreateEvent(code));
+		event.setExceptionType(ExceptionType.ITEM_ALREADY_EXIST_EXCEPTION.name());
+
+		Map<String, String> arguments = new HashMap<>();
+		arguments.put("A", "B");
+		event.setArguments(arguments);
 		return event;
 	}
 
 	public static CreateLayerCancelledEvent getCreateLayerCancelledEvent() {
+		return getCreateLayerCancelledEvent(CODE);
+	}
 
-		CreateLayerCancelledEvent event = new CreateLayerCancelledEvent().buildFrom(getCreateEvent());
-		event.setType(LayerEventTypes.CREATE_CANCELLED);
-		event.setExceptionType("ItemAlreadyExist");
+	public static CreateLayerCancelledEvent getCreateLayerCancelledEvent(String code) {
+
+		CreateLayerCancelledEvent event = new CreateLayerCancelledEvent().buildFrom(getCreateEvent(code));
+		event.setExceptionType(ExceptionType.ITEM_ALREADY_EXIST_EXCEPTION.name());
+
+		Map<String, String> arguments = new HashMap<>();
+		arguments.put("A", "B");
+		event.setArguments(arguments);
 		return event;
 	}
 
 	// Update
 
 	public static UpdateLayerEvent getUpdateEvent() {
+		return getUpdateEvent(CODE);
+	}
+
+	public static UpdateLayerEvent getUpdateEvent(String code) {
 
 		UpdateLayerEvent event = new UpdateLayerEvent();
-		event.setAggregateId(PREFIX + CODE);
-		event.setType(LayerEventTypes.UPDATE);
+		event.setAggregateId(PREFIX + code);
 		event.setVersion(2);
 		event.setUserId(USER);
-		event.setLayer(getLayer());
+		event.setSessionId("sessionIdB");
+		event.setLayer(getLayer(code));
 		return event;
 	}
 
 	public static EnrichUpdateLayerEvent getEnrichUpdateLayerEvent() {
+		return getEnrichUpdateLayerEvent(CODE);
+	}
 
-		EnrichUpdateLayerEvent event = new EnrichUpdateLayerEvent().buildFrom(getUpdateEvent());
+	public static EnrichUpdateLayerEvent getEnrichUpdateLayerEvent(String code) {
 
-		event.setType(LayerEventTypes.ENRICH_UPDATE);
-		event.setLayer(getLayer());
+		EnrichUpdateLayerEvent event = new EnrichUpdateLayerEvent().buildFrom(getUpdateEvent(code));
+		event.setLayer(getLayer(code));
 		return event;
 	}
 
 	public static UpdateLayerEnrichedEvent getUpdateLayerEnrichedEvent() {
+		return getUpdateLayerEnrichedEvent(CODE);
+	}
 
-		UpdateLayerEnrichedEvent event = new UpdateLayerEnrichedEvent().buildFrom(getUpdateEvent());
-		event.setType(LayerEventTypes.UPDATE_ENRICHED);
-		event.setLayer(getLayer());
+	public static UpdateLayerEnrichedEvent getUpdateLayerEnrichedEvent(String code) {
+
+		UpdateLayerEnrichedEvent event = new UpdateLayerEnrichedEvent().buildFrom(getUpdateEvent(code));
+		event.setLayer(getLayer(code));
 		return event;
 	}
 
 	public static UpdateLayerConfirmedEvent getUpdateLayerConfirmedEvent() {
+		return getUpdateLayerConfirmedEvent(CODE);
+	}
 
-		UpdateLayerConfirmedEvent event = new UpdateLayerConfirmedEvent().buildFrom(getUpdateEvent());
-		event.setType(LayerEventTypes.UPDATE_CONFIRMED);
-		return event;
+	public static UpdateLayerConfirmedEvent getUpdateLayerConfirmedEvent(String code) {
+
+		return new UpdateLayerConfirmedEvent().buildFrom(getUpdateEvent(code));
 	}
 
 	public static LayerUpdatedEvent getLayerUpdatedEvent() {
+		return getLayerUpdatedEvent(CODE);
+	}
 
-		LayerUpdatedEvent event = new LayerUpdatedEvent().buildFrom(getUpdateEvent());
-		event.setType(LayerEventTypes.UPDATED);
-		event.setLayer(getLayer());
+	public static LayerUpdatedEvent getLayerUpdatedEvent(String code) {
+
+		LayerUpdatedEvent event = new LayerUpdatedEvent().buildFrom(getUpdateEvent(code));
+		event.setLayer(getLayer(code));
 		return event;
 	}
 
 	public static UpdateLayerFailedEvent getUpdateLayerFailedEvent() {
+		return getUpdateLayerFailedEvent(CODE);
+	}
 
-		UpdateLayerFailedEvent event = new UpdateLayerFailedEvent().buildFrom(getUpdateEvent());
-		event.setType(LayerEventTypes.UPDATE_FAILED);
-		event.setExceptionType("ItemNotFound");
+	public static UpdateLayerFailedEvent getUpdateLayerFailedEvent(String code) {
+
+		UpdateLayerFailedEvent event = new UpdateLayerFailedEvent().buildFrom(getUpdateEvent(code));
+		event.setExceptionType(ExceptionType.ITEM_NOT_FOUND.name());
+
 		Map<String, String> arguments = new HashMap<String, String>();
 		arguments.put("a", "b");
 		event.setArguments(arguments);
@@ -197,13 +249,17 @@ public abstract class LayerDataUtil {
 	}
 
 	public static UpdateLayerCancelledEvent getUpdateLayerCancelledEvent() {
+		return getUpdateLayerCancelledEvent(CODE);
+	}
 
-		UpdateLayerCancelledEvent event = new UpdateLayerCancelledEvent().buildFrom(getUpdateEvent());
-		event.setType(LayerEventTypes.UPDATE_FAILED);
-		event.setLayer(getLayer());
-		event.setExceptionType("ItemNotFound");
-		Map<String, String> arguments = new HashMap<String, String>();
-		arguments.put("a", "b");
+	public static UpdateLayerCancelledEvent getUpdateLayerCancelledEvent(String code) {
+
+		UpdateLayerCancelledEvent event = new UpdateLayerCancelledEvent().buildFrom(getUpdateEvent(code));
+		event.setLayer(getLayer(code));
+		event.setExceptionType(ExceptionType.ES_UPDATE_DOCUMENT.name());
+
+		Map<String, String> arguments = new HashMap<>();
+		// arguments.put("A", "B");
 		event.setArguments(arguments);
 		return event;
 	}
@@ -211,28 +267,45 @@ public abstract class LayerDataUtil {
 	// Delete
 
 	public static DeleteLayerEvent getDeleteEvent() {
+		return getDeleteEvent(CODE);
+	}
+
+	public static DeleteLayerEvent getDeleteEvent(String code) {
 
 		DeleteLayerEvent event = new DeleteLayerEvent();
-		event.setAggregateId(PREFIX + CODE);
+		event.setAggregateId(PREFIX + code);
 		event.setType(LayerEventTypes.DELETE);
 		event.setVersion(3);
 		event.setUserId(USER);
+		event.setSessionId("sessionIdC");
 		return event;
 	}
 
 	public static CheckDeleteLayerEvent getCheckDeleteLayerEvent() {
+		return getCheckDeleteLayerEvent(CODE);
+	}
 
-		return new CheckDeleteLayerEvent().buildFrom(getDeleteEvent());
+	public static CheckDeleteLayerEvent getCheckDeleteLayerEvent(String code) {
+
+		return new CheckDeleteLayerEvent().buildFrom(getDeleteEvent(code));
 	}
 
 	public static DeleteLayerCheckedEvent getDeleteLayerCheckedEvent() {
+		return getDeleteLayerCheckedEvent(CODE);
+	}
 
-		return new DeleteLayerCheckedEvent().buildFrom(getDeleteEvent());
+	public static DeleteLayerCheckedEvent getDeleteLayerCheckedEvent(String code) {
+
+		return new DeleteLayerCheckedEvent().buildFrom(getDeleteEvent(code));
 	}
 
 	public static DeleteLayerCheckFailedEvent getDeleteLayerCheckFailedEvent() {
+		return getDeleteLayerCheckFailedEvent(CODE);
+	}
 
-		DeleteLayerCheckFailedEvent event = new DeleteLayerCheckFailedEvent().buildFrom(getDeleteEvent());
+	public static DeleteLayerCheckFailedEvent getDeleteLayerCheckFailedEvent(String code) {
+
+		DeleteLayerCheckFailedEvent event = new DeleteLayerCheckFailedEvent().buildFrom(getDeleteEvent(code));
 		event.setExceptionType("ItemIsReferenced");
 		Map<String, String> arguments = new HashMap<String, String>();
 		arguments.put("a", "b");
@@ -241,98 +314,159 @@ public abstract class LayerDataUtil {
 	}
 
 	public static DeleteLayerConfirmedEvent getDeleteLayerConfirmedEvent() {
+		return getDeleteLayerConfirmedEvent(CODE);
+	}
 
-		DeleteLayerConfirmedEvent event = new DeleteLayerConfirmedEvent().buildFrom(getDeleteEvent());
-		event.setAggregateId(PREFIX + CODE);
-		event.setType(LayerEventTypes.DELETE_CONFIRMED);
-		event.setVersion(3);
+	public static DeleteLayerConfirmedEvent getDeleteLayerConfirmedEvent(String code) {
 
-		return event;
+		return new DeleteLayerConfirmedEvent().buildFrom(getDeleteEvent(code));
 	}
 
 	public static LayerDeletedEvent getLayerDeletedEvent() {
+		return getLayerDeletedEvent(CODE);
+	}
 
-		LayerDeletedEvent event = new LayerDeletedEvent().buildFrom(getDeleteEvent());
-		event.setType(LayerEventTypes.DELETED);
-		return event;
+	public static LayerDeletedEvent getLayerDeletedEvent(String code) {
+
+		return new LayerDeletedEvent().buildFrom(getDeleteEvent(code));
 	}
 
 	public static DeleteLayerFailedEvent getDeleteLayerFailedEvent() {
+		return getDeleteLayerFailedEvent(CODE);
+	}
 
-		DeleteLayerFailedEvent event = new DeleteLayerFailedEvent().buildFrom(getDeleteEvent());
-		event.setType(LayerEventTypes.DELETE_FAILED);
-		event.setExceptionType("ItemNotFound");
+	public static DeleteLayerFailedEvent getDeleteLayerFailedEvent(String code) {
+
+		DeleteLayerFailedEvent event = new DeleteLayerFailedEvent().buildFrom(getDeleteEvent(code));
+		event.setExceptionType(ExceptionType.DELETE_ITEM_EXCEPTION.name());
+		event.setArguments(new HashMap<>());
 		return event;
 	}
 
 	public static DeleteLayerCancelledEvent getDeleteLayerCancelledEvent() {
 
-		DeleteLayerCancelledEvent event = new DeleteLayerCancelledEvent().buildFrom(getDeleteEvent());
-		event.setType(LayerEventTypes.DELETE_CONFIRMED);
-		event.setLayer(getLayer());
-		event.setExceptionType("ItemNotFound");
+		return getDeleteLayerCancelledEvent(CODE);
+	}
+
+	public static DeleteLayerCancelledEvent getDeleteLayerCancelledEvent(String code) {
+
+		DeleteLayerCancelledEvent event = new DeleteLayerCancelledEvent().buildFrom(getDeleteEvent(code));
+		event.setLayer(getLayer(code));
+		event.setExceptionType(ExceptionType.DELETE_ITEM_EXCEPTION.name());
+		event.setArguments(new HashMap<>());
 		return event;
 	}
 
 	// Refresh
 
 	public static RefreshLayerEvent getRefreshEvent() {
+		return getRefreshEvent(CODE);
+	}
+
+	public static RefreshLayerEvent getRefreshEvent(String code) {
 
 		RefreshLayerEvent event = new RefreshLayerEvent();
-		event.setAggregateId(PREFIX + CODE);
+		event.setAggregateId(PREFIX + code);
 		event.setType(LayerEventTypes.REFRESH);
-		event.setVersion(1);
+		event.setVersion(2);
 		event.setUserId(USER);
-		event.setLayer(getLayerWMS());
+		event.setSessionId("sessionIdD");
+		event.setLayer(getLayerWMS(code));
 
 		return event;
 	}
 
 	public static RefreshLayerConfirmedEvent getRefreshLayerConfirmedEvent() {
+		return getRefreshLayerConfirmedEvent(CODE);
+	}
 
-		RefreshLayerConfirmedEvent event = new RefreshLayerConfirmedEvent().buildFrom(getRefreshEvent());
-		event.setType(LayerEventTypes.REFRESH_CONFIRMED);
-		event.setLayer(getLayer());
+	public static RefreshLayerConfirmedEvent getRefreshLayerConfirmedEvent(String code) {
+
+		RefreshLayerConfirmedEvent event = new RefreshLayerConfirmedEvent().buildFrom(getRefreshEvent(code));
+		event.setLayer(getLayer(code));
 		return event;
 	}
 
 	public static LayerRefreshedEvent getLayerRefreshedEvent() {
+		return getLayerRefreshedEvent(CODE);
+	}
 
-		LayerRefreshedEvent event = new LayerRefreshedEvent().buildFrom(getRefreshEvent());
-		event.setType(LayerEventTypes.REFRESHED);
-		event.setLayer(getLayer());
+	public static LayerRefreshedEvent getLayerRefreshedEvent(String code) {
+
+		LayerRefreshedEvent event = new LayerRefreshedEvent().buildFrom(getRefreshEvent(code));
+		event.setLayer(getLayer(code));
 		return event;
 	}
 
 	public static RefreshLayerFailedEvent getRefreshLayerFailedEvent() {
+		return getRefreshLayerFailedEvent(CODE);
+	}
 
-		RefreshLayerFailedEvent event = new RefreshLayerFailedEvent().buildFrom(getRefreshEvent());
-		event.setType(LayerEventTypes.REFRESH_FAILED);
-		event.setExceptionType("ItemAlreadyExist");
+	public static RefreshLayerFailedEvent getRefreshLayerFailedEvent(String code) {
+
+		RefreshLayerFailedEvent event = new RefreshLayerFailedEvent().buildFrom(getRefreshEvent(code));
+		event.setExceptionType(ExceptionType.ITEM_NOT_FOUND.name());
+
+		Map<String, String> arguments = new HashMap<String, String>();
+		arguments.put("a", "b");
+		event.setArguments(arguments);
 		return event;
 	}
 
 	public static RefreshLayerCancelledEvent getRefreshLayerCancelledEvent() {
+		return getRefreshLayerCancelledEvent(CODE);
+	}
 
-		RefreshLayerCancelledEvent event = new RefreshLayerCancelledEvent().buildFrom(getRefreshEvent());
-		event.setType(LayerEventTypes.REFRESH_CANCELLED);
-		event.setExceptionType("ItemAlreadyExist");
-		event.setLayer(getLayer());
+	public static RefreshLayerCancelledEvent getRefreshLayerCancelledEvent(String code) {
+
+		RefreshLayerCancelledEvent event = new RefreshLayerCancelledEvent().buildFrom(getRefreshEvent(code));
+		event.setExceptionType(ExceptionType.ITEM_NOT_FOUND.name());
+
+		Map<String, String> arguments = new HashMap<String, String>();
+		arguments.put("a", "b");
+		event.setArguments(arguments);
+
+		event.setLayer(getLayer(code));
 		return event;
 	}
 
 	public static UpdateThemeInspireInLayerEvent getUpdateThemeInspireInLayerEvent() {
+		return getUpdateThemeInspireInLayerEvent(CODE);
+	}
+
+	public static UpdateThemeInspireInLayerEvent getUpdateThemeInspireInLayerEvent(String code) {
 
 		UpdateThemeInspireInLayerEvent event = new UpdateThemeInspireInLayerEvent();
-		event.setAggregateId(PREFIX + CODE);
-		event.setType(LayerEventTypes.UPDATE_THEMEINSPIRE);
+		event.setAggregateId(PREFIX + code);
 		event.setVersion(2);
 		event.setUserId(USER);
+		event.setSessionId("sessionIdE");
 		event.setThemeInspire(ThemeInspireDataUtil.getThemeInspire());
 		return event;
 	}
 
+	//
+
+	public static String getLayerInfoToSave(LayerInfoDTO layerInfoDTO) throws JsonProcessingException {
+
+		ObjectMapper mapper = new ObjectMapper();
+
+		String layerInfoString = mapper.writeValueAsString(layerInfoDTO);
+
+		layerInfoString = layerInfoString.replace(mapper.writeValueAsString(ThemeInspireDataUtil.getThemeInspire("cc")),
+				"\"" + ThemeInspireDataUtil.getThemeInspire("cc").getId() + "\"");
+
+		layerInfoString = layerInfoString.replace(mapper.writeValueAsString(CategoryDataUtil.getCategory("3442")),
+				"\"" + CategoryDataUtil.getCategory("3442").getId() + "\"");
+
+		return layerInfoString;
+	}
+
 	public static LayerDTO getLayer() {
+		return getLayer(CODE);
+	}
+
+	public static LayerDTO getLayer(String code) {
 
 		LayerDTO layer = new LayerDTO();
 
@@ -340,8 +474,7 @@ public abstract class LayerDataUtil {
 		layer.setAttribution(getAttribution());
 		layer.setTimeDimension(getDimension());
 		layer.setElevationDimension(getDimension());
-		layer.setParent(CategoryDataUtil.getCategory());
-		layer.setId(PREFIX + CODE);
+		layer.setId(PREFIX + code);
 		layer.setName("Prueba");
 		layer.setTitle("title");
 		layer.setAlias("Prueba");
@@ -368,7 +501,8 @@ public abstract class LayerDataUtil {
 		layer.setGeometry(getGeometry());
 		layer.setActivities(getActivities());
 		layer.setContact(getContact());
-		layer.setThemeInspire(ThemeInspireDataUtil.getThemeInspire());
+		layer.setParent(CategoryDataUtil.getCategory("3442"));
+		layer.setThemeInspire(ThemeInspireDataUtil.getThemeInspire("cc"));
 		layer.setProtocols(getProtocols());
 		layer.setLatLonBoundsImage(getLatLonBoundingBoxDTO());
 		layer.setStylesLayer(getStylesLayer());
@@ -377,6 +511,10 @@ public abstract class LayerDataUtil {
 	}
 
 	public static LayerWMSDTO getLayerWMS() {
+		return getLayerWMS(CODE);
+	}
+
+	public static LayerWMSDTO getLayerWMS(String code) {
 
 		LayerWMSDTO layer = new LayerWMSDTO();
 
@@ -384,7 +522,7 @@ public abstract class LayerDataUtil {
 		layer.setAttribution(getAttribution());
 		layer.setTimeDimension(getDimension());
 		layer.setElevationDimension(getDimension());
-		layer.setId(PREFIX + CODE);
+		layer.setId(PREFIX + code);
 		layer.setName("Prueba");
 		layer.setTitle("title");
 		layer.setAbstractLayer("Prueba");
@@ -426,16 +564,20 @@ public abstract class LayerDataUtil {
 	}
 
 	public static LayerInfoDTO getLayerInfo() {
+		return getLayerInfo(CODE);
+	}
+
+	public static LayerInfoDTO getLayerInfo(String code) {
 
 		LayerInfoDTO layerInfo = new LayerInfoDTO();
 
-		layerInfo.setId(PREFIX + CODE);
+		layerInfo.setId(PREFIX + code);
 		layerInfo.setName("Prueba");
 		layerInfo.setAlias("Prueba");
 		layerInfo.setDescription("Prueba");
 		layerInfo.setUrlSource("http://redmic.es");
-		layerInfo.setParent(CategoryDataUtil.getCategory());
-		layerInfo.setThemeInspire(ThemeInspireDataUtil.getThemeInspire());
+		layerInfo.setParent(CategoryDataUtil.getCategory("3442"));
+		layerInfo.setThemeInspire(ThemeInspireDataUtil.getThemeInspire("cc"));
 		layerInfo.setProtocols(getProtocols());
 		layerInfo.setLatLonBoundsImage(getLatLonBoundingBoxDTO());
 
