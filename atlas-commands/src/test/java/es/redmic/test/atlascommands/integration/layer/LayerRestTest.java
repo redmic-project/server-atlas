@@ -83,10 +83,11 @@ import es.redmic.atlaslib.events.layer.refresh.RefreshLayerEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEvent;
 import es.redmic.atlaslib.events.themeinspire.create.ThemeInspireCreatedEvent;
+import es.redmic.atlaslib.unit.utils.LayerDataUtil;
+import es.redmic.atlaslib.unit.utils.ThemeInspireDataUtil;
 import es.redmic.brokerlib.avro.common.Event;
 import es.redmic.brokerlib.listener.SendListener;
 import es.redmic.test.atlascommands.integration.KafkaEmbeddedConfig;
-import es.redmic.test.atlascommands.integration.themeinspire.ThemeInspireDataUtil;
 import es.redmic.testutils.documentation.DocumentationCommandBaseTest;
 import es.redmic.testutils.utils.JsonToBeanTestUtil;
 

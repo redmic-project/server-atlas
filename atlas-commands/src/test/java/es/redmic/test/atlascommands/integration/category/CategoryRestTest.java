@@ -75,6 +75,7 @@ import es.redmic.atlaslib.events.category.delete.DeleteCategoryConfirmedEvent;
 import es.redmic.atlaslib.events.category.delete.DeleteCategoryEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryConfirmedEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryEvent;
+import es.redmic.atlaslib.unit.utils.CategoryDataUtil;
 import es.redmic.brokerlib.avro.common.Event;
 import es.redmic.brokerlib.listener.SendListener;
 import es.redmic.test.atlascommands.integration.KafkaEmbeddedConfig;

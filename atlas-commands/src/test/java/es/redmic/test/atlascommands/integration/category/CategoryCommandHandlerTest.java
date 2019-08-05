@@ -73,6 +73,7 @@ import es.redmic.atlaslib.events.category.update.UpdateCategoryCancelledEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryConfirmedEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryFailedEvent;
+import es.redmic.atlaslib.unit.utils.CategoryDataUtil;
 import es.redmic.brokerlib.avro.common.Event;
 import es.redmic.brokerlib.listener.SendListener;
 import es.redmic.exception.data.DeleteItemException;

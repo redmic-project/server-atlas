@@ -43,10 +43,10 @@ import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireEvent;
 import es.redmic.atlaslib.events.themeinspire.delete.ThemeInspireDeletedEvent;
 import es.redmic.atlaslib.events.themeinspire.update.ThemeInspireUpdatedEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireEvent;
+import es.redmic.atlaslib.unit.utils.ThemeInspireDataUtil;
 import es.redmic.brokerlib.avro.common.Event;
 import es.redmic.commandslib.exceptions.ItemLockedException;
 import es.redmic.restlib.config.UserService;
-import es.redmic.test.atlascommands.integration.themeinspire.ThemeInspireDataUtil;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ApplyEventTest {

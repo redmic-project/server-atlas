@@ -46,10 +46,10 @@ import es.redmic.atlaslib.events.layer.refresh.LayerRefreshedEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerEvent;
 import es.redmic.atlaslib.events.layer.update.LayerUpdatedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEvent;
+import es.redmic.atlaslib.unit.utils.LayerDataUtil;
 import es.redmic.brokerlib.avro.common.Event;
 import es.redmic.commandslib.exceptions.ItemLockedException;
 import es.redmic.restlib.config.UserService;
-import es.redmic.test.atlascommands.integration.layer.LayerDataUtil;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ApplyEventTest {

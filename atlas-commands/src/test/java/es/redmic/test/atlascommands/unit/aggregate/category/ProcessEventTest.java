@@ -44,10 +44,10 @@ import es.redmic.atlaslib.events.category.CategoryEventTypes;
 import es.redmic.atlaslib.events.category.create.CreateCategoryEvent;
 import es.redmic.atlaslib.events.category.delete.CheckDeleteCategoryEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryEvent;
+import es.redmic.atlaslib.unit.utils.CategoryDataUtil;
 import es.redmic.commandslib.exceptions.ItemLockedException;
 import es.redmic.exception.data.ItemNotFoundException;
 import es.redmic.restlib.config.UserService;
-import es.redmic.test.atlascommands.integration.category.CategoryDataUtil;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ProcessEventTest {

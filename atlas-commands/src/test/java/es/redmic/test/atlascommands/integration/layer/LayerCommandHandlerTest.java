@@ -84,13 +84,14 @@ import es.redmic.atlaslib.events.layer.update.UpdateLayerEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerFailedEvent;
 import es.redmic.atlaslib.events.themeinspire.create.ThemeInspireCreatedEvent;
 import es.redmic.atlaslib.events.themeinspire.update.ThemeInspireUpdatedEvent;
+import es.redmic.atlaslib.unit.utils.LayerDataUtil;
+import es.redmic.atlaslib.unit.utils.ThemeInspireDataUtil;
 import es.redmic.brokerlib.avro.common.Event;
 import es.redmic.brokerlib.listener.SendListener;
 import es.redmic.exception.data.DeleteItemException;
 import es.redmic.exception.data.ItemAlreadyExistException;
 import es.redmic.exception.data.ItemNotFoundException;
 import es.redmic.test.atlascommands.integration.KafkaEmbeddedConfig;
-import es.redmic.test.atlascommands.integration.themeinspire.ThemeInspireDataUtil;
 import es.redmic.testutils.kafka.KafkaBaseIntegrationTest;
 
 @RunWith(SpringJUnit4ClassRunner.class)

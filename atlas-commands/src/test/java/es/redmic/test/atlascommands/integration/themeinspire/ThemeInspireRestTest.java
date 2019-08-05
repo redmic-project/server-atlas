@@ -74,6 +74,7 @@ import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireConfirmed
 import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireConfirmedEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireEvent;
+import es.redmic.atlaslib.unit.utils.ThemeInspireDataUtil;
 import es.redmic.brokerlib.avro.common.Event;
 import es.redmic.brokerlib.listener.SendListener;
 import es.redmic.test.atlascommands.integration.KafkaEmbeddedConfig;

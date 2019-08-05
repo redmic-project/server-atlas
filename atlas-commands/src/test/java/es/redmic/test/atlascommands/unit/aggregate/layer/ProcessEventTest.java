@@ -46,10 +46,10 @@ import es.redmic.atlaslib.events.layer.LayerEventTypes;
 import es.redmic.atlaslib.events.layer.common.LayerEvent;
 import es.redmic.atlaslib.events.layer.delete.CheckDeleteLayerEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerEvent;
+import es.redmic.atlaslib.unit.utils.LayerDataUtil;
 import es.redmic.commandslib.exceptions.ItemLockedException;
 import es.redmic.exception.data.ItemNotFoundException;
 import es.redmic.restlib.config.UserService;
-import es.redmic.test.atlascommands.integration.layer.LayerDataUtil;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ProcessEventTest {
