@@ -164,8 +164,9 @@ public class LayerController extends DataController<Layer, LayerDTO, GeoDataQuer
 
 		try {
 			result = service.updateThemeInspireInLayer(event.getAggregateId(),
-					Mappers.getMapper(ThemeInspireESMapper.class).map(event.getThemeInspire()));
+					Mappers.getMapper(ThemeInspireESMapper.class).map(event.getThemeInspire()), event.getDate());
 		} catch (Exception e) {
+			e.printStackTrace();
 			publishFailedEvent(LayerEventFactory.getEvent(event, LayerEventTypes.UPDATE_FAILED,
 					ExceptionType.INTERNAL_EXCEPTION.name(), null), layer_topic);
 			return;

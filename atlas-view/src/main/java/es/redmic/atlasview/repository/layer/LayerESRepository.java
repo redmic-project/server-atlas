@@ -36,6 +36,8 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -62,6 +64,8 @@ public class LayerESRepository extends RWDataESRepository<Layer, GeoDataQueryDTO
 	private static String[] INDEX = { "layer" };
 	private static String TYPE = "_doc";
 
+	private static final String DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZZ";
+
 	// @formatter:off
 	
 	private final String ID_PROPERTY = "id",
@@ -78,7 +82,8 @@ public class LayerESRepository extends RWDataESRepository<Layer, GeoDataQueryDTO
 	}
 
 	@SuppressWarnings("unchecked")
-	public EventApplicationResult updateThemeInspireInLayer(String layerId, ThemeInspire themeInspire) {
+	public EventApplicationResult updateThemeInspireInLayer(String layerId, ThemeInspire themeInspire,
+			DateTime updated) {
 
 		Layer source = (Layer) queryById(layerId).get_source();
 
@@ -88,7 +93,8 @@ public class LayerESRepository extends RWDataESRepository<Layer, GeoDataQueryDTO
 
 		try {
 			doc = jsonBuilder().startObject().field("jobIndex", objectMapper.convertValue(joinIndex, Map.class))
-					.field("themeInspire", objectMapper.convertValue(themeInspire, Map.class)).endObject();
+					.field("themeInspire", objectMapper.convertValue(themeInspire, Map.class))
+					.field("updated", updated.withZone(DateTimeZone.UTC).toString(DATETIME_FORMAT)).endObject();
 		} catch (IllegalArgumentException | IOException e1) {
 			LOGGER.debug("Error modificando el item con id " + layerId + " en " + getIndex()[0] + " " + getType());
 			return new EventApplicationResult(ExceptionType.ES_UPDATE_DOCUMENT.toString());

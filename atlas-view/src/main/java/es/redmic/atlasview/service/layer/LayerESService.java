@@ -2,6 +2,7 @@ package es.redmic.atlasview.service.layer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTime;
 import org.mapstruct.factory.Mappers;
 
 /*-
@@ -95,8 +96,8 @@ public class LayerESService extends RDataService<Layer, LayerDTO, GeoDataQueryDT
 		return repository.delete(id);
 	}
 
-	public EventApplicationResult updateThemeInspireInLayer(String id, ThemeInspire themeInspire) {
-		return repository.updateThemeInspireInLayer(id, themeInspire);
+	public EventApplicationResult updateThemeInspireInLayer(String id, ThemeInspire themeInspire, DateTime updated) {
+		return repository.updateThemeInspireInLayer(id, themeInspire, updated);
 	}
 
 	/**
