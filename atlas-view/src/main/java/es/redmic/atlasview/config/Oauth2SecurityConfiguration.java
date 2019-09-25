@@ -40,6 +40,14 @@ public class Oauth2SecurityConfiguration {
 			
 			http.cors();
 			
+			http.authorizeRequests().antMatchers(HttpMethod.GET, "/**/settings/_suggest").access(
+					"#oauth2.hasScope('write') and hasAnyRole('ROLE_ADMINISTRATOR', 'ROLE_OAG', 'ROLE_COLLABORATOR', 'ROLE_USER')");
+			
+			http.authorizeRequests().antMatchers(HttpMethod.GET, "/**/settings/*").permitAll();
+			
+			http.authorizeRequests().antMatchers("/**/settings/**").access(
+					"#oauth2.hasScope('write') and hasAnyRole('ROLE_ADMINISTRATOR', 'ROLE_OAG', 'ROLE_COLLABORATOR', 'ROLE_USER')");
+			
 			http.authorizeRequests().antMatchers(HttpMethod.GET, "/actuator/**").permitAll();
 			
 			http.authorizeRequests().antMatchers(HttpMethod.GET, "/**").permitAll();
@@ -49,8 +57,6 @@ public class Oauth2SecurityConfiguration {
 			http.authorizeRequests().antMatchers(HttpMethod.POST, "/**/_mget").permitAll();
 			
 			http.authorizeRequests().antMatchers(HttpMethod.POST, "/**/_suggest").permitAll();
-			
-			http.authorizeRequests().antMatchers("/**/_selection/**").permitAll();
 			
 			http.authorizeRequests().antMatchers(HttpMethod.GET, "/**/_search/_schema").permitAll();
 			
