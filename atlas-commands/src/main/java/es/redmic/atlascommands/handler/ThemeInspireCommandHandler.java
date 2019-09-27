@@ -52,6 +52,7 @@ import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireCancelled
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireEvent;
 import es.redmic.brokerlib.alert.AlertService;
 import es.redmic.commandslib.commands.CommandHandler;
+import es.redmic.commandslib.exceptions.ItemLockedException;
 import es.redmic.commandslib.streaming.common.StreamConfig;
 import es.redmic.commandslib.streaming.common.StreamConfig.Builder;
 import es.redmic.exception.factory.ExceptionFactory;
@@ -126,7 +127,15 @@ public class ThemeInspireCommandHandler extends CommandHandler {
 
 		ThemeInspireAggregate agg = new ThemeInspireAggregate(themeInspireStateStore, userService);
 
-		CreateThemeInspireEvent event = agg.process(cmd);
+		CreateThemeInspireEvent event;
+
+		try {
+			event = agg.process(cmd);
+		} catch (ItemLockedException e) {
+
+			unlockStatus(agg, cmd.getThemeInspire().getId(), themeInspireTopic);
+			throw e;
+		}
 
 		// Si no se genera evento significa que no se debe aplicar
 		if (event == null)
@@ -135,7 +144,7 @@ public class ThemeInspireCommandHandler extends CommandHandler {
 		// Se aplica el evento
 		agg.apply(event);
 
-		return sendEventAndWaitResult(event, themeInspireTopic);
+		return sendEventAndWaitResult(agg, event, themeInspireTopic);
 	}
 
 	public ThemeInspireDTO update(String id, UpdateThemeInspireCommand cmd) {
@@ -143,7 +152,15 @@ public class ThemeInspireCommandHandler extends CommandHandler {
 		ThemeInspireAggregate agg = new ThemeInspireAggregate(themeInspireStateStore, userService);
 
 		// Se procesa el comando, obteniendo el evento generado
-		UpdateThemeInspireEvent event = agg.process(cmd);
+		UpdateThemeInspireEvent event;
+
+		try {
+			event = agg.process(cmd);
+		} catch (ItemLockedException e) {
+
+			unlockStatus(agg, cmd.getThemeInspire().getId(), themeInspireTopic);
+			throw e;
+		}
 
 		// Si no se genera evento significa que no se va a aplicar
 		if (event == null)
@@ -152,7 +169,7 @@ public class ThemeInspireCommandHandler extends CommandHandler {
 		// Si no existen excepciones, se aplica el comando
 		agg.apply(event);
 
-		return sendEventAndWaitResult(event, themeInspireTopic);
+		return sendEventAndWaitResult(agg, event, themeInspireTopic);
 	}
 
 	public ThemeInspireDTO update(String id, DeleteThemeInspireCommand cmd) {
@@ -160,7 +177,15 @@ public class ThemeInspireCommandHandler extends CommandHandler {
 		ThemeInspireAggregate agg = new ThemeInspireAggregate(themeInspireStateStore, userService);
 
 		// Se procesa el comando, obteniendo el evento generado
-		CheckDeleteThemeInspireEvent event = agg.process(cmd);
+		CheckDeleteThemeInspireEvent event;
+
+		try {
+			event = agg.process(cmd);
+		} catch (ItemLockedException e) {
+
+			unlockStatus(agg, cmd.getThemeInspireId(), themeInspireTopic);
+			throw e;
+		}
 
 		// Si no se genera evento significa que no se va a aplicar
 		if (event == null)
@@ -169,7 +194,7 @@ public class ThemeInspireCommandHandler extends CommandHandler {
 		// Si no existen excepciones, se aplica el comando
 		agg.apply(event);
 
-		return sendEventAndWaitResult(event, themeInspireTopic);
+		return sendEventAndWaitResult(agg, event, themeInspireTopic);
 	}
 
 	@KafkaHandler

@@ -52,6 +52,7 @@ import es.redmic.atlaslib.events.category.update.UpdateCategoryCancelledEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryEvent;
 import es.redmic.brokerlib.alert.AlertService;
 import es.redmic.commandslib.commands.CommandHandler;
+import es.redmic.commandslib.exceptions.ItemLockedException;
 import es.redmic.commandslib.streaming.common.StreamConfig;
 import es.redmic.commandslib.streaming.common.StreamConfig.Builder;
 import es.redmic.exception.factory.ExceptionFactory;
@@ -123,7 +124,15 @@ public class CategoryCommandHandler extends CommandHandler {
 
 		CategoryAggregate agg = new CategoryAggregate(categoryStateStore, userService);
 
-		CreateCategoryEvent event = agg.process(cmd);
+		CreateCategoryEvent event;
+
+		try {
+			event = agg.process(cmd);
+		} catch (ItemLockedException e) {
+
+			unlockStatus(agg, cmd.getCategory().getId(), categoryTopic);
+			throw e;
+		}
 
 		// Si no se genera evento significa que no se debe aplicar
 		if (event == null)
@@ -132,7 +141,7 @@ public class CategoryCommandHandler extends CommandHandler {
 		// Se aplica el evento
 		agg.apply(event);
 
-		return sendEventAndWaitResult(event, categoryTopic);
+		return sendEventAndWaitResult(agg, event, categoryTopic);
 	}
 
 	public CategoryDTO update(String id, UpdateCategoryCommand cmd) {
@@ -140,7 +149,15 @@ public class CategoryCommandHandler extends CommandHandler {
 		CategoryAggregate agg = new CategoryAggregate(categoryStateStore, userService);
 
 		// Se procesa el comando, obteniendo el evento generado
-		UpdateCategoryEvent event = agg.process(cmd);
+		UpdateCategoryEvent event;
+
+		try {
+			event = agg.process(cmd);
+		} catch (ItemLockedException e) {
+
+			unlockStatus(agg, cmd.getCategory().getId(), categoryTopic);
+			throw e;
+		}
 
 		// Si no se genera evento significa que no se va a aplicar
 		if (event == null)
@@ -149,7 +166,7 @@ public class CategoryCommandHandler extends CommandHandler {
 		// Si no existen excepciones, se aplica el comando
 		agg.apply(event);
 
-		return sendEventAndWaitResult(event, categoryTopic);
+		return sendEventAndWaitResult(agg, event, categoryTopic);
 	}
 
 	public CategoryDTO update(String id, DeleteCategoryCommand cmd) {
@@ -158,7 +175,15 @@ public class CategoryCommandHandler extends CommandHandler {
 		agg.setAggregateId(id);
 
 		// Se procesa el comando, obteniendo el evento generado
-		CheckDeleteCategoryEvent event = agg.process(cmd);
+		CheckDeleteCategoryEvent event;
+
+		try {
+			event = agg.process(cmd);
+		} catch (ItemLockedException e) {
+
+			unlockStatus(agg, cmd.getCategoryId(), categoryTopic);
+			throw e;
+		}
 
 		// Si no se genera evento significa que no se va a aplicar
 		if (event == null)
@@ -167,7 +192,7 @@ public class CategoryCommandHandler extends CommandHandler {
 		// Si no existen excepciones, se aplica el comando
 		agg.apply(event);
 
-		return sendEventAndWaitResult(event, categoryTopic);
+		return sendEventAndWaitResult(agg, event, categoryTopic);
 	}
 
 	@KafkaHandler

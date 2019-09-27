@@ -64,6 +64,7 @@ import es.redmic.atlaslib.events.themeinspire.update.ThemeInspireUpdatedEvent;
 import es.redmic.brokerlib.alert.AlertService;
 import es.redmic.brokerlib.avro.common.Event;
 import es.redmic.commandslib.commands.CommandHandler;
+import es.redmic.commandslib.exceptions.ItemLockedException;
 import es.redmic.commandslib.streaming.common.StreamConfig;
 import es.redmic.commandslib.streaming.common.StreamConfig.Builder;
 import es.redmic.exception.common.ExceptionType;
@@ -139,7 +140,15 @@ public class LayerCommandHandler extends CommandHandler {
 
 		LayerAggregate agg = new LayerAggregate(layerStateStore, userService);
 
-		LayerEvent event = agg.process(cmd);
+		LayerEvent event;
+
+		try {
+			event = agg.process(cmd);
+		} catch (ItemLockedException e) {
+
+			unlockStatus(agg, cmd.getLayer().getId(), layerTopic);
+			throw e;
+		}
 
 		// Si no se genera evento significa que no se debe aplicar
 		if (event == null)
@@ -148,7 +157,7 @@ public class LayerCommandHandler extends CommandHandler {
 		// Se aplica el evento
 		agg.apply(event);
 
-		return sendEventAndWaitResult(event, layerTopic);
+		return sendEventAndWaitResult(agg, event, layerTopic);
 	}
 
 	public LayerDTO update(String id, UpdateLayerCommand cmd) {
@@ -156,7 +165,15 @@ public class LayerCommandHandler extends CommandHandler {
 		LayerAggregate agg = new LayerAggregate(layerStateStore, userService);
 
 		// Se procesa el comando, obteniendo el evento generado
-		LayerEvent event = agg.process(cmd);
+		LayerEvent event;
+
+		try {
+			event = agg.process(cmd);
+		} catch (ItemLockedException e) {
+
+			unlockStatus(agg, cmd.getLayer().getId(), layerTopic);
+			throw e;
+		}
 
 		// Si no se genera evento significa que no se va a aplicar
 		if (event == null)
@@ -165,7 +182,7 @@ public class LayerCommandHandler extends CommandHandler {
 		// Si no existen excepciones, se aplica el comando
 		agg.apply(event);
 
-		return sendEventAndWaitResult(event, layerTopic);
+		return sendEventAndWaitResult(agg, event, layerTopic);
 	}
 
 	public LayerDTO update(String id, DeleteLayerCommand cmd) {
@@ -173,7 +190,15 @@ public class LayerCommandHandler extends CommandHandler {
 		LayerAggregate agg = new LayerAggregate(layerStateStore, userService);
 
 		// Se procesa el comando, obteniendo el evento generado
-		CheckDeleteLayerEvent event = agg.process(cmd);
+		CheckDeleteLayerEvent event;
+
+		try {
+			event = agg.process(cmd);
+		} catch (ItemLockedException e) {
+
+			unlockStatus(agg, cmd.getLayerId(), layerTopic);
+			throw e;
+		}
 
 		// Si no se genera evento significa que no se va a aplicar
 		if (event == null)
@@ -182,7 +207,7 @@ public class LayerCommandHandler extends CommandHandler {
 		// Si no existen excepciones, se aplica el comando
 		agg.apply(event);
 
-		return sendEventAndWaitResult(event, layerTopic);
+		return sendEventAndWaitResult(agg, event, layerTopic);
 	}
 
 	public LayerDTO refresh(RefreshLayerCommand cmd) {
@@ -190,7 +215,15 @@ public class LayerCommandHandler extends CommandHandler {
 		LayerAggregate agg = new LayerAggregate(layerStateStore, userService);
 
 		// Se procesa el comando, obteniendo el evento generado
-		RefreshLayerEvent event = agg.process(cmd);
+		RefreshLayerEvent event;
+
+		try {
+			event = agg.process(cmd);
+		} catch (ItemLockedException e) {
+
+			unlockStatus(agg, cmd.getLayer().getId(), layerTopic);
+			throw e;
+		}
 
 		// Si no se genera evento significa que no se va a aplicar
 		if (event == null)
@@ -199,7 +232,7 @@ public class LayerCommandHandler extends CommandHandler {
 		// Si no existen excepciones, se aplica el comando
 		agg.apply(event);
 
-		return sendEventAndWaitResult(event, layerTopic);
+		return sendEventAndWaitResult(agg, event, layerTopic);
 	}
 
 	@KafkaHandler
