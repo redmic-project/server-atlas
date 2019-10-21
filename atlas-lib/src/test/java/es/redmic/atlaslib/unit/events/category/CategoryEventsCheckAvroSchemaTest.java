@@ -38,6 +38,7 @@ import es.redmic.atlaslib.events.category.delete.DeleteCategoryCheckedEvent;
 import es.redmic.atlaslib.events.category.delete.DeleteCategoryConfirmedEvent;
 import es.redmic.atlaslib.events.category.delete.DeleteCategoryEvent;
 import es.redmic.atlaslib.events.category.delete.DeleteCategoryFailedEvent;
+import es.redmic.atlaslib.events.category.fail.CategoryRollbackEvent;
 import es.redmic.atlaslib.events.category.update.CategoryUpdatedEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryCancelledEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryConfirmedEvent;
@@ -284,6 +285,21 @@ public class CategoryEventsCheckAvroSchemaTest extends AvroBaseTest {
 
 		assertTrue("El objeto obtenido debe ser una instancia de DeleteCategoryCancelledEvent",
 				DeleteCategoryCancelledEvent.class.isInstance(result));
+
+		assertEquals(result, event);
+	}
+
+	// FAIL
+
+	@Test
+	public void CategoryRollbackEventSerializeAndDeserialize_IsSuccessful_IfSchemaAndDataAreCorrect() {
+
+		CategoryRollbackEvent event = CategoryDataUtil.getCategoryRollbackEvent();
+
+		Object result = serializerAndDeserializer(event);
+
+		assertTrue("El objeto obtenido debe ser una instancia de CategoryRollbackEvent",
+				CategoryRollbackEvent.class.isInstance(result));
 
 		assertEquals(result, event);
 	}

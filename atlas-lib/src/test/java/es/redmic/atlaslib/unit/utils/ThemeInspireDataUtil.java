@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import es.redmic.atlaslib.dto.themeinspire.ThemeInspireDTO;
+import es.redmic.atlaslib.events.themeinspire.ThemeInspireEventTypes;
 import es.redmic.atlaslib.events.themeinspire.create.CreateThemeInspireCancelledEvent;
 import es.redmic.atlaslib.events.themeinspire.create.CreateThemeInspireConfirmedEvent;
 import es.redmic.atlaslib.events.themeinspire.create.CreateThemeInspireEvent;
@@ -37,6 +38,7 @@ import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireConfirmed
 import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireEvent;
 import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireFailedEvent;
 import es.redmic.atlaslib.events.themeinspire.delete.ThemeInspireDeletedEvent;
+import es.redmic.atlaslib.events.themeinspire.fail.ThemeInspireRollbackEvent;
 import es.redmic.atlaslib.events.themeinspire.update.ThemeInspireUpdatedEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireCancelledEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireConfirmedEvent;
@@ -283,6 +285,19 @@ public abstract class ThemeInspireDataUtil {
 
 		Map<String, String> arguments = new HashMap<>();
 		event.setArguments(arguments);
+		return event;
+	}
+
+	public static ThemeInspireRollbackEvent getThemeInspireRollbackEvent() {
+		return getThemeInspireRollbackEvent(CODE);
+	}
+
+	public static ThemeInspireRollbackEvent getThemeInspireRollbackEvent(String code) {
+
+		ThemeInspireRollbackEvent event = new ThemeInspireRollbackEvent().buildFrom(getCreateEvent(code));
+
+		event.setFailEventType(ThemeInspireEventTypes.CREATE);
+		event.setLastSnapshotItem(getThemeInspire(code));
 		return event;
 	}
 

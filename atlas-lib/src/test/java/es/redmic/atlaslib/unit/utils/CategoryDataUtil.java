@@ -39,6 +39,7 @@ import es.redmic.atlaslib.events.category.delete.DeleteCategoryCheckedEvent;
 import es.redmic.atlaslib.events.category.delete.DeleteCategoryConfirmedEvent;
 import es.redmic.atlaslib.events.category.delete.DeleteCategoryEvent;
 import es.redmic.atlaslib.events.category.delete.DeleteCategoryFailedEvent;
+import es.redmic.atlaslib.events.category.fail.CategoryRollbackEvent;
 import es.redmic.atlaslib.events.category.update.CategoryUpdatedEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryCancelledEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryConfirmedEvent;
@@ -288,6 +289,20 @@ public abstract class CategoryDataUtil {
 
 		Map<String, String> arguments = new HashMap<>();
 		event.setArguments(arguments);
+		return event;
+	}
+
+	public static CategoryRollbackEvent getCategoryRollbackEvent() {
+		return getCategoryRollbackEvent(CODE);
+	}
+
+	public static CategoryRollbackEvent getCategoryRollbackEvent(String code) {
+
+		CategoryRollbackEvent event = new CategoryRollbackEvent().buildFrom(getCreateEvent(code));
+
+		event.setFailEventType(CategoryEventTypes.CREATE);
+		event.setLastSnapshotItem(getCategory(code));
+
 		return event;
 	}
 

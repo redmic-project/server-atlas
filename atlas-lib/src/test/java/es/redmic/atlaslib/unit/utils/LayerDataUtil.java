@@ -60,6 +60,7 @@ import es.redmic.atlaslib.events.layer.delete.DeleteLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerFailedEvent;
 import es.redmic.atlaslib.events.layer.delete.LayerDeletedEvent;
+import es.redmic.atlaslib.events.layer.fail.LayerRollbackEvent;
 import es.redmic.atlaslib.events.layer.partialupdate.themeinspire.UpdateThemeInspireInLayerEvent;
 import es.redmic.atlaslib.events.layer.refresh.LayerRefreshedEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerCancelledEvent;
@@ -442,6 +443,18 @@ public abstract class LayerDataUtil {
 		event.setUserId(USER);
 		event.setSessionId("sessionIdE");
 		event.setThemeInspire(ThemeInspireDataUtil.getThemeInspire());
+		return event;
+	}
+
+	public static LayerRollbackEvent getLayerRollbackEvent() {
+		return getLayerRollbackEvent(CODE);
+	}
+
+	public static LayerRollbackEvent getLayerRollbackEvent(String code) {
+
+		LayerRollbackEvent event = new LayerRollbackEvent().buildFrom(getCreateEvent(code));
+		event.setFailEventType(LayerEventTypes.CREATE);
+		event.setLastSnapshotItem(getLayer());
 		return event;
 	}
 

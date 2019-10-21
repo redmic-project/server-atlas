@@ -40,6 +40,7 @@ import es.redmic.atlaslib.events.layer.delete.DeleteLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerFailedEvent;
 import es.redmic.atlaslib.events.layer.delete.LayerDeletedEvent;
+import es.redmic.atlaslib.events.layer.fail.LayerRollbackEvent;
 import es.redmic.atlaslib.events.layer.partialupdate.themeinspire.UpdateThemeInspireInLayerEvent;
 import es.redmic.atlaslib.events.layer.refresh.LayerRefreshedEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerCancelledEvent;
@@ -426,6 +427,21 @@ public class LayerEventsCheckAvroSchemaTest extends AvroBaseTest {
 
 		assertTrue("El objeto obtenido debe ser una instancia de UpdateThemeInspireInLayerEvent",
 				UpdateThemeInspireInLayerEvent.class.isInstance(result));
+
+		assertEquals(result, event);
+	}
+
+	// FAIL
+
+	@Test
+	public void LayerRollbackEventSerializeAndDeserialize_IsSuccessful_IfSchemaAndDataAreCorrect() {
+
+		LayerRollbackEvent event = LayerDataUtil.getLayerRollbackEvent();
+
+		Object result = serializerAndDeserializer(event);
+
+		assertTrue("El objeto obtenido debe ser una instancia de LayerRollbackEvent",
+				LayerRollbackEvent.class.isInstance(result));
 
 		assertEquals(result, event);
 	}

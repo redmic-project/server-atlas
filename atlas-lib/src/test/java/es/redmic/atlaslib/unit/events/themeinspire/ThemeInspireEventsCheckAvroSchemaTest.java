@@ -38,6 +38,7 @@ import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireConfirmed
 import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireEvent;
 import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireFailedEvent;
 import es.redmic.atlaslib.events.themeinspire.delete.ThemeInspireDeletedEvent;
+import es.redmic.atlaslib.events.themeinspire.fail.ThemeInspireRollbackEvent;
 import es.redmic.atlaslib.events.themeinspire.update.ThemeInspireUpdatedEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireCancelledEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireConfirmedEvent;
@@ -284,6 +285,21 @@ public class ThemeInspireEventsCheckAvroSchemaTest extends AvroBaseTest {
 
 		assertTrue("El objeto obtenido debe ser una instancia de DeleteThemeInspireCancelledEvent",
 				DeleteThemeInspireCancelledEvent.class.isInstance(result));
+
+		assertEquals(result, event);
+	}
+
+	// FAIL
+
+	@Test
+	public void ThemeInspireRollbackEventSerializeAndDeserialize_IsSuccessful_IfSchemaAndDataAreCorrect() {
+
+		ThemeInspireRollbackEvent event = ThemeInspireDataUtil.getThemeInspireRollbackEvent();
+
+		Object result = serializerAndDeserializer(event);
+
+		assertTrue("El objeto obtenido debe ser una instancia de ThemeInspireRollbackEvent",
+				ThemeInspireRollbackEvent.class.isInstance(result));
 
 		assertEquals(result, event);
 	}
