@@ -38,6 +38,7 @@ import es.redmic.atlaslib.events.category.delete.DeleteCategoryCheckedEvent;
 import es.redmic.atlaslib.events.category.delete.DeleteCategoryConfirmedEvent;
 import es.redmic.atlaslib.events.category.delete.DeleteCategoryEvent;
 import es.redmic.atlaslib.events.category.delete.DeleteCategoryFailedEvent;
+import es.redmic.atlaslib.events.category.fail.CategoryRollbackEvent;
 import es.redmic.atlaslib.events.category.update.CategoryUpdatedEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryCancelledEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryConfirmedEvent;
@@ -45,6 +46,7 @@ import es.redmic.atlaslib.events.category.update.UpdateCategoryFailedEvent;
 import es.redmic.atlaslib.unit.utils.CategoryDataUtil;
 import es.redmic.brokerlib.avro.common.Event;
 import es.redmic.brokerlib.avro.common.EventError;
+import es.redmic.brokerlib.avro.fail.PrepareRollbackEvent;
 import es.redmic.testutils.utils.AvroBaseTest;
 
 public class CategoryEventFactoryTest extends AvroBaseTest {
@@ -270,6 +272,21 @@ public class CategoryEventFactoryTest extends AvroBaseTest {
 	}
 
 	////////////////////
+
+	@Test
+	public void GetEvent_ReturnCategoryRollbackEvent_IfTypeIsRollback() {
+
+		PrepareRollbackEvent source = CategoryDataUtil.getPrepareRollbackEvent();
+
+		CategoryRollbackEvent event = (CategoryRollbackEvent) CategoryEventFactory.getEvent(source,
+				CategoryEventTypes.ROLLBACK, CategoryDataUtil.getCategory());
+
+		assertEquals(CategoryEventTypes.ROLLBACK, event.getType());
+
+		checkMetadataFields(source, event);
+		assertEquals(source.getFailEventType(), event.getFailEventType());
+		assertNotNull(event.getLastSnapshotItem());
+	}
 
 	private void checkMetadataFields(Event source, Event evt) {
 

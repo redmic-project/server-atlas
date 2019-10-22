@@ -41,6 +41,7 @@ import es.redmic.atlaslib.events.layer.delete.DeleteLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerFailedEvent;
 import es.redmic.atlaslib.events.layer.delete.LayerDeletedEvent;
+import es.redmic.atlaslib.events.layer.fail.LayerRollbackEvent;
 import es.redmic.atlaslib.events.layer.partialupdate.themeinspire.UpdateThemeInspireInLayerEvent;
 import es.redmic.atlaslib.events.layer.refresh.LayerRefreshedEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerCancelledEvent;
@@ -58,6 +59,7 @@ import es.redmic.atlaslib.unit.utils.LayerDataUtil;
 import es.redmic.atlaslib.unit.utils.ThemeInspireDataUtil;
 import es.redmic.brokerlib.avro.common.Event;
 import es.redmic.brokerlib.avro.common.EventError;
+import es.redmic.brokerlib.avro.fail.PrepareRollbackEvent;
 import es.redmic.testutils.utils.AvroBaseTest;
 
 public class LayerEventFactoryTest extends AvroBaseTest {
@@ -437,6 +439,23 @@ public class LayerEventFactoryTest extends AvroBaseTest {
 		checkMetadataFields(source, event);
 		checkErrorFields(exception, event);
 		assertNotNull(event.getLayer());
+	}
+
+	////////////////////
+
+	@Test
+	public void GetEvent_ReturnLayerRollbackEvent_IfTypeIsRollback() {
+
+		PrepareRollbackEvent source = LayerDataUtil.getPrepareRollbackEvent();
+
+		LayerRollbackEvent event = (LayerRollbackEvent) LayerEventFactory.getEvent(source, LayerEventTypes.ROLLBACK,
+				LayerDataUtil.getLayer());
+
+		assertEquals(LayerEventTypes.ROLLBACK, event.getType());
+
+		checkMetadataFields(source, event);
+		assertEquals(source.getFailEventType(), event.getFailEventType());
+		assertNotNull(event.getLastSnapshotItem());
 	}
 
 	////////////////////

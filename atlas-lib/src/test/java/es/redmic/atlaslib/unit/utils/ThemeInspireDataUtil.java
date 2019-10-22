@@ -44,6 +44,7 @@ import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireCancelled
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireConfirmedEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireFailedEvent;
+import es.redmic.brokerlib.avro.fail.PrepareRollbackEvent;
 import es.redmic.exception.common.ExceptionType;
 
 public abstract class ThemeInspireDataUtil {
@@ -285,6 +286,17 @@ public abstract class ThemeInspireDataUtil {
 
 		Map<String, String> arguments = new HashMap<>();
 		event.setArguments(arguments);
+		return event;
+	}
+
+	public static PrepareRollbackEvent getPrepareRollbackEvent() {
+		return getPrepareRollbackEvent(CODE);
+	}
+
+	public static PrepareRollbackEvent getPrepareRollbackEvent(String code) {
+
+		PrepareRollbackEvent event = new PrepareRollbackEvent().buildFrom(getCreateEvent(code));
+		event.setFailEventType(ThemeInspireEventTypes.CREATE);
 		return event;
 	}
 

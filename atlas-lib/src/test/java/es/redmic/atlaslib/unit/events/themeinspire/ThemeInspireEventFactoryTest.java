@@ -38,6 +38,7 @@ import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireConfirmed
 import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireEvent;
 import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireFailedEvent;
 import es.redmic.atlaslib.events.themeinspire.delete.ThemeInspireDeletedEvent;
+import es.redmic.atlaslib.events.themeinspire.fail.ThemeInspireRollbackEvent;
 import es.redmic.atlaslib.events.themeinspire.update.ThemeInspireUpdatedEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireCancelledEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireConfirmedEvent;
@@ -45,6 +46,7 @@ import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireFailedEve
 import es.redmic.atlaslib.unit.utils.ThemeInspireDataUtil;
 import es.redmic.brokerlib.avro.common.Event;
 import es.redmic.brokerlib.avro.common.EventError;
+import es.redmic.brokerlib.avro.fail.PrepareRollbackEvent;
 import es.redmic.testutils.utils.AvroBaseTest;
 
 public class ThemeInspireEventFactoryTest extends AvroBaseTest {
@@ -269,6 +271,23 @@ public class ThemeInspireEventFactoryTest extends AvroBaseTest {
 		checkMetadataFields(source, event);
 		checkErrorFields(exception, event);
 		assertNotNull(event.getThemeInspire());
+	}
+
+	////////////////////
+
+	@Test
+	public void GetEvent_ReturnThemeInspireRollbackEvent_IfTypeIsRollback() {
+
+		PrepareRollbackEvent source = ThemeInspireDataUtil.getPrepareRollbackEvent();
+
+		ThemeInspireRollbackEvent event = (ThemeInspireRollbackEvent) ThemeInspireEventFactory.getEvent(source,
+				ThemeInspireEventTypes.ROLLBACK, ThemeInspireDataUtil.getThemeInspire());
+
+		assertEquals(ThemeInspireEventTypes.ROLLBACK, event.getType());
+
+		checkMetadataFields(source, event);
+		assertEquals(source.getFailEventType(), event.getFailEventType());
+		assertNotNull(event.getLastSnapshotItem());
 	}
 
 	////////////////////

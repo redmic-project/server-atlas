@@ -42,6 +42,7 @@ import es.redmic.atlaslib.events.layer.delete.DeleteLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerFailedEvent;
 import es.redmic.atlaslib.events.layer.delete.LayerDeletedEvent;
+import es.redmic.atlaslib.events.layer.fail.LayerRollbackEvent;
 import es.redmic.atlaslib.events.layer.partialupdate.themeinspire.UpdateThemeInspireInLayerEvent;
 import es.redmic.atlaslib.events.layer.refresh.LayerRefreshedEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerCancelledEvent;
@@ -57,6 +58,7 @@ import es.redmic.atlaslib.events.layer.update.UpdateLayerFailedEvent;
 import es.redmic.atlaslib.events.themeinspire.common.ThemeInspireEvent;
 import es.redmic.brokerlib.avro.common.Event;
 import es.redmic.brokerlib.avro.common.EventError;
+import es.redmic.brokerlib.avro.fail.PrepareRollbackEvent;
 import es.redmic.exception.common.ExceptionType;
 import es.redmic.exception.common.InternalException;
 
@@ -110,6 +112,14 @@ public class LayerEventFactory {
 	}
 
 	public static Event getEvent(Event source, String type, LayerDTO layer) {
+
+		if (type.equals(LayerEventTypes.ROLLBACK)) {
+			logger.debug("Creando evento LayerRollbackEvent para: " + source.getAggregateId());
+			LayerRollbackEvent rollbackEvent = new LayerRollbackEvent().buildFrom(source);
+			rollbackEvent.setLastSnapshotItem(layer);
+			rollbackEvent.setFailEventType(((PrepareRollbackEvent) source).getFailEventType());
+			return rollbackEvent;
+		}
 
 		LayerEvent successfulEvent = null;
 

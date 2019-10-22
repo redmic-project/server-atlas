@@ -45,6 +45,7 @@ import es.redmic.atlaslib.events.category.update.UpdateCategoryCancelledEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryConfirmedEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryFailedEvent;
+import es.redmic.brokerlib.avro.fail.PrepareRollbackEvent;
 import es.redmic.exception.common.ExceptionType;
 
 public abstract class CategoryDataUtil {
@@ -88,7 +89,7 @@ public abstract class CategoryDataUtil {
 
 	public static CategoryCreatedEvent getCategoryCreatedEvent(String code) {
 
-		CategoryCreatedEvent event = new CategoryCreatedEvent().buildFrom(getCreateEvent());
+		CategoryCreatedEvent event = new CategoryCreatedEvent().buildFrom(getCreateEvent(code));
 		event.setCategory(getCategory(code));
 		return event;
 	}
@@ -289,6 +290,17 @@ public abstract class CategoryDataUtil {
 
 		Map<String, String> arguments = new HashMap<>();
 		event.setArguments(arguments);
+		return event;
+	}
+
+	public static PrepareRollbackEvent getPrepareRollbackEvent() {
+		return getPrepareRollbackEvent(CODE);
+	}
+
+	public static PrepareRollbackEvent getPrepareRollbackEvent(String code) {
+
+		PrepareRollbackEvent event = new PrepareRollbackEvent().buildFrom(getCreateEvent(code));
+		event.setFailEventType(CategoryEventTypes.CREATE);
 		return event;
 	}
 

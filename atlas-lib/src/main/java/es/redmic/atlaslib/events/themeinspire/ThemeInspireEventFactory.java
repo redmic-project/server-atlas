@@ -39,12 +39,14 @@ import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireConfirmed
 import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireEvent;
 import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireFailedEvent;
 import es.redmic.atlaslib.events.themeinspire.delete.ThemeInspireDeletedEvent;
+import es.redmic.atlaslib.events.themeinspire.fail.ThemeInspireRollbackEvent;
 import es.redmic.atlaslib.events.themeinspire.update.ThemeInspireUpdatedEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireCancelledEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireConfirmedEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireFailedEvent;
 import es.redmic.brokerlib.avro.common.Event;
 import es.redmic.brokerlib.avro.common.EventError;
+import es.redmic.brokerlib.avro.fail.PrepareRollbackEvent;
 import es.redmic.exception.common.ExceptionType;
 import es.redmic.exception.common.InternalException;
 
@@ -98,6 +100,14 @@ public class ThemeInspireEventFactory {
 	}
 
 	public static Event getEvent(Event source, String type, ThemeInspireDTO themeInspire) {
+
+		if (type.equals(ThemeInspireEventTypes.ROLLBACK)) {
+			logger.debug("Creando evento ThemeInspireRollbackEvent para: " + source.getAggregateId());
+			ThemeInspireRollbackEvent rollbackEvent = new ThemeInspireRollbackEvent().buildFrom(source);
+			rollbackEvent.setLastSnapshotItem(themeInspire);
+			rollbackEvent.setFailEventType(((PrepareRollbackEvent) source).getFailEventType());
+			return rollbackEvent;
+		}
 
 		ThemeInspireEvent successfulEvent = null;
 

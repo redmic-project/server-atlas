@@ -39,12 +39,14 @@ import es.redmic.atlaslib.events.category.delete.DeleteCategoryCheckedEvent;
 import es.redmic.atlaslib.events.category.delete.DeleteCategoryConfirmedEvent;
 import es.redmic.atlaslib.events.category.delete.DeleteCategoryEvent;
 import es.redmic.atlaslib.events.category.delete.DeleteCategoryFailedEvent;
+import es.redmic.atlaslib.events.category.fail.CategoryRollbackEvent;
 import es.redmic.atlaslib.events.category.update.CategoryUpdatedEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryCancelledEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryConfirmedEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryFailedEvent;
 import es.redmic.brokerlib.avro.common.Event;
 import es.redmic.brokerlib.avro.common.EventError;
+import es.redmic.brokerlib.avro.fail.PrepareRollbackEvent;
 import es.redmic.exception.common.ExceptionType;
 import es.redmic.exception.common.InternalException;
 
@@ -98,6 +100,14 @@ public class CategoryEventFactory {
 	}
 
 	public static Event getEvent(Event source, String type, CategoryDTO category) {
+
+		if (type.equals(CategoryEventTypes.ROLLBACK)) {
+			logger.debug("Creando evento CategoryRollbackEvent para: " + source.getAggregateId());
+			CategoryRollbackEvent rollbackEvent = new CategoryRollbackEvent().buildFrom(source);
+			rollbackEvent.setLastSnapshotItem(category);
+			rollbackEvent.setFailEventType(((PrepareRollbackEvent) source).getFailEventType());
+			return rollbackEvent;
+		}
 
 		CategoryEvent successfulEvent = null;
 

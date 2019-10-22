@@ -74,6 +74,7 @@ import es.redmic.atlaslib.events.layer.update.UpdateLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEnrichedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerFailedEvent;
+import es.redmic.brokerlib.avro.fail.PrepareRollbackEvent;
 import es.redmic.exception.common.ExceptionType;
 
 public abstract class LayerDataUtil {
@@ -446,6 +447,17 @@ public abstract class LayerDataUtil {
 		return event;
 	}
 
+	public static PrepareRollbackEvent getPrepareRollbackEvent() {
+		return getPrepareRollbackEvent(CODE);
+	}
+
+	public static PrepareRollbackEvent getPrepareRollbackEvent(String code) {
+
+		PrepareRollbackEvent event = new PrepareRollbackEvent().buildFrom(getCreateEvent(code));
+		event.setFailEventType(LayerEventTypes.CREATE);
+		return event;
+	}
+
 	public static LayerRollbackEvent getLayerRollbackEvent() {
 		return getLayerRollbackEvent(CODE);
 	}
@@ -454,7 +466,7 @@ public abstract class LayerDataUtil {
 
 		LayerRollbackEvent event = new LayerRollbackEvent().buildFrom(getCreateEvent(code));
 		event.setFailEventType(LayerEventTypes.CREATE);
-		event.setLastSnapshotItem(getLayer());
+		event.setLastSnapshotItem(getLayer(code));
 		return event;
 	}
 
