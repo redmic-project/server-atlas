@@ -71,6 +71,7 @@ import es.redmic.atlaslib.events.layer.delete.DeleteLayerCheckedEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerFailedEvent;
 import es.redmic.atlaslib.events.layer.delete.LayerDeletedEvent;
+import es.redmic.atlaslib.events.layer.fail.LayerRollbackEvent;
 import es.redmic.atlaslib.events.layer.refresh.LayerRefreshedEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerConfirmedEvent;
@@ -87,6 +88,7 @@ import es.redmic.atlaslib.events.themeinspire.update.ThemeInspireUpdatedEvent;
 import es.redmic.atlaslib.unit.utils.LayerDataUtil;
 import es.redmic.atlaslib.unit.utils.ThemeInspireDataUtil;
 import es.redmic.brokerlib.avro.common.Event;
+import es.redmic.brokerlib.avro.fail.PrepareRollbackEvent;
 import es.redmic.brokerlib.listener.SendListener;
 import es.redmic.exception.data.DeleteItemException;
 import es.redmic.exception.data.ItemAlreadyExistException;
@@ -477,6 +479,33 @@ public class LayerCommandHandlerTest extends KafkaBaseIntegrationTest {
 		assertEquals(layerUpdateEvent.getLayer(), ((DeleteLayerCancelledEvent) confirm).getLayer());
 	}
 
+	// Envía un evento de error de prepare rollback y debe provocar un evento
+	// LayerRollback con el item dentro
+	@Test
+	public void prepareRollbackEvent_SendLayerRollbackEvent_IfReceivesSuccess() throws Exception {
+
+		// Envía created para meterlo en el stream y lo saca de la cola
+		LayerCreatedEvent layerCreatedEvent = LayerDataUtil.getLayerCreatedEvent(code + "7");
+		kafkaTemplate.send(layer_topic, layerCreatedEvent.getAggregateId(), layerCreatedEvent);
+		blockingQueue.poll(30, TimeUnit.SECONDS);
+
+		Thread.sleep(8000);
+
+		PrepareRollbackEvent event = LayerDataUtil.getPrepareRollbackEvent(code + "7");
+
+		kafkaTemplate.send(layer_topic, event.getAggregateId(), event);
+
+		Event rollback = (Event) blockingQueue.poll(40, TimeUnit.SECONDS);
+
+		assertNotNull(rollback);
+		assertEquals(LayerEventTypes.ROLLBACK, rollback.getType());
+		assertEquals(event.getFailEventType(), ((LayerRollbackEvent) rollback).getFailEventType());
+		assertEquals(layerCreatedEvent.getLayer().getId(),
+				((LayerRollbackEvent) rollback).getLastSnapshotItem().getId());
+		assertEquals(layerCreatedEvent.getLayer().getUpdated().getMillis(),
+				((LayerRollbackEvent) rollback).getLastSnapshotItem().getUpdated().getMillis());
+	}
+
 	@KafkaHandler
 	public void createLayerEvent(CreateLayerEvent createLayerEvent) {
 
@@ -541,6 +570,12 @@ public class LayerCommandHandlerTest extends KafkaBaseIntegrationTest {
 	public void deleteLayerCheckFailedEvent(DeleteLayerCheckFailedEvent deleteLayerCheckFailedEvent) {
 
 		blockingQueue.offer(deleteLayerCheckFailedEvent);
+	}
+
+	@KafkaHandler
+	public void layerRollbackEvent(LayerRollbackEvent layerRollbackEvent) {
+
+		blockingQueue.offer(layerRollbackEvent);
 	}
 
 	@KafkaHandler(isDefault = true)

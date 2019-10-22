@@ -69,6 +69,7 @@ import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireCheckedEv
 import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireConfirmedEvent;
 import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireFailedEvent;
 import es.redmic.atlaslib.events.themeinspire.delete.ThemeInspireDeletedEvent;
+import es.redmic.atlaslib.events.themeinspire.fail.ThemeInspireRollbackEvent;
 import es.redmic.atlaslib.events.themeinspire.update.ThemeInspireUpdatedEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireCancelledEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireConfirmedEvent;
@@ -77,6 +78,7 @@ import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireFailedEve
 import es.redmic.atlaslib.unit.utils.LayerDataUtil;
 import es.redmic.atlaslib.unit.utils.ThemeInspireDataUtil;
 import es.redmic.brokerlib.avro.common.Event;
+import es.redmic.brokerlib.avro.fail.PrepareRollbackEvent;
 import es.redmic.brokerlib.listener.SendListener;
 import es.redmic.exception.common.ExceptionType;
 import es.redmic.exception.data.DeleteItemException;
@@ -365,6 +367,30 @@ public class ThemeInspireCommandHandlerTest extends KafkaBaseIntegrationTest {
 				((DeleteThemeInspireCancelledEvent) confirm).getThemeInspire());
 	}
 
+	// Envía un evento de error de prepare rollback y debe provocar un evento
+	// ThemeInspireRollback con el item dentro
+	@Test
+	public void prepareRollbackEvent_SendThemeInspireRollbackEvent_IfReceivesSuccess() throws Exception {
+
+		// Envía created para meterlo en el stream y lo saca de la cola
+		ThemeInspireCreatedEvent themeInspireCreatedEvent = ThemeInspireDataUtil
+				.getThemeInspireCreatedEvent(code + "7");
+		kafkaTemplate.send(theme_inspire_topic, themeInspireCreatedEvent.getAggregateId(), themeInspireCreatedEvent);
+		blockingQueue.poll(10, TimeUnit.SECONDS);
+
+		PrepareRollbackEvent event = ThemeInspireDataUtil.getPrepareRollbackEvent(code + "7");
+
+		kafkaTemplate.send(theme_inspire_topic, event.getAggregateId(), event);
+
+		Event rollback = (Event) blockingQueue.poll(30, TimeUnit.SECONDS);
+
+		assertNotNull(rollback);
+		assertEquals(ThemeInspireEventTypes.ROLLBACK, rollback.getType());
+		assertEquals(event.getFailEventType(), ((ThemeInspireRollbackEvent) rollback).getFailEventType());
+		assertEquals(themeInspireCreatedEvent.getThemeInspire(),
+				((ThemeInspireRollbackEvent) rollback).getLastSnapshotItem());
+	}
+
 	@KafkaHandler
 	public void themeInspireCreatedEvent(ThemeInspireCreatedEvent themeInspireCreatedEvent) {
 
@@ -412,6 +438,12 @@ public class ThemeInspireCommandHandlerTest extends KafkaBaseIntegrationTest {
 			DeleteThemeInspireCheckFailedEvent deleteThemeInspireCheckFailedEvent) {
 
 		blockingQueue.offer(deleteThemeInspireCheckFailedEvent);
+	}
+
+	@KafkaHandler
+	public void themeInspireRollbackEvent(ThemeInspireRollbackEvent themeInspireRollbackEvent) {
+
+		blockingQueue.offer(themeInspireRollbackEvent);
 	}
 
 	@KafkaHandler(isDefault = true)

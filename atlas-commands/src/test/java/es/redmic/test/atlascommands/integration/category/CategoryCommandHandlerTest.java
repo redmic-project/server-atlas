@@ -68,6 +68,7 @@ import es.redmic.atlaslib.events.category.delete.DeleteCategoryCheckFailedEvent;
 import es.redmic.atlaslib.events.category.delete.DeleteCategoryCheckedEvent;
 import es.redmic.atlaslib.events.category.delete.DeleteCategoryConfirmedEvent;
 import es.redmic.atlaslib.events.category.delete.DeleteCategoryFailedEvent;
+import es.redmic.atlaslib.events.category.fail.CategoryRollbackEvent;
 import es.redmic.atlaslib.events.category.update.CategoryUpdatedEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryCancelledEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryConfirmedEvent;
@@ -75,6 +76,7 @@ import es.redmic.atlaslib.events.category.update.UpdateCategoryEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryFailedEvent;
 import es.redmic.atlaslib.unit.utils.CategoryDataUtil;
 import es.redmic.brokerlib.avro.common.Event;
+import es.redmic.brokerlib.avro.fail.PrepareRollbackEvent;
 import es.redmic.brokerlib.listener.SendListener;
 import es.redmic.exception.data.DeleteItemException;
 import es.redmic.exception.data.ItemAlreadyExistException;
@@ -88,7 +90,7 @@ import es.redmic.testutils.kafka.KafkaBaseIntegrationTest;
 @DirtiesContext
 @KafkaListener(topics = "${broker.topic.category}", groupId = "CategoryCommandHandlerTest")
 @TestPropertySource(properties = { "spring.kafka.consumer.group-id=CategoryCommandHandler",
-		"schema.registry.port=19099" })
+		"schema.registry.port=19099", "rest.eventsource.timeout.ms=20000" })
 public class CategoryCommandHandlerTest extends KafkaBaseIntegrationTest {
 
 	protected static Logger logger = LogManager.getLogger();
@@ -320,6 +322,28 @@ public class CategoryCommandHandlerTest extends KafkaBaseIntegrationTest {
 		assertEquals(categoryUpdateEvent.getCategory(), ((DeleteCategoryCancelledEvent) confirm).getCategory());
 	}
 
+	// Envía un evento de error de prepare rollback y debe provocar un evento
+	// CategoryRollback con el item dentro
+	@Test
+	public void prepareRollbackEvent_SendCategoryRollbackEvent_IfReceivesSuccess() throws Exception {
+
+		// Envía created para meterlo en el stream y lo saca de la cola
+		CategoryCreatedEvent categoryCreatedEvent = CategoryDataUtil.getCategoryCreatedEvent(code + "7");
+		kafkaTemplate.send(category_topic, categoryCreatedEvent.getAggregateId(), categoryCreatedEvent);
+		blockingQueue.poll(10, TimeUnit.SECONDS);
+
+		PrepareRollbackEvent event = CategoryDataUtil.getPrepareRollbackEvent(code + "7");
+
+		kafkaTemplate.send(category_topic, event.getAggregateId(), event);
+
+		Event rollback = (Event) blockingQueue.poll(30, TimeUnit.SECONDS);
+
+		assertNotNull(rollback);
+		assertEquals(CategoryEventTypes.ROLLBACK, rollback.getType());
+		assertEquals(event.getFailEventType(), ((CategoryRollbackEvent) rollback).getFailEventType());
+		assertEquals(categoryCreatedEvent.getCategory(), ((CategoryRollbackEvent) rollback).getLastSnapshotItem());
+	}
+
 	@KafkaHandler
 	public void categoryCreatedEvent(CategoryCreatedEvent categoryCreatedEvent) {
 
@@ -366,6 +390,12 @@ public class CategoryCommandHandlerTest extends KafkaBaseIntegrationTest {
 	public void deleteCategoryCheckFailedEvent(DeleteCategoryCheckFailedEvent deleteCategoryCheckFailedEvent) {
 
 		blockingQueue.offer(deleteCategoryCheckFailedEvent);
+	}
+
+	@KafkaHandler
+	public void categoryRollbackEvent(CategoryRollbackEvent categoryRollbackEvent) {
+
+		blockingQueue.offer(categoryRollbackEvent);
 	}
 
 	@KafkaHandler(isDefault = true)

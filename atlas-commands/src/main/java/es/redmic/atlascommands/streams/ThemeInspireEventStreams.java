@@ -21,6 +21,7 @@ package es.redmic.atlascommands.streams;
  */
 
 import org.apache.kafka.streams.kstream.KStream;
+import org.apache.kafka.streams.kstream.KTable;
 
 import es.redmic.atlaslib.dto.themeinspire.ThemeInspireDTO;
 import es.redmic.atlaslib.events.themeinspire.ThemeInspireEventFactory;
@@ -165,6 +166,13 @@ public class ThemeInspireEventStreams extends EventSourcingStreams {
 	}
 
 	@Override
-	protected void processExtraStreams(KStream<String, Event> events, KStream<String, Event> snapshotEvents) {
+	protected void processExtraStreams(KStream<String, Event> events, KTable<String, Event> successEventsTable) {
+	}
+
+	@Override
+	protected Event getRollbackEvent(Event prepareRollbackEvent, Event lastSuccessEvent) {
+
+		return ThemeInspireEventFactory.getEvent(prepareRollbackEvent, ThemeInspireEventTypes.ROLLBACK,
+				((ThemeInspireEvent) lastSuccessEvent).getThemeInspire());
 	}
 }

@@ -324,11 +324,11 @@ public class LayerEventStreams extends EventSourcingStreams {
 	}
 
 	@Override
-	protected void processExtraStreams(KStream<String, Event> events, KStream<String, Event> snapshotEvents) {
+	protected void processExtraStreams(KStream<String, Event> events, KTable<String, Event> successEventsTable) {
 
 		processRefreshSuccessStream(events);
 
-		processRefreshFailedStream(events, snapshotEvents);
+		processRefreshFailedStream(events, successEventsTable);
 	}
 
 	protected void processRefreshSuccessStream(KStream<String, Event> events) {
@@ -377,13 +377,11 @@ public class LayerEventStreams extends EventSourcingStreams {
 	 * refrescar, envía evento de cancelación
 	 */
 
-	protected void processRefreshFailedStream(KStream<String, Event> events, KStream<String, Event> successEvents) {
+	protected void processRefreshFailedStream(KStream<String, Event> events, KTable<String, Event> successEventsTable) {
 
 		// Stream filtrado por eventos de fallo al modificar
 		KStream<String, Event> failedEvents = events
 				.filter((id, event) -> (LayerEventTypes.REFRESH_FAILED.equals(event.getType())));
-
-		KTable<String, Event> successEventsTable = successEvents.groupByKey().reduce((aggValue, newValue) -> newValue);
 
 		// Join por id, mandando a kafka el evento de compensación
 		failedEvents
@@ -416,5 +414,12 @@ public class LayerEventStreams extends EventSourcingStreams {
 		ThemeInspireDTO themeInspireDTO = ((LayerEvent) evt).getLayer().getThemeInspire();
 
 		return themeInspireDTO != null ? themeInspireDTO.getId() : null;
+	}
+
+	@Override
+	protected Event getRollbackEvent(Event prepareRollbackEvent, Event lastSuccessEvent) {
+
+		return LayerEventFactory.getEvent(prepareRollbackEvent, LayerEventTypes.ROLLBACK,
+				((LayerEvent) lastSuccessEvent).getLayer());
 	}
 }

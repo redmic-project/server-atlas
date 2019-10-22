@@ -23,6 +23,7 @@ import java.util.Arrays;
  */
 
 import org.apache.kafka.streams.kstream.KStream;
+import org.apache.kafka.streams.kstream.KTable;
 
 import es.redmic.atlaslib.dto.category.CategoryDTO;
 import es.redmic.atlaslib.events.category.CategoryEventFactory;
@@ -176,6 +177,13 @@ public class CategoryEventStreams extends EventSourcingStreams {
 	}
 
 	@Override
-	protected void processExtraStreams(KStream<String, Event> events, KStream<String, Event> snapshotEvents) {
+	protected void processExtraStreams(KStream<String, Event> events, KTable<String, Event> successEventsTable) {
+	}
+
+	@Override
+	protected Event getRollbackEvent(Event prepareRollbackEvent, Event lastSuccessEvent) {
+
+		return CategoryEventFactory.getEvent(prepareRollbackEvent, CategoryEventTypes.ROLLBACK,
+				((CategoryEvent) lastSuccessEvent).getCategory());
 	}
 }
