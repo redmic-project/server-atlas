@@ -330,7 +330,9 @@ public class CategoryCommandHandlerTest extends KafkaBaseIntegrationTest {
 		// Envía created para meterlo en el stream y lo saca de la cola
 		CategoryCreatedEvent categoryCreatedEvent = CategoryDataUtil.getCategoryCreatedEvent(code + "7");
 		kafkaTemplate.send(category_topic, categoryCreatedEvent.getAggregateId(), categoryCreatedEvent);
-		blockingQueue.poll(10, TimeUnit.SECONDS);
+		blockingQueue.poll(30, TimeUnit.SECONDS);
+
+		Thread.sleep(8000);
 
 		PrepareRollbackEvent event = CategoryDataUtil.getPrepareRollbackEvent(code + "7");
 

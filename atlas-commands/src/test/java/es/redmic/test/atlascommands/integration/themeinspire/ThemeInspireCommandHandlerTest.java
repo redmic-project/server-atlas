@@ -376,7 +376,9 @@ public class ThemeInspireCommandHandlerTest extends KafkaBaseIntegrationTest {
 		ThemeInspireCreatedEvent themeInspireCreatedEvent = ThemeInspireDataUtil
 				.getThemeInspireCreatedEvent(code + "7");
 		kafkaTemplate.send(theme_inspire_topic, themeInspireCreatedEvent.getAggregateId(), themeInspireCreatedEvent);
-		blockingQueue.poll(10, TimeUnit.SECONDS);
+		blockingQueue.poll(30, TimeUnit.SECONDS);
+
+		Thread.sleep(8000);
 
 		PrepareRollbackEvent event = ThemeInspireDataUtil.getPrepareRollbackEvent(code + "7");
 
