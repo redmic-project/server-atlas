@@ -13,4 +13,4 @@ HEALTHCHECK \
 	--timeout=15s \
 	--start-period=3m \
 	--retries=10 \
-CMD wget --spider -q http://localhost:${PORT}/api/${MICROSERVICE_NAME}/actuator/health
+CMD wget --spider -q http://localhost:${PORT}/api/${UNIT_NAME}/${MICROSERVICE_PATH}/actuator/health
