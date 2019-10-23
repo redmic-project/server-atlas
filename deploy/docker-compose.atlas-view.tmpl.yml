@@ -4,6 +4,7 @@ services:
   atlas-view:
     image: ${IMAGE_NAME:-registry.gitlab.com/redmic-project/server/atlas}:${IMAGE_TAG:-latest}
     environment:
+      - UNIT_NAME
       - MICROSERVICE_PATH=view
       - PORT
       - SPRING_PROFILES_ACTIVE
