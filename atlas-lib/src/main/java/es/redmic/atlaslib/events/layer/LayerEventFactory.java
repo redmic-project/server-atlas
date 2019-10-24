@@ -111,6 +111,36 @@ public class LayerEventFactory {
 		throw new InternalException(ExceptionType.INTERNAL_EXCEPTION);
 	}
 
+	public static Event getEvent(LayerRollbackEvent source, String type) {
+
+		EventError failedEvent = null;
+
+		if (type.equals(LayerEventTypes.CREATE_FAILED)) {
+			failedEvent = new CreateLayerFailedEvent().buildFrom(source);
+		}
+
+		if (type.equals(LayerEventTypes.UPDATE_FAILED)) {
+			failedEvent = new UpdateLayerFailedEvent().buildFrom(source);
+		}
+
+		if (type.equals(LayerEventTypes.DELETE_FAILED)) {
+			failedEvent = new DeleteLayerFailedEvent().buildFrom(source);
+		}
+
+		if (type.equals(LayerEventTypes.REFRESH_FAILED)) {
+			failedEvent = new RefreshLayerFailedEvent().buildFrom(source);
+		}
+
+		if (failedEvent != null) {
+			failedEvent.setExceptionType("unknown");
+			return failedEvent;
+
+		} else {
+			logger.error("Tipo de evento no soportado");
+			throw new InternalException(ExceptionType.INTERNAL_EXCEPTION);
+		}
+	}
+
 	public static Event getEvent(Event source, String type, LayerDTO layer) {
 
 		if (type.equals(LayerEventTypes.ROLLBACK)) {

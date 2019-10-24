@@ -310,9 +310,14 @@ public abstract class CategoryDataUtil {
 
 	public static CategoryRollbackEvent getCategoryRollbackEvent(String code) {
 
+		return getCategoryRollbackEvent(code, CategoryEventTypes.CREATE);
+	}
+
+	public static CategoryRollbackEvent getCategoryRollbackEvent(String code, String failEventType) {
+
 		CategoryRollbackEvent event = new CategoryRollbackEvent().buildFrom(getCreateEvent(code));
 
-		event.setFailEventType(CategoryEventTypes.CREATE);
+		event.setFailEventType(failEventType);
 		event.setLastSnapshotItem(getCategory(code));
 
 		return event;

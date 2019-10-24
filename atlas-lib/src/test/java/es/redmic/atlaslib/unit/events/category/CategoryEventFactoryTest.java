@@ -23,6 +23,8 @@ package es.redmic.atlaslib.unit.events.category;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.UUID;
+
 import org.junit.Test;
 
 import es.redmic.atlaslib.events.category.CategoryEventFactory;
@@ -286,6 +288,50 @@ public class CategoryEventFactoryTest extends AvroBaseTest {
 		checkMetadataFields(source, event);
 		assertEquals(source.getFailEventType(), event.getFailEventType());
 		assertNotNull(event.getLastSnapshotItem());
+	}
+
+	// ROLLBACK
+
+	@Test
+	public void GetEvent_ReturnCreateCategoryFailed_IfRollbackFailEventTypeIsCreate() {
+
+		CategoryRollbackEvent source = CategoryDataUtil.getCategoryRollbackEvent(UUID.randomUUID().toString(),
+				CategoryEventTypes.CREATE);
+
+		CreateCategoryFailedEvent event = (CreateCategoryFailedEvent) CategoryEventFactory.getEvent(source,
+				CategoryEventTypes.getEventFailedTypeByActionType(source.getFailEventType()));
+
+		assertEquals(CategoryEventTypes.CREATE_FAILED, event.getType());
+
+		checkMetadataFields(source, event);
+	}
+
+	@Test
+	public void GetEvent_ReturnUpdateCategoryFailedEvent_IfRollbackFailEventTypeIsUpdate() {
+
+		CategoryRollbackEvent source = CategoryDataUtil.getCategoryRollbackEvent(UUID.randomUUID().toString(),
+				CategoryEventTypes.UPDATE);
+
+		UpdateCategoryFailedEvent event = (UpdateCategoryFailedEvent) CategoryEventFactory.getEvent(source,
+				CategoryEventTypes.getEventFailedTypeByActionType(source.getFailEventType()));
+
+		assertEquals(CategoryEventTypes.UPDATE_FAILED, event.getType());
+
+		checkMetadataFields(source, event);
+	}
+
+	@Test
+	public void GetEvent_ReturnDeleteCategoryFailedEvent_IfRollbackFailEventTypeIsDelete() {
+
+		CategoryRollbackEvent source = CategoryDataUtil.getCategoryRollbackEvent(UUID.randomUUID().toString(),
+				CategoryEventTypes.DELETE);
+
+		DeleteCategoryFailedEvent event = (DeleteCategoryFailedEvent) CategoryEventFactory.getEvent(source,
+				CategoryEventTypes.getEventFailedTypeByActionType(source.getFailEventType()));
+
+		assertEquals(CategoryEventTypes.DELETE_FAILED, event.getType());
+
+		checkMetadataFields(source, event);
 	}
 
 	private void checkMetadataFields(Event source, Event evt) {

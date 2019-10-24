@@ -23,6 +23,8 @@ package es.redmic.atlaslib.unit.events.layer;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.UUID;
+
 import org.junit.Test;
 
 import es.redmic.atlaslib.events.layer.LayerEventFactory;
@@ -456,6 +458,64 @@ public class LayerEventFactoryTest extends AvroBaseTest {
 		checkMetadataFields(source, event);
 		assertEquals(source.getFailEventType(), event.getFailEventType());
 		assertNotNull(event.getLastSnapshotItem());
+	}
+
+	// ROLLBACK
+
+	@Test
+	public void GetEvent_ReturnCreateLayerFailed_IfRollbackFailEventTypeIsCreate() {
+
+		LayerRollbackEvent source = LayerDataUtil.getLayerRollbackEvent(UUID.randomUUID().toString(),
+				LayerEventTypes.CREATE);
+
+		CreateLayerFailedEvent event = (CreateLayerFailedEvent) LayerEventFactory.getEvent(source,
+				LayerEventTypes.getEventFailedTypeByActionType(source.getFailEventType()));
+
+		assertEquals(LayerEventTypes.CREATE_FAILED, event.getType());
+
+		checkMetadataFields(source, event);
+	}
+
+	@Test
+	public void GetEvent_ReturnUpdateLayerFailedEvent_IfRollbackFailEventTypeIsUpdate() {
+
+		LayerRollbackEvent source = LayerDataUtil.getLayerRollbackEvent(UUID.randomUUID().toString(),
+				LayerEventTypes.UPDATE);
+
+		UpdateLayerFailedEvent event = (UpdateLayerFailedEvent) LayerEventFactory.getEvent(source,
+				LayerEventTypes.getEventFailedTypeByActionType(source.getFailEventType()));
+
+		assertEquals(LayerEventTypes.UPDATE_FAILED, event.getType());
+
+		checkMetadataFields(source, event);
+	}
+
+	@Test
+	public void GetEvent_ReturnDeleteLayerFailedEvent_IfRollbackFailEventTypeIsDelete() {
+
+		LayerRollbackEvent source = LayerDataUtil.getLayerRollbackEvent(UUID.randomUUID().toString(),
+				LayerEventTypes.DELETE);
+
+		DeleteLayerFailedEvent event = (DeleteLayerFailedEvent) LayerEventFactory.getEvent(source,
+				LayerEventTypes.getEventFailedTypeByActionType(source.getFailEventType()));
+
+		assertEquals(LayerEventTypes.DELETE_FAILED, event.getType());
+
+		checkMetadataFields(source, event);
+	}
+
+	@Test
+	public void GetEvent_ReturnRefreshLayerFailedEvent_IfRollbackFailEventTypeIsDelete() {
+
+		LayerRollbackEvent source = LayerDataUtil.getLayerRollbackEvent(UUID.randomUUID().toString(),
+				LayerEventTypes.REFRESH);
+
+		RefreshLayerFailedEvent event = (RefreshLayerFailedEvent) LayerEventFactory.getEvent(source,
+				LayerEventTypes.getEventFailedTypeByActionType(source.getFailEventType()));
+
+		assertEquals(LayerEventTypes.REFRESH_FAILED, event.getType());
+
+		checkMetadataFields(source, event);
 	}
 
 	////////////////////

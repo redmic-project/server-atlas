@@ -99,6 +99,32 @@ public class ThemeInspireEventFactory {
 		throw new InternalException(ExceptionType.INTERNAL_EXCEPTION);
 	}
 
+	public static Event getEvent(ThemeInspireRollbackEvent source, String type) {
+
+		EventError failedEvent = null;
+
+		if (type.equals(ThemeInspireEventTypes.CREATE_FAILED)) {
+			failedEvent = new CreateThemeInspireFailedEvent().buildFrom(source);
+		}
+
+		if (type.equals(ThemeInspireEventTypes.UPDATE_FAILED)) {
+			failedEvent = new UpdateThemeInspireFailedEvent().buildFrom(source);
+		}
+
+		if (type.equals(ThemeInspireEventTypes.DELETE_FAILED)) {
+			failedEvent = new DeleteThemeInspireFailedEvent().buildFrom(source);
+		}
+
+		if (failedEvent != null) {
+			failedEvent.setExceptionType("unknown");
+			return failedEvent;
+
+		} else {
+			logger.error("Tipo de evento no soportado");
+			throw new InternalException(ExceptionType.INTERNAL_EXCEPTION);
+		}
+	}
+
 	public static Event getEvent(Event source, String type, ThemeInspireDTO themeInspire) {
 
 		if (type.equals(ThemeInspireEventTypes.ROLLBACK)) {

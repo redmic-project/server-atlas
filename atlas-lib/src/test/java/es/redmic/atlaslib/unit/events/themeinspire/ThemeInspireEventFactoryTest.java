@@ -23,6 +23,8 @@ package es.redmic.atlaslib.unit.events.themeinspire;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.UUID;
+
 import org.junit.Test;
 
 import es.redmic.atlaslib.events.themeinspire.ThemeInspireEventFactory;
@@ -288,6 +290,50 @@ public class ThemeInspireEventFactoryTest extends AvroBaseTest {
 		checkMetadataFields(source, event);
 		assertEquals(source.getFailEventType(), event.getFailEventType());
 		assertNotNull(event.getLastSnapshotItem());
+	}
+
+	// ROLLBACK
+
+	@Test
+	public void GetEvent_ReturnCreateThemeInspireFailed_IfRollbackFailEventTypeIsCreate() {
+
+		ThemeInspireRollbackEvent source = ThemeInspireDataUtil
+				.getThemeInspireRollbackEvent(UUID.randomUUID().toString(), ThemeInspireEventTypes.CREATE);
+
+		CreateThemeInspireFailedEvent event = (CreateThemeInspireFailedEvent) ThemeInspireEventFactory.getEvent(source,
+				ThemeInspireEventTypes.getEventFailedTypeByActionType(source.getFailEventType()));
+
+		assertEquals(ThemeInspireEventTypes.CREATE_FAILED, event.getType());
+
+		checkMetadataFields(source, event);
+	}
+
+	@Test
+	public void GetEvent_ReturnUpdateThemeInspireFailedEvent_IfRollbackFailEventTypeIsUpdate() {
+
+		ThemeInspireRollbackEvent source = ThemeInspireDataUtil
+				.getThemeInspireRollbackEvent(UUID.randomUUID().toString(), ThemeInspireEventTypes.UPDATE);
+
+		UpdateThemeInspireFailedEvent event = (UpdateThemeInspireFailedEvent) ThemeInspireEventFactory.getEvent(source,
+				ThemeInspireEventTypes.getEventFailedTypeByActionType(source.getFailEventType()));
+
+		assertEquals(ThemeInspireEventTypes.UPDATE_FAILED, event.getType());
+
+		checkMetadataFields(source, event);
+	}
+
+	@Test
+	public void GetEvent_ReturnDeleteThemeInspireFailedEvent_IfRollbackFailEventTypeIsDelete() {
+
+		ThemeInspireRollbackEvent source = ThemeInspireDataUtil
+				.getThemeInspireRollbackEvent(UUID.randomUUID().toString(), ThemeInspireEventTypes.DELETE);
+
+		DeleteThemeInspireFailedEvent event = (DeleteThemeInspireFailedEvent) ThemeInspireEventFactory.getEvent(source,
+				ThemeInspireEventTypes.getEventFailedTypeByActionType(source.getFailEventType()));
+
+		assertEquals(ThemeInspireEventTypes.DELETE_FAILED, event.getType());
+
+		checkMetadataFields(source, event);
 	}
 
 	////////////////////

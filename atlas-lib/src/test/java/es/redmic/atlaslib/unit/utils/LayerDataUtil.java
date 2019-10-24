@@ -464,8 +464,13 @@ public abstract class LayerDataUtil {
 
 	public static LayerRollbackEvent getLayerRollbackEvent(String code) {
 
+		return getLayerRollbackEvent(code, LayerEventTypes.CREATE);
+	}
+
+	public static LayerRollbackEvent getLayerRollbackEvent(String code, String failEventType) {
+
 		LayerRollbackEvent event = new LayerRollbackEvent().buildFrom(getCreateEvent(code));
-		event.setFailEventType(LayerEventTypes.CREATE);
+		event.setFailEventType(failEventType);
 		event.setLastSnapshotItem(getLayer(code));
 		return event;
 	}

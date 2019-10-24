@@ -306,9 +306,14 @@ public abstract class ThemeInspireDataUtil {
 
 	public static ThemeInspireRollbackEvent getThemeInspireRollbackEvent(String code) {
 
+		return getThemeInspireRollbackEvent(code, ThemeInspireEventTypes.CREATE);
+	}
+
+	public static ThemeInspireRollbackEvent getThemeInspireRollbackEvent(String code, String failEventType) {
+
 		ThemeInspireRollbackEvent event = new ThemeInspireRollbackEvent().buildFrom(getCreateEvent(code));
 
-		event.setFailEventType(ThemeInspireEventTypes.CREATE);
+		event.setFailEventType(failEventType);
 		event.setLastSnapshotItem(getThemeInspire(code));
 		return event;
 	}

@@ -99,6 +99,32 @@ public class CategoryEventFactory {
 		throw new InternalException(ExceptionType.INTERNAL_EXCEPTION);
 	}
 
+	public static Event getEvent(CategoryRollbackEvent source, String type) {
+
+		EventError failedEvent = null;
+
+		if (type.equals(CategoryEventTypes.CREATE_FAILED)) {
+			failedEvent = new CreateCategoryFailedEvent().buildFrom(source);
+		}
+
+		if (type.equals(CategoryEventTypes.UPDATE_FAILED)) {
+			failedEvent = new UpdateCategoryFailedEvent().buildFrom(source);
+		}
+
+		if (type.equals(CategoryEventTypes.DELETE_FAILED)) {
+			failedEvent = new DeleteCategoryFailedEvent().buildFrom(source);
+		}
+
+		if (failedEvent != null) {
+			failedEvent.setExceptionType("unknown");
+			return failedEvent;
+
+		} else {
+			logger.error("Tipo de evento no soportado");
+			throw new InternalException(ExceptionType.INTERNAL_EXCEPTION);
+		}
+	}
+
 	public static Event getEvent(Event source, String type, CategoryDTO category) {
 
 		if (type.equals(CategoryEventTypes.ROLLBACK)) {
