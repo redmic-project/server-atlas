@@ -1,5 +1,7 @@
 package es.redmic.atlaslib.events.layer;
 
+import java.util.Arrays;
+
 /*-
  * #%L
  * Atlas-lib
@@ -49,5 +51,17 @@ public abstract class LayerEventTypes extends EventTypes {
 	public static boolean isUpdatable(String eventType) {
 
 		return (isSnapshot(eventType) && !eventType.equals(EventTypes.DELETED.toString()));
+	}
+
+	public static String getEventFailedTypeByActionType(String actionType) {
+
+		if (UPDATE_THEMEINSPIRE.equals(actionType)) {
+			return UPDATE_FAILED;
+		}
+		if (Arrays.asList(REFRESH, REFRESH_CONFIRMED, REFRESH_FAILED).contains(actionType)) {
+			return REFRESH_FAILED;
+		}
+		return EventTypes.getEventFailedTypeByActionType(actionType);
+
 	}
 }
