@@ -35,7 +35,7 @@ public class ThemeInspireRollbackEvent extends BaseRollbackEvent {
 	public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{"
 		+ "\"type\":\"record\",\"name\":\"ThemeInspireRollbackEvent\","
 				+ "\"namespace\":\"es.redmic.atlaslib.events.themeinspire.fail\",\"fields\":["
-			+ "{\"name\":\"lastSnapshotItem\",\"type\":" + ThemeInspireDTO.SCHEMA$.toString() + "},"
+			+ "{\"name\":\"lastSnapshotItem\",\"type\":[\"null\"," + ThemeInspireDTO.SCHEMA$.toString() + "]},"
 			+ "{\"name\":\"failEventType\",\"type\": \"string\"},"
 			+ getEventBaseSchema() + "]}");
 	

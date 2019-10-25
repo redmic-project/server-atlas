@@ -35,7 +35,7 @@ public class CategoryRollbackEvent extends BaseRollbackEvent {
 	public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{"
 		+ "\"type\":\"record\",\"name\":\"CategoryRollbackEvent\","
 				+ "\"namespace\":\"es.redmic.atlaslib.events.category.fail\",\"fields\":["
-			+ "{\"name\":\"lastSnapshotItem\",\"type\":" + CategoryDTO.SCHEMA$.toString() + "},"
+			+ "{\"name\":\"lastSnapshotItem\",\"type\":[\"null\"," + CategoryDTO.SCHEMA$.toString() + "]},"
 			+ "{\"name\":\"failEventType\",\"type\": \"string\"},"
 			+ getEventBaseSchema() + "]}");
 	

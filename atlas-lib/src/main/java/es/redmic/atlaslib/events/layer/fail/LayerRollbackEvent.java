@@ -35,7 +35,7 @@ public class LayerRollbackEvent extends BaseRollbackEvent {
 	public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{"
 		+ "\"type\":\"record\",\"name\":\"LayerRollbackEvent\","
 				+ "\"namespace\":\"es.redmic.atlaslib.events.layer.fail\",\"fields\":["
-			+ "{\"name\":\"lastSnapshotItem\",\"type\":" + LayerDTO.SCHEMA$.toString() + "},"
+			+ "{\"name\":\"lastSnapshotItem\",\"type\":[\"null\"," + LayerDTO.SCHEMA$.toString() + "]},"
 			+ "{\"name\":\"failEventType\",\"type\": \"string\"},"
 			+ getEventBaseSchema() + "]}");
 	
