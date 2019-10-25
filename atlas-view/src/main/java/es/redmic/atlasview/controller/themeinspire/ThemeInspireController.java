@@ -34,11 +34,13 @@ import es.redmic.atlaslib.events.themeinspire.create.CreateThemeInspireConfirmed
 import es.redmic.atlaslib.events.themeinspire.create.CreateThemeInspireEvent;
 import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireConfirmedEvent;
 import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireEvent;
+import es.redmic.atlaslib.events.themeinspire.fail.ThemeInspireRollbackEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireConfirmedEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireEvent;
 import es.redmic.atlasview.mapper.themeinspire.ThemeInspireESMapper;
 import es.redmic.atlasview.model.themeinspire.ThemeInspire;
 import es.redmic.atlasview.service.themeinspire.ThemeInspireESService;
+import es.redmic.brokerlib.avro.fail.RollbackFailedEvent;
 import es.redmic.exception.common.ExceptionType;
 import es.redmic.models.es.common.dto.EventApplicationResult;
 import es.redmic.models.es.common.query.dto.SimpleQueryDTO;
@@ -119,6 +121,29 @@ public class ThemeInspireController extends DataController<ThemeInspire, ThemeIn
 		} else {
 			publishFailedEvent(ThemeInspireEventFactory.getEvent(event, ThemeInspireEventTypes.DELETE_FAILED,
 					result.getExeptionType(), result.getExceptionArguments()), theme_inspire_topic);
+		}
+	}
+
+	@KafkaHandler
+	public void listen(ThemeInspireRollbackEvent event) {
+
+		EventApplicationResult result = null;
+
+		try {
+			result = service.rollback(Mappers.getMapper(ThemeInspireESMapper.class).map(event.getLastSnapshotItem()),
+					event.getAggregateId());
+		} catch (Exception e) {
+			publishFailedEvent(new RollbackFailedEvent(event.getFailEventType()).buildFrom(event), theme_inspire_topic);
+			return;
+		}
+
+		if (result.isSuccess()) {
+			publishConfirmedEvent(
+					ThemeInspireEventFactory.getEvent(event,
+							ThemeInspireEventTypes.getEventFailedTypeByActionType(event.getFailEventType())),
+					theme_inspire_topic);
+		} else {
+			publishFailedEvent(new RollbackFailedEvent(event.getFailEventType()).buildFrom(event), theme_inspire_topic);
 		}
 	}
 

@@ -32,6 +32,7 @@ import es.redmic.atlaslib.events.layer.LayerEventFactory;
 import es.redmic.atlaslib.events.layer.LayerEventTypes;
 import es.redmic.atlaslib.events.layer.create.CreateLayerEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerEvent;
+import es.redmic.atlaslib.events.layer.fail.LayerRollbackEvent;
 import es.redmic.atlaslib.events.layer.partialupdate.themeinspire.UpdateThemeInspireInLayerEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerConfirmedEvent;
@@ -41,6 +42,7 @@ import es.redmic.atlasview.mapper.layer.LayerWMSESMapper;
 import es.redmic.atlasview.mapper.themeinspire.ThemeInspireESMapper;
 import es.redmic.atlasview.model.layer.Layer;
 import es.redmic.atlasview.service.layer.LayerESService;
+import es.redmic.brokerlib.avro.fail.RollbackFailedEvent;
 import es.redmic.exception.common.ExceptionType;
 import es.redmic.models.es.common.dto.EventApplicationResult;
 import es.redmic.models.es.common.query.dto.GeoDataQueryDTO;
@@ -177,6 +179,32 @@ public class LayerController extends DataController<Layer, LayerDTO, GeoDataQuer
 		} else {
 			publishFailedEvent(LayerEventFactory.getEvent(event, LayerEventTypes.UPDATE_FAILED,
 					result.getExeptionType(), result.getExceptionArguments()), layer_topic);
+		}
+	}
+
+	@KafkaHandler
+	public void listen(LayerRollbackEvent event) {
+
+		EventApplicationResult result = null;
+
+		String parentId = event.getLastSnapshotItem().getParent() != null
+				? event.getLastSnapshotItem().getParent().getId()
+				: null;
+
+		try {
+			result = service.rollback(Mappers.getMapper(LayerESMapper.class).map(event.getLastSnapshotItem()),
+					event.getAggregateId(), parentId);
+		} catch (Exception e) {
+			e.printStackTrace();
+			publishFailedEvent(new RollbackFailedEvent(event.getFailEventType()).buildFrom(event), layer_topic);
+			return;
+		}
+
+		if (result.isSuccess()) {
+			publishConfirmedEvent(LayerEventFactory.getEvent(event,
+					LayerEventTypes.getEventFailedTypeByActionType(event.getFailEventType())), layer_topic);
+		} else {
+			publishFailedEvent(new RollbackFailedEvent(event.getFailEventType()).buildFrom(event), layer_topic);
 		}
 	}
 

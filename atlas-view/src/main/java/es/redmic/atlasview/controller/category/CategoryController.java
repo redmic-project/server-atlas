@@ -34,11 +34,13 @@ import es.redmic.atlaslib.events.category.create.CreateCategoryConfirmedEvent;
 import es.redmic.atlaslib.events.category.create.CreateCategoryEvent;
 import es.redmic.atlaslib.events.category.delete.DeleteCategoryConfirmedEvent;
 import es.redmic.atlaslib.events.category.delete.DeleteCategoryEvent;
+import es.redmic.atlaslib.events.category.fail.CategoryRollbackEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryConfirmedEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryEvent;
 import es.redmic.atlasview.mapper.category.CategoryESMapper;
 import es.redmic.atlasview.model.category.Category;
 import es.redmic.atlasview.service.category.CategoryESService;
+import es.redmic.brokerlib.avro.fail.RollbackFailedEvent;
 import es.redmic.exception.common.ExceptionType;
 import es.redmic.models.es.common.dto.EventApplicationResult;
 import es.redmic.models.es.common.query.dto.SimpleQueryDTO;
@@ -122,6 +124,30 @@ public class CategoryController extends DataController<Category, CategoryDTO, Si
 		} else {
 			publishFailedEvent(CategoryEventFactory.getEvent(event, CategoryEventTypes.DELETE_FAILED,
 					result.getExeptionType(), result.getExceptionArguments()), category_topic);
+		}
+	}
+
+	@KafkaHandler
+	public void listen(CategoryRollbackEvent event) {
+
+		EventApplicationResult result = null;
+
+		try {
+			result = service.rollback(Mappers.getMapper(CategoryESMapper.class).map(event.getLastSnapshotItem()),
+					event.getAggregateId());
+		} catch (Exception e) {
+			e.printStackTrace();
+			publishFailedEvent(new RollbackFailedEvent(event.getFailEventType()).buildFrom(event), category_topic);
+			return;
+		}
+
+		if (result.isSuccess()) {
+			publishConfirmedEvent(
+					CategoryEventFactory.getEvent(event,
+							CategoryEventTypes.getEventFailedTypeByActionType(event.getFailEventType())),
+					category_topic);
+		} else {
+			publishFailedEvent(new RollbackFailedEvent(event.getFailEventType()).buildFrom(event), category_topic);
 		}
 	}
 
