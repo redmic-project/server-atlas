@@ -100,6 +100,10 @@ public class LayerESService extends RDataService<Layer, LayerDTO, GeoDataQueryDT
 		return repository.updateThemeInspireInLayer(id, themeInspire, updated);
 	}
 
+	public EventApplicationResult rollback(Layer model, String id, String parentId) {
+		return repository.rollback(model, parentId);
+	}
+
 	/**
 	 * Sobrescribe findById para realizar una query en lugar de un get. En caso
 	 * contrario sería necesario pasarle el id del padre
