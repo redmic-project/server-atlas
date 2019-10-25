@@ -144,4 +144,10 @@ public class ThemeInspireESRepository extends RWDataESRepository<ThemeInspire, S
 	protected EventApplicationResult checkDeleteConstraintsFulfilled(String modelToIndexId) {
 		return new EventApplicationResult(true);
 	}
+
+	@Override
+	protected boolean rollbackIsRequired(ThemeInspire currentModel, ThemeInspire modelToIndex) {
+
+		return !currentModel.equals(modelToIndex);
+	}
 }

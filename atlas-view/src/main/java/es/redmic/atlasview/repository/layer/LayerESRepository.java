@@ -264,4 +264,10 @@ public class LayerESRepository extends RWDataESRepository<Layer, GeoDataQueryDTO
 	private QueryBuilder getLayerQuery() {
 		return QueryBuilders.existsQuery(URL_SOURCE_PROPERTY);
 	}
+
+	@Override
+	protected boolean rollbackIsRequired(Layer currentModel, Layer modelToIndex) {
+
+		return currentModel.getUpdated().getMillis() > modelToIndex.getUpdated().getMillis();
+	}
 }

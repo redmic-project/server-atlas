@@ -206,4 +206,10 @@ public class CategoryESRepository extends RWDataESRepository<Category, SimpleQue
 
 		return QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery(URL_SOURCE_PROPERTY));
 	}
+
+	@Override
+	protected boolean rollbackIsRequired(Category currentModel, Category modelToIndex) {
+
+		return !currentModel.equals(modelToIndex);
+	}
 }
