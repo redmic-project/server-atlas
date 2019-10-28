@@ -21,6 +21,7 @@ package es.redmic.test.atlasview.integration.handler;
  */
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.Map;
@@ -59,6 +60,7 @@ import es.redmic.atlaslib.events.category.create.CreateCategoryFailedEvent;
 import es.redmic.atlaslib.events.category.delete.DeleteCategoryConfirmedEvent;
 import es.redmic.atlaslib.events.category.delete.DeleteCategoryEvent;
 import es.redmic.atlaslib.events.category.delete.DeleteCategoryFailedEvent;
+import es.redmic.atlaslib.events.category.fail.CategoryRollbackEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryConfirmedEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryEvent;
 import es.redmic.atlaslib.events.category.update.UpdateCategoryFailedEvent;
@@ -288,6 +290,153 @@ public class CategoryEventHandlerTest extends DocumentationViewBaseTest {
 		repository.delete(category.getId());
 	}
 
+	// Rollback
+
+	@Test(expected = ItemNotFoundException.class)
+	public void sendCategoryRollbackEvent_PublishCreateCategoryFailedEvent_IfFailEventTypeIsCreate() throws Exception {
+
+		CategoryRollbackEvent event = getCategoryRollbackEvent(CategoryEventTypes.CREATE_FAILED);
+
+		Category lastSnapshotCategory = Mappers.getMapper(CategoryESMapper.class).map(event.getLastSnapshotItem());
+
+		event.setLastSnapshotItem(null);
+
+		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(CATEGORY_TOPIC, event.getAggregateId(),
+				event);
+		future.addCallback(new SendListener());
+
+		Event confirm = (Event) blockingQueue.poll(50, TimeUnit.SECONDS);
+
+		assertNotNull(confirm);
+		assertEquals(CategoryEventTypes.CREATE_FAILED, confirm.getType());
+
+		repository.findById(lastSnapshotCategory.getId()).get_source();
+	}
+
+	@Test(expected = ItemNotFoundException.class)
+	public void sendCategoryRollbackEvent_PublishCreateCategoryFailedEventAndDoRollback_IfFailEventTypeIsCreateAndLastSnapshotItemIsDifferent()
+			throws Exception {
+
+		CategoryRollbackEvent event = getCategoryRollbackEvent(CategoryEventTypes.CREATE_FAILED);
+
+		Category lastSnapshotCategory = Mappers.getMapper(CategoryESMapper.class).map(event.getLastSnapshotItem());
+
+		event.setLastSnapshotItem(null);
+
+		repository.save(lastSnapshotCategory);
+
+		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(CATEGORY_TOPIC, event.getAggregateId(),
+				event);
+		future.addCallback(new SendListener());
+
+		Event confirm = (Event) blockingQueue.poll(50, TimeUnit.SECONDS);
+
+		assertNotNull(confirm);
+		assertEquals(CategoryEventTypes.CREATE_FAILED, confirm.getType());
+
+		repository.findById(lastSnapshotCategory.getId()).get_source();
+	}
+
+	@Test
+	public void sendCategoryRollbackEvent_PublishUpdateCategoryFailedEvent_IfFailEventTypeIsUpdate() throws Exception {
+
+		CategoryRollbackEvent event = getCategoryRollbackEvent(CategoryEventTypes.UPDATE);
+
+		Category lastSnapshotCategory = Mappers.getMapper(CategoryESMapper.class).map(event.getLastSnapshotItem());
+
+		repository.save(lastSnapshotCategory);
+
+		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(CATEGORY_TOPIC, event.getAggregateId(),
+				event);
+		future.addCallback(new SendListener());
+
+		Event confirm = (Event) blockingQueue.poll(50, TimeUnit.SECONDS);
+
+		assertNotNull(confirm);
+		assertEquals(CategoryEventTypes.UPDATE_FAILED, confirm.getType());
+
+		Category newCategory = (Category) repository.findById(lastSnapshotCategory.getId()).get_source();
+		assertEquals(lastSnapshotCategory, newCategory);
+
+		repository.delete(lastSnapshotCategory.getId());
+	}
+
+	@Test
+	public void sendCategoryRollbackEvent_PublishUpdateCategoryFailedEventAndDoRollback_IfFailEventTypeIsUpdateAndLastSnapshotItemIsDifferent()
+			throws Exception {
+
+		CategoryRollbackEvent event = getCategoryRollbackEvent(CategoryEventTypes.UPDATE);
+
+		Category lastSnapshotCategory = Mappers.getMapper(CategoryESMapper.class).map(event.getLastSnapshotItem());
+
+		lastSnapshotCategory.setName("other");
+
+		assertNotEquals(event.getLastSnapshotItem(), lastSnapshotCategory);
+
+		repository.save(lastSnapshotCategory);
+
+		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(CATEGORY_TOPIC, event.getAggregateId(),
+				event);
+		future.addCallback(new SendListener());
+
+		Event confirm = (Event) blockingQueue.poll(50, TimeUnit.SECONDS);
+
+		assertNotNull(confirm);
+		assertEquals(CategoryEventTypes.UPDATE_FAILED, confirm.getType());
+
+		Category newCategory = (Category) repository.findById(lastSnapshotCategory.getId()).get_source();
+		assertEquals(Mappers.getMapper(CategoryESMapper.class).map(event.getLastSnapshotItem()), newCategory);
+
+		repository.delete(lastSnapshotCategory.getId());
+	}
+
+	@Test
+	public void sendCategoryRollbackEvent_PublishDeleteCategoryFailedEvent_IfFailEventTypeIsDelete() throws Exception {
+
+		CategoryRollbackEvent event = getCategoryRollbackEvent(CategoryEventTypes.DELETE);
+
+		Category lastSnapshotCategory = Mappers.getMapper(CategoryESMapper.class).map(event.getLastSnapshotItem());
+
+		repository.save(lastSnapshotCategory);
+
+		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(CATEGORY_TOPIC, event.getAggregateId(),
+				event);
+		future.addCallback(new SendListener());
+
+		Event confirm = (Event) blockingQueue.poll(50, TimeUnit.SECONDS);
+
+		assertNotNull(confirm);
+		assertEquals(CategoryEventTypes.DELETE_FAILED, confirm.getType());
+
+		Category newCategory = (Category) repository.findById(lastSnapshotCategory.getId()).get_source();
+		assertEquals(lastSnapshotCategory, newCategory);
+
+		repository.delete(lastSnapshotCategory.getId());
+	}
+
+	@Test
+	public void sendCategoryRollbackEvent_PublishDeleteCategoryFailedEventAndDoRollback_IfFailEventTypeIsDeleteAndLastSnapshotItemIsDifferent()
+			throws Exception {
+
+		CategoryRollbackEvent event = getCategoryRollbackEvent(CategoryEventTypes.DELETE);
+
+		Category lastSnapshotCategory = Mappers.getMapper(CategoryESMapper.class).map(event.getLastSnapshotItem());
+
+		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(CATEGORY_TOPIC, event.getAggregateId(),
+				event);
+		future.addCallback(new SendListener());
+
+		Event confirm = (Event) blockingQueue.poll(50, TimeUnit.SECONDS);
+
+		assertNotNull(confirm);
+		assertEquals(CategoryEventTypes.DELETE_FAILED, confirm.getType());
+
+		Category newCategory = (Category) repository.findById(lastSnapshotCategory.getId()).get_source();
+		assertEquals(lastSnapshotCategory, newCategory);
+
+		repository.delete(lastSnapshotCategory.getId());
+	}
+
 	@KafkaHandler
 	public void createTypeCategoryConfirmed(CreateCategoryConfirmedEvent createCategoryConfirmedEvent) {
 
@@ -378,5 +527,15 @@ public class CategoryEventHandlerTest extends DocumentationViewBaseTest {
 		deletedEvent.setSessionId(UUID.randomUUID().toString());
 		deletedEvent.setUserId(USER_ID);
 		return deletedEvent;
+	}
+
+	public CategoryRollbackEvent getCategoryRollbackEvent(String failEventType) {
+
+		CategoryRollbackEvent event = new CategoryRollbackEvent().buildFrom(getCreateCategoryEvent());
+
+		event.setFailEventType(failEventType);
+		event.setLastSnapshotItem(getCategory());
+
+		return event;
 	}
 }

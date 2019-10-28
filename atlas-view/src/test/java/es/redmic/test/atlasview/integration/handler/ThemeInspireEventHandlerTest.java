@@ -21,6 +21,7 @@ package es.redmic.test.atlasview.integration.handler;
  */
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -60,6 +61,7 @@ import es.redmic.atlaslib.events.themeinspire.create.CreateThemeInspireFailedEve
 import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireConfirmedEvent;
 import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireEvent;
 import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireFailedEvent;
+import es.redmic.atlaslib.events.themeinspire.fail.ThemeInspireRollbackEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireConfirmedEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireFailedEvent;
@@ -274,6 +276,165 @@ public class ThemeInspireEventHandlerTest extends DocumentationViewBaseTest {
 		assertTrue(true);
 	}
 
+	// Rollback
+
+	@Test(expected = ItemNotFoundException.class)
+	public void sendThemeInspireRollbackEvent_PublishCreateThemeInspireFailedEvent_IfFailEventTypeIsCreate()
+			throws Exception {
+
+		ThemeInspireRollbackEvent event = getThemeInspireRollbackEvent(ThemeInspireEventTypes.CREATE);
+
+		ThemeInspire lastSnapshotThemeInspire = Mappers.getMapper(ThemeInspireESMapper.class)
+				.map(event.getLastSnapshotItem());
+
+		event.setLastSnapshotItem(null);
+
+		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(THEME_INSPIRE_TOPIC,
+				event.getAggregateId(), event);
+		future.addCallback(new SendListener());
+
+		Event confirm = (Event) blockingQueue.poll(50, TimeUnit.SECONDS);
+
+		assertNotNull(confirm);
+		assertEquals(ThemeInspireEventTypes.CREATE_FAILED, confirm.getType());
+
+		repository.findById(lastSnapshotThemeInspire.getId()).get_source();
+	}
+
+	@Test(expected = ItemNotFoundException.class)
+	public void sendThemeInspireRollbackEvent_PublishCreateThemeInspireFailedEventAndDoRollback_IfFailEventTypeIsCreateAndLastSnapshotItemIsDifferent()
+			throws Exception {
+
+		ThemeInspireRollbackEvent event = getThemeInspireRollbackEvent(ThemeInspireEventTypes.CREATE);
+
+		ThemeInspire lastSnapshotThemeInspire = Mappers.getMapper(ThemeInspireESMapper.class)
+				.map(event.getLastSnapshotItem());
+
+		event.setLastSnapshotItem(null);
+
+		repository.save(lastSnapshotThemeInspire);
+
+		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(THEME_INSPIRE_TOPIC,
+				event.getAggregateId(), event);
+		future.addCallback(new SendListener());
+
+		Event confirm = (Event) blockingQueue.poll(50, TimeUnit.SECONDS);
+
+		assertNotNull(confirm);
+		assertEquals(ThemeInspireEventTypes.CREATE_FAILED, confirm.getType());
+
+		repository.findById(lastSnapshotThemeInspire.getId()).get_source();
+	}
+
+	@Test
+	public void sendThemeInspireRollbackEvent_PublishUpdateThemeInspireFailedEvent_IfFailEventTypeIsUpdate()
+			throws Exception {
+
+		ThemeInspireRollbackEvent event = getThemeInspireRollbackEvent(ThemeInspireEventTypes.UPDATE);
+
+		ThemeInspire lastSnapshotThemeInspire = Mappers.getMapper(ThemeInspireESMapper.class)
+				.map(event.getLastSnapshotItem());
+
+		repository.save(lastSnapshotThemeInspire);
+
+		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(THEME_INSPIRE_TOPIC,
+				event.getAggregateId(), event);
+		future.addCallback(new SendListener());
+
+		Event confirm = (Event) blockingQueue.poll(50, TimeUnit.SECONDS);
+
+		assertNotNull(confirm);
+		assertEquals(ThemeInspireEventTypes.UPDATE_FAILED, confirm.getType());
+
+		ThemeInspire newThemeInspire = (ThemeInspire) repository.findById(lastSnapshotThemeInspire.getId())
+				.get_source();
+		assertEquals(lastSnapshotThemeInspire, newThemeInspire);
+
+		repository.delete(lastSnapshotThemeInspire.getId());
+	}
+
+	@Test
+	public void sendThemeInspireRollbackEvent_PublishUpdateThemeInspireFailedEventAndDoRollback_IfFailEventTypeIsUpdateAndLastSnapshotItemIsDifferent()
+			throws Exception {
+
+		ThemeInspireRollbackEvent event = getThemeInspireRollbackEvent(ThemeInspireEventTypes.UPDATE);
+
+		ThemeInspire lastSnapshotThemeInspire = Mappers.getMapper(ThemeInspireESMapper.class)
+				.map(event.getLastSnapshotItem());
+
+		lastSnapshotThemeInspire.setName("other");
+		assertNotEquals(event.getLastSnapshotItem(), lastSnapshotThemeInspire);
+
+		repository.save(lastSnapshotThemeInspire);
+
+		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(THEME_INSPIRE_TOPIC,
+				event.getAggregateId(), event);
+		future.addCallback(new SendListener());
+
+		Event confirm = (Event) blockingQueue.poll(50, TimeUnit.SECONDS);
+
+		assertNotNull(confirm);
+		assertEquals(ThemeInspireEventTypes.UPDATE_FAILED, confirm.getType());
+
+		ThemeInspire newThemeInspire = (ThemeInspire) repository.findById(lastSnapshotThemeInspire.getId())
+				.get_source();
+		assertEquals(Mappers.getMapper(ThemeInspireESMapper.class).map(event.getLastSnapshotItem()), newThemeInspire);
+
+		repository.delete(lastSnapshotThemeInspire.getId());
+	}
+
+	@Test
+	public void sendThemeInspireRollbackEvent_PublishDeleteThemeInspireFailedEvent_IfFailEventTypeIsDelete()
+			throws Exception {
+
+		ThemeInspireRollbackEvent event = getThemeInspireRollbackEvent(ThemeInspireEventTypes.DELETE);
+
+		ThemeInspire lastSnapshotThemeInspire = Mappers.getMapper(ThemeInspireESMapper.class)
+				.map(event.getLastSnapshotItem());
+
+		repository.save(lastSnapshotThemeInspire);
+
+		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(THEME_INSPIRE_TOPIC,
+				event.getAggregateId(), event);
+		future.addCallback(new SendListener());
+
+		Event confirm = (Event) blockingQueue.poll(50, TimeUnit.SECONDS);
+
+		assertNotNull(confirm);
+		assertEquals(ThemeInspireEventTypes.DELETE_FAILED, confirm.getType());
+
+		ThemeInspire newThemeInspire = (ThemeInspire) repository.findById(lastSnapshotThemeInspire.getId())
+				.get_source();
+		assertEquals(lastSnapshotThemeInspire, newThemeInspire);
+
+		repository.delete(lastSnapshotThemeInspire.getId());
+	}
+
+	@Test
+	public void sendThemeInspireRollbackEvent_PublishDeleteThemeInspireFailedEventAndDoRollback_IfFailEventTypeIsDeleteAndLastSnapshotItemIsDifferent()
+			throws Exception {
+
+		ThemeInspireRollbackEvent event = getThemeInspireRollbackEvent(ThemeInspireEventTypes.DELETE);
+
+		ThemeInspire lastSnapshotThemeInspire = Mappers.getMapper(ThemeInspireESMapper.class)
+				.map(event.getLastSnapshotItem());
+
+		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(THEME_INSPIRE_TOPIC,
+				event.getAggregateId(), event);
+		future.addCallback(new SendListener());
+
+		Event confirm = (Event) blockingQueue.poll(50, TimeUnit.SECONDS);
+
+		assertNotNull(confirm);
+		assertEquals(ThemeInspireEventTypes.DELETE_FAILED, confirm.getType());
+
+		ThemeInspire newThemeInspire = (ThemeInspire) repository.findById(lastSnapshotThemeInspire.getId())
+				.get_source();
+		assertEquals(lastSnapshotThemeInspire, newThemeInspire);
+
+		repository.delete(lastSnapshotThemeInspire.getId());
+	}
+
 	@KafkaHandler
 	public void createTypeThemeInspireConfirmed(CreateThemeInspireConfirmedEvent createThemeInspireConfirmedEvent) {
 
@@ -366,5 +527,15 @@ public class ThemeInspireEventHandlerTest extends DocumentationViewBaseTest {
 		deletedEvent.setSessionId(UUID.randomUUID().toString());
 		deletedEvent.setUserId(USER_ID);
 		return deletedEvent;
+	}
+
+	public ThemeInspireRollbackEvent getThemeInspireRollbackEvent(String failEventType) {
+
+		ThemeInspireRollbackEvent event = new ThemeInspireRollbackEvent().buildFrom(getCreateThemeInspireEvent());
+
+		event.setFailEventType(failEventType);
+		event.setLastSnapshotItem(getThemeInspire());
+
+		return event;
 	}
 }

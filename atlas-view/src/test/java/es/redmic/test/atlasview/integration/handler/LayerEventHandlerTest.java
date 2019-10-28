@@ -22,6 +22,7 @@ package es.redmic.test.atlasview.integration.handler;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -65,9 +66,11 @@ import es.redmic.atlaslib.events.layer.create.CreateLayerFailedEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerFailedEvent;
+import es.redmic.atlaslib.events.layer.fail.LayerRollbackEvent;
 import es.redmic.atlaslib.events.layer.partialupdate.themeinspire.UpdateThemeInspireInLayerEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.refresh.RefreshLayerEvent;
+import es.redmic.atlaslib.events.layer.refresh.RefreshLayerFailedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerConfirmedEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerEvent;
 import es.redmic.atlaslib.events.layer.update.UpdateLayerFailedEvent;
@@ -421,6 +424,214 @@ public class LayerEventHandlerTest extends DocumentationViewBaseTest {
 		assertTrue(true);
 	}
 
+	// Rollback
+
+	@Test(expected = ItemNotFoundException.class)
+	public void sendLayerRollbackEvent_PublishCreateLayerFailedEvent_IfFailEventTypeIsCreate() throws Exception {
+
+		LayerRollbackEvent event = getLayerRollbackEvent(LayerEventTypes.CREATE);
+
+		Layer lastSnapshotLayer = Mappers.getMapper(LayerESMapper.class).map(event.getLastSnapshotItem());
+
+		event.setLastSnapshotItem(null);
+
+		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(LAYER_TOPIC, event.getAggregateId(),
+				event);
+		future.addCallback(new SendListener());
+
+		Event confirm = (Event) blockingQueue.poll(50, TimeUnit.SECONDS);
+
+		assertNotNull(confirm);
+		assertEquals(LayerEventTypes.CREATE_FAILED, confirm.getType());
+
+		repository.findById(lastSnapshotLayer.getId(), lastSnapshotLayer.getJoinIndex().getParent()).get_source();
+	}
+
+	@Test(expected = ItemNotFoundException.class)
+	public void sendLayerRollbackEvent_PublishCreateLayerFailedEventAndDoRollback_IfFailEventTypeIsCreateAndLastSnapshotItemIsDifferent()
+			throws Exception {
+
+		LayerRollbackEvent event = getLayerRollbackEvent(LayerEventTypes.CREATE);
+
+		Layer lastSnapshotLayer = Mappers.getMapper(LayerESMapper.class).map(event.getLastSnapshotItem());
+
+		event.setLastSnapshotItem(null);
+
+		repository.save(lastSnapshotLayer, lastSnapshotLayer.getJoinIndex().getParent());
+
+		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(LAYER_TOPIC, event.getAggregateId(),
+				event);
+		future.addCallback(new SendListener());
+
+		Event confirm = (Event) blockingQueue.poll(50, TimeUnit.SECONDS);
+
+		assertNotNull(confirm);
+		assertEquals(LayerEventTypes.CREATE_FAILED, confirm.getType());
+
+		repository.findById(lastSnapshotLayer.getId(), lastSnapshotLayer.getJoinIndex().getParent()).get_source();
+	}
+
+	@Test
+	public void sendLayerRollbackEvent_PublishUpdateLayerFailedEvent_IfFailEventTypeIsUpdate() throws Exception {
+
+		LayerRollbackEvent event = getLayerRollbackEvent(LayerEventTypes.UPDATE);
+
+		Layer lastSnapshotLayer = Mappers.getMapper(LayerESMapper.class).map(event.getLastSnapshotItem());
+
+		repository.save(lastSnapshotLayer, lastSnapshotLayer.getJoinIndex().getParent());
+
+		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(LAYER_TOPIC, event.getAggregateId(),
+				event);
+		future.addCallback(new SendListener());
+
+		Event confirm = (Event) blockingQueue.poll(50, TimeUnit.SECONDS);
+
+		assertNotNull(confirm);
+		assertEquals(LayerEventTypes.UPDATE_FAILED, confirm.getType());
+
+		Layer newLayer = (Layer) repository
+				.findById(lastSnapshotLayer.getId(), lastSnapshotLayer.getJoinIndex().getParent()).get_source();
+		assertEquals(lastSnapshotLayer, newLayer);
+
+		repository.delete(lastSnapshotLayer.getId(), lastSnapshotLayer.getJoinIndex().getParent());
+	}
+
+	@Test
+	public void sendLayerRollbackEvent_PublishUpdateLayerFailedEventAndDoRollback_IfFailEventTypeIsUpdateAndLastSnapshotItemIsDifferent()
+			throws Exception {
+
+		LayerRollbackEvent event = getLayerRollbackEvent(LayerEventTypes.UPDATE);
+
+		Layer lastSnapshotLayer = Mappers.getMapper(LayerESMapper.class).map(event.getLastSnapshotItem());
+
+		lastSnapshotLayer.setUpdated(lastSnapshotLayer.getUpdated().plusDays(1));
+		lastSnapshotLayer.setName("other");
+
+		assertNotEquals(event.getLastSnapshotItem(), lastSnapshotLayer);
+
+		repository.save(lastSnapshotLayer, lastSnapshotLayer.getJoinIndex().getParent());
+
+		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(LAYER_TOPIC, event.getAggregateId(),
+				event);
+		future.addCallback(new SendListener());
+
+		Event confirm = (Event) blockingQueue.poll(50, TimeUnit.SECONDS);
+
+		assertNotNull(confirm);
+		assertEquals(LayerEventTypes.UPDATE_FAILED, confirm.getType());
+
+		Layer newLayer = (Layer) repository
+				.findById(lastSnapshotLayer.getId(), lastSnapshotLayer.getJoinIndex().getParent()).get_source();
+		assertEquals(Mappers.getMapper(LayerESMapper.class).map(event.getLastSnapshotItem()), newLayer);
+
+		repository.delete(lastSnapshotLayer.getId(), lastSnapshotLayer.getJoinIndex().getParent());
+	}
+
+	@Test
+	public void sendLayerRollbackEvent_PublishRefreshLayerFailedEvent_IfFailEventTypeIsRefresh() throws Exception {
+
+		LayerRollbackEvent event = getLayerRollbackEvent(LayerEventTypes.REFRESH);
+
+		Layer lastSnapshotLayer = Mappers.getMapper(LayerESMapper.class).map(event.getLastSnapshotItem());
+
+		repository.save(lastSnapshotLayer, lastSnapshotLayer.getJoinIndex().getParent());
+
+		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(LAYER_TOPIC, event.getAggregateId(),
+				event);
+		future.addCallback(new SendListener());
+
+		Event confirm = (Event) blockingQueue.poll(50, TimeUnit.SECONDS);
+
+		assertNotNull(confirm);
+		assertEquals(LayerEventTypes.REFRESH_FAILED, confirm.getType());
+
+		Layer newLayer = (Layer) repository
+				.findById(lastSnapshotLayer.getId(), lastSnapshotLayer.getJoinIndex().getParent()).get_source();
+		assertEquals(lastSnapshotLayer, newLayer);
+
+		repository.delete(lastSnapshotLayer.getId(), lastSnapshotLayer.getJoinIndex().getParent());
+	}
+
+	@Test
+	public void sendLayerRollbackEvent_PublishRefreshLayerFailedEventAndDoRollback_IfFailEventTypeIsRefreshAndLastSnapshotItemIsDifferent()
+			throws Exception {
+
+		LayerRollbackEvent event = getLayerRollbackEvent(LayerEventTypes.REFRESH);
+
+		Layer lastSnapshotLayer = Mappers.getMapper(LayerESMapper.class).map(event.getLastSnapshotItem());
+
+		lastSnapshotLayer.setUpdated(lastSnapshotLayer.getUpdated().plusDays(1));
+		lastSnapshotLayer.setName("other");
+
+		assertNotEquals(event.getLastSnapshotItem(), lastSnapshotLayer);
+
+		repository.save(lastSnapshotLayer, lastSnapshotLayer.getJoinIndex().getParent());
+
+		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(LAYER_TOPIC, event.getAggregateId(),
+				event);
+		future.addCallback(new SendListener());
+
+		Event confirm = (Event) blockingQueue.poll(50, TimeUnit.SECONDS);
+
+		assertNotNull(confirm);
+		assertEquals(LayerEventTypes.REFRESH_FAILED, confirm.getType());
+
+		Layer newLayer = (Layer) repository
+				.findById(lastSnapshotLayer.getId(), lastSnapshotLayer.getJoinIndex().getParent()).get_source();
+		assertEquals(Mappers.getMapper(LayerESMapper.class).map(event.getLastSnapshotItem()), newLayer);
+
+		repository.delete(lastSnapshotLayer.getId(), lastSnapshotLayer.getJoinIndex().getParent());
+	}
+
+	@Test
+	public void sendLayerRollbackEvent_PublishDeleteLayerFailedEvent_IfFailEventTypeIsDelete() throws Exception {
+
+		LayerRollbackEvent event = getLayerRollbackEvent(LayerEventTypes.DELETE);
+
+		Layer lastSnapshotLayer = Mappers.getMapper(LayerESMapper.class).map(event.getLastSnapshotItem());
+
+		repository.save(lastSnapshotLayer, lastSnapshotLayer.getJoinIndex().getParent());
+
+		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(LAYER_TOPIC, event.getAggregateId(),
+				event);
+		future.addCallback(new SendListener());
+
+		Event confirm = (Event) blockingQueue.poll(50, TimeUnit.SECONDS);
+
+		assertNotNull(confirm);
+		assertEquals(LayerEventTypes.DELETE_FAILED, confirm.getType());
+
+		Layer newLayer = (Layer) repository
+				.findById(lastSnapshotLayer.getId(), lastSnapshotLayer.getJoinIndex().getParent()).get_source();
+		assertEquals(lastSnapshotLayer, newLayer);
+
+		repository.delete(lastSnapshotLayer.getId(), lastSnapshotLayer.getJoinIndex().getParent());
+	}
+
+	@Test
+	public void sendLayerRollbackEvent_PublishDeleteLayerFailedEventAndDoRollback_IfFailEventTypeIsDeleteAndLastSnapshotItemIsDifferent()
+			throws Exception {
+
+		LayerRollbackEvent event = getLayerRollbackEvent(LayerEventTypes.DELETE);
+
+		Layer lastSnapshotLayer = Mappers.getMapper(LayerESMapper.class).map(event.getLastSnapshotItem());
+
+		ListenableFuture<SendResult<String, Event>> future = kafkaTemplate.send(LAYER_TOPIC, event.getAggregateId(),
+				event);
+		future.addCallback(new SendListener());
+
+		Event confirm = (Event) blockingQueue.poll(50, TimeUnit.SECONDS);
+
+		assertNotNull(confirm);
+		assertEquals(LayerEventTypes.DELETE_FAILED, confirm.getType());
+
+		Layer newLayer = (Layer) repository
+				.findById(lastSnapshotLayer.getId(), lastSnapshotLayer.getJoinIndex().getParent()).get_source();
+		assertEquals(lastSnapshotLayer, newLayer);
+
+		repository.delete(lastSnapshotLayer.getId(), lastSnapshotLayer.getJoinIndex().getParent());
+	}
+
 	@KafkaHandler
 	public void createTypeLayerConfirmed(CreateLayerConfirmedEvent createLayerConfirmedEvent) {
 
@@ -446,6 +657,12 @@ public class LayerEventHandlerTest extends DocumentationViewBaseTest {
 	}
 
 	@KafkaHandler
+	public void refreshLayerFailed(RefreshLayerFailedEvent refreshLayerFailedEvent) {
+
+		blockingQueue.offer(refreshLayerFailedEvent);
+	}
+
+	@KafkaHandler
 	public void deleteLayerConfirmed(DeleteLayerConfirmedEvent deleteLayerConfirmedEvent) {
 
 		blockingQueue.offer(deleteLayerConfirmedEvent);
@@ -468,12 +685,17 @@ public class LayerEventHandlerTest extends DocumentationViewBaseTest {
 
 	}
 
-	protected LayerDTO getLayer() throws IOException {
+	protected LayerDTO getLayer() {
 
-		return (LayerDTO) JsonToBeanTestUtil.getBean("/data/dto/layer/layer.json", LayerDTO.class);
+		try {
+			return (LayerDTO) JsonToBeanTestUtil.getBean("/data/dto/layer/layer.json", LayerDTO.class);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
-	protected CreateLayerEvent getCreateLayerEvent() throws IOException {
+	protected CreateLayerEvent getCreateLayerEvent() {
 
 		CreateLayerEvent createdEvent = new CreateLayerEvent();
 		createdEvent.setId(UUID.randomUUID().toString());
@@ -487,7 +709,7 @@ public class LayerEventHandlerTest extends DocumentationViewBaseTest {
 		return createdEvent;
 	}
 
-	protected UpdateLayerEvent getUpdateLayerEvent() throws IOException {
+	protected UpdateLayerEvent getUpdateLayerEvent() {
 
 		UpdateLayerEvent updatedEvent = new UpdateLayerEvent();
 		updatedEvent.setId(UUID.randomUUID().toString());
@@ -503,7 +725,7 @@ public class LayerEventHandlerTest extends DocumentationViewBaseTest {
 		return updatedEvent;
 	}
 
-	protected UpdateThemeInspireInLayerEvent getUpdateThemeInspireInLayerEvent() throws IOException {
+	protected UpdateThemeInspireInLayerEvent getUpdateThemeInspireInLayerEvent() {
 
 		UpdateThemeInspireInLayerEvent event = new UpdateThemeInspireInLayerEvent().buildFrom(getUpdateLayerEvent());
 
@@ -518,15 +740,20 @@ public class LayerEventHandlerTest extends DocumentationViewBaseTest {
 		return event;
 	}
 
-	protected RefreshLayerEvent getRefreshLayerEvent() throws IOException {
+	protected RefreshLayerEvent getRefreshLayerEvent() {
 
 		RefreshLayerEvent refreshEvent = new RefreshLayerEvent();
 
 		refreshEvent.setId(UUID.randomUUID().toString());
 		refreshEvent.setDate(DateTime.now());
 		refreshEvent.setType(LayerEventTypes.UPDATE);
-		LayerWMSDTO layer = (LayerWMSDTO) JsonToBeanTestUtil.getBean("/data/dto/layer/layerWMS.json",
-				LayerWMSDTO.class);
+		LayerWMSDTO layer;
+		try {
+			layer = (LayerWMSDTO) JsonToBeanTestUtil.getBean("/data/dto/layer/layerWMS.json", LayerWMSDTO.class);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
 		layer.setName(layer.getName() + "2");
 		refreshEvent.setLayer(layer);
 		refreshEvent.setAggregateId(refreshEvent.getLayer().getId());
@@ -537,7 +764,7 @@ public class LayerEventHandlerTest extends DocumentationViewBaseTest {
 		return refreshEvent;
 	}
 
-	protected DeleteLayerEvent getDeleteLayerEvent() throws IOException {
+	protected DeleteLayerEvent getDeleteLayerEvent() {
 
 		DeleteLayerEvent deletedEvent = new DeleteLayerEvent();
 		deletedEvent.setId(UUID.randomUUID().toString());
@@ -548,5 +775,15 @@ public class LayerEventHandlerTest extends DocumentationViewBaseTest {
 		deletedEvent.setSessionId(UUID.randomUUID().toString());
 		deletedEvent.setUserId(USER_ID);
 		return deletedEvent;
+	}
+
+	public LayerRollbackEvent getLayerRollbackEvent(String failEventType) {
+
+		LayerRollbackEvent event = new LayerRollbackEvent().buildFrom(getCreateLayerEvent());
+
+		event.setFailEventType(failEventType);
+		event.setLastSnapshotItem(getLayer());
+
+		return event;
 	}
 }
