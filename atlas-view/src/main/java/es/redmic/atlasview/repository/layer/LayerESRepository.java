@@ -239,6 +239,25 @@ public class LayerESRepository extends RWDataESRepository<Layer, GeoDataQueryDTO
 		return result.getHits().getHits().get(0);
 	}
 
+	/*
+	 * Controla los casos de un create fallido, sin snapshot y por tanto sin
+	 * parentId para ir a buscar el registro
+	 */
+	@Override
+	public EventApplicationResult rollback(Layer modelToIndex, String id, String parentId) {
+
+		if (parentId == null) {
+			DataSearchWrapper<?> result = findBy(QueryBuilders.termQuery(ID_PROPERTY, id));
+			Layer model = (Layer) result.getSource(0);
+			if (model != null)
+				return super.rollback(modelToIndex, id, model.getJoinIndex().getParent());
+			else
+				return new EventApplicationResult(true);
+		}
+
+		return super.rollback(modelToIndex, id, parentId);
+	}
+
 	/**
 	 * Sobrescribe a la función base por incompatibilidad de query. Función que dado
 	 * un conjunto de términos, nos devuelve una query de elasticsearch. Debe estar

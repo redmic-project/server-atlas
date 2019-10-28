@@ -101,7 +101,7 @@ public class LayerESService extends RDataService<Layer, LayerDTO, GeoDataQueryDT
 	}
 
 	public EventApplicationResult rollback(Layer model, String id, String parentId) {
-		return repository.rollback(model, parentId);
+		return repository.rollback(model, id, parentId);
 	}
 
 	/**

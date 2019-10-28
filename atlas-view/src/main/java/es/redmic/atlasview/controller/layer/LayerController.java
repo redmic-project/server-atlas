@@ -187,7 +187,7 @@ public class LayerController extends DataController<Layer, LayerDTO, GeoDataQuer
 
 		EventApplicationResult result = null;
 
-		String parentId = event.getLastSnapshotItem().getParent() != null
+		String parentId = (event.getLastSnapshotItem() != null && event.getLastSnapshotItem().getParent() != null)
 				? event.getLastSnapshotItem().getParent().getId()
 				: null;
 
