@@ -22,6 +22,8 @@ package es.redmic.test.atlascommands.integration.themeinspire;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
@@ -53,6 +55,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.concurrent.ListenableFuture;
 
 import es.redmic.atlascommands.AtlasCommandsApplication;
+import es.redmic.atlascommands.aggregate.ThemeInspireAggregate;
+import es.redmic.atlascommands.commands.themeinspire.CreateThemeInspireCommand;
+import es.redmic.atlascommands.commands.themeinspire.DeleteThemeInspireCommand;
+import es.redmic.atlascommands.commands.themeinspire.UpdateThemeInspireCommand;
 import es.redmic.atlascommands.handler.ThemeInspireCommandHandler;
 import es.redmic.atlaslib.dto.themeinspire.ThemeInspireDTO;
 import es.redmic.atlaslib.events.layer.create.LayerCreatedEvent;
@@ -67,6 +73,7 @@ import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireCancelled
 import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireCheckFailedEvent;
 import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireCheckedEvent;
 import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireConfirmedEvent;
+import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireEvent;
 import es.redmic.atlaslib.events.themeinspire.delete.DeleteThemeInspireFailedEvent;
 import es.redmic.atlaslib.events.themeinspire.delete.ThemeInspireDeletedEvent;
 import es.redmic.atlaslib.events.themeinspire.fail.ThemeInspireRollbackEvent;
@@ -77,9 +84,15 @@ import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireEvent;
 import es.redmic.atlaslib.events.themeinspire.update.UpdateThemeInspireFailedEvent;
 import es.redmic.atlaslib.unit.utils.LayerDataUtil;
 import es.redmic.atlaslib.unit.utils.ThemeInspireDataUtil;
+import es.redmic.brokerlib.alert.AlertType;
+import es.redmic.brokerlib.alert.Message;
 import es.redmic.brokerlib.avro.common.Event;
+import es.redmic.brokerlib.avro.common.EventTypes;
 import es.redmic.brokerlib.avro.fail.PrepareRollbackEvent;
+import es.redmic.brokerlib.avro.fail.RollbackFailedEvent;
 import es.redmic.brokerlib.listener.SendListener;
+import es.redmic.commandslib.exceptions.ConfirmationTimeoutException;
+import es.redmic.commandslib.exceptions.ItemLockedException;
 import es.redmic.exception.common.ExceptionType;
 import es.redmic.exception.data.DeleteItemException;
 import es.redmic.exception.data.ItemAlreadyExistException;
@@ -93,7 +106,7 @@ import es.redmic.testutils.kafka.KafkaBaseIntegrationTest;
 @DirtiesContext
 @KafkaListener(topics = "${broker.topic.theme-inspire}", groupId = "ThemeInspireCommandHandlerTest")
 @TestPropertySource(properties = { "spring.kafka.consumer.group-id=ThemeInspireCommandHandler",
-		"schema.registry.port=18096" })
+		"schema.registry.port=18096", "rest.eventsource.timeout.ms=20000" })
 public class ThemeInspireCommandHandlerTest extends KafkaBaseIntegrationTest {
 
 	protected static Logger logger = LogManager.getLogger();
@@ -115,6 +128,8 @@ public class ThemeInspireCommandHandlerTest extends KafkaBaseIntegrationTest {
 
 	protected static BlockingQueue<Object> blockingQueue;
 
+	protected static BlockingQueue<Object> blockingQueueForAlerts;
+
 	@Autowired
 	ThemeInspireCommandHandler themeInspireCommandHandler;
 
@@ -129,6 +144,7 @@ public class ThemeInspireCommandHandlerTest extends KafkaBaseIntegrationTest {
 	public void setup() {
 
 		blockingQueue = new LinkedBlockingDeque<>();
+		blockingQueueForAlerts = new LinkedBlockingDeque<>();
 	}
 
 	// Success cases
@@ -367,25 +383,366 @@ public class ThemeInspireCommandHandlerTest extends KafkaBaseIntegrationTest {
 				((DeleteThemeInspireCancelledEvent) confirm).getThemeInspire());
 	}
 
-	// Envía un evento de error de prepare rollback y debe provocar un evento
-	// ThemeInspireRollback con el item dentro
-	@Test
-	public void prepareRollbackEvent_SendThemeInspireRollbackEvent_IfReceivesSuccess() throws Exception {
+	// Rollback
 
-		// Envía created para meterlo en el stream y lo saca de la cola
-		ThemeInspireCreatedEvent themeInspireCreatedEvent = ThemeInspireDataUtil
-				.getThemeInspireCreatedEvent(code + "7");
-		kafkaTemplate.send(theme_inspire_topic, themeInspireCreatedEvent.getAggregateId(), themeInspireCreatedEvent);
+	// Create
+
+	// ConfirmationTimeoutException
+	@Test
+	public void createThemeInspire_ThrowConfirmationTimeoutExceptionAndSendRollbackEvent_IfConfirmationIsNotReceived()
+			throws Exception {
+
+		try {
+			Whitebox.invokeMethod(themeInspireCommandHandler, "save",
+					new CreateThemeInspireCommand(ThemeInspireDataUtil.getThemeInspire(code + 8)));
+		} catch (Exception e) {
+			assertTrue(e instanceof ConfirmationTimeoutException);
+		}
+		Event rollback = (Event) blockingQueue.poll(40, TimeUnit.SECONDS);
+
+		assertNotNull(rollback);
+		assertEquals(EventTypes.ROLLBACK, rollback.getType());
+		assertEquals(ThemeInspireEventTypes.CREATE, ((ThemeInspireRollbackEvent) rollback).getFailEventType());
+
+		// LLegó un mensaje de alerta
+		Message message = (Message) blockingQueueForAlerts.poll(40, TimeUnit.SECONDS);
+		assertNotNull(message);
+		assertEquals(AlertType.ERROR.name(), message.getType());
+	}
+
+	// ItemLockedException
+	@Test
+	public void createThemeInspire_ThrowItemLockedExceptionAndSendRollbackEvent_IfItemLocked() throws Exception {
+
+		RollbackFailedEvent rollbackFailedEvent = new RollbackFailedEvent(ThemeInspireEventTypes.CREATE_FAILED)
+				.buildFrom(ThemeInspireDataUtil.getThemeInspireCreatedEvent(code + "9"));
+		kafkaTemplate.send(theme_inspire_topic, rollbackFailedEvent.getAggregateId(), rollbackFailedEvent);
+
+		Thread.sleep(8000);
+
+		try {
+			Whitebox.invokeMethod(themeInspireCommandHandler, "save",
+					new CreateThemeInspireCommand(ThemeInspireDataUtil.getThemeInspire(code + "9")));
+		} catch (Exception e) {
+			assertTrue(e instanceof ItemLockedException);
+		}
+		Event rollback = (Event) blockingQueue.poll(40, TimeUnit.SECONDS);
+
+		assertNotNull(rollback);
+		assertEquals(EventTypes.ROLLBACK, rollback.getType());
+		assertEquals(rollbackFailedEvent.getFailEventType(), ((ThemeInspireRollbackEvent) rollback).getFailEventType());
+
+		// LLegó un mensaje de alerta
+		Message message = (Message) blockingQueueForAlerts.poll(40, TimeUnit.SECONDS);
+		assertNotNull(message);
+		assertEquals(AlertType.ERROR.name(), message.getType());
+	}
+
+	@Test
+	public void prepareRollbackEvent_SendThemeInspireRollbackEventWithFailEventTypeEqualToCreateThemeInspire_IfItemIsLocked()
+			throws Exception {
+
+		CreateThemeInspireEvent createThemeInspireEvent = ThemeInspireDataUtil.getCreateEvent(code + "10");
+		kafkaTemplate.send(theme_inspire_topic, createThemeInspireEvent.getAggregateId(), createThemeInspireEvent);
 		blockingQueue.poll(30, TimeUnit.SECONDS);
 
 		Thread.sleep(8000);
 
-		PrepareRollbackEvent event = ThemeInspireDataUtil.getPrepareRollbackEvent(code + "7");
+		PrepareRollbackEvent event = (PrepareRollbackEvent) new ThemeInspireAggregate(null, null)
+				.getRollbackEvent(createThemeInspireEvent);
 
 		kafkaTemplate.send(theme_inspire_topic, event.getAggregateId(), event);
 
-		Event rollback = (Event) blockingQueue.poll(30, TimeUnit.SECONDS);
+		Event rollback = (Event) blockingQueue.poll(40, TimeUnit.SECONDS);
 
+		assertNotNull(rollback);
+		assertEquals(ThemeInspireEventTypes.ROLLBACK, rollback.getType());
+		assertEquals(createThemeInspireEvent.getType(), event.getFailEventType());
+		assertEquals(event.getFailEventType(), ((ThemeInspireRollbackEvent) rollback).getFailEventType());
+		assertNull(((ThemeInspireRollbackEvent) rollback).getLastSnapshotItem());
+	}
+
+	@Test
+	public void prepareRollbackEventAfterRollbackFail_SendThemeInspireRollbackEventWithFailEventTypeEqualToCreateThemeInspire_IfItemIsLocked()
+			throws Exception {
+
+		CreateThemeInspireEvent createThemeInspireEvent = ThemeInspireDataUtil.getCreateEvent(code + "11");
+		kafkaTemplate.send(theme_inspire_topic, createThemeInspireEvent.getAggregateId(), createThemeInspireEvent);
+		blockingQueue.poll(30, TimeUnit.SECONDS);
+
+		RollbackFailedEvent rollbackFailedEvent = new RollbackFailedEvent(ThemeInspireEventTypes.CREATE_FAILED)
+				.buildFrom(createThemeInspireEvent);
+		kafkaTemplate.send(theme_inspire_topic, rollbackFailedEvent.getAggregateId(), rollbackFailedEvent);
+
+		Thread.sleep(8000);
+
+		PrepareRollbackEvent event = (PrepareRollbackEvent) new ThemeInspireAggregate(null, null)
+				.getRollbackEvent(rollbackFailedEvent);
+
+		try {
+			kafkaTemplate.send(theme_inspire_topic, event.getAggregateId(), event);
+
+		} catch (Exception e) {
+			assertTrue(e instanceof ItemLockedException);
+		}
+		Event rollback = (Event) blockingQueue.poll(60, TimeUnit.SECONDS);
+		assertNotNull(rollback);
+		assertEquals(ThemeInspireEventTypes.ROLLBACK, rollback.getType());
+		assertEquals(event.getFailEventType(), ((ThemeInspireRollbackEvent) rollback).getFailEventType());
+		assertNull(((ThemeInspireRollbackEvent) rollback).getLastSnapshotItem());
+	}
+
+	// Update
+	// ConfirmationTimeoutException
+	@Test
+	public void updateThemeInspire_ThrowConfirmationTimeoutExceptionAndSendRollbackEvent_IfConfirmationIsNotReceived()
+			throws Exception {
+
+		ThemeInspireCreatedEvent themeInspireCreatedEvent = ThemeInspireDataUtil
+				.getThemeInspireCreatedEvent(code + "12");
+		kafkaTemplate.send(theme_inspire_topic, themeInspireCreatedEvent.getAggregateId(), themeInspireCreatedEvent);
+		blockingQueue.poll(30, TimeUnit.SECONDS);
+
+		try {
+			Whitebox.invokeMethod(themeInspireCommandHandler, "update", themeInspireCreatedEvent.getAggregateId(),
+					new UpdateThemeInspireCommand(themeInspireCreatedEvent.getThemeInspire()));
+		} catch (Exception e) {
+			assertTrue(e instanceof ConfirmationTimeoutException);
+		}
+		Event rollback = (Event) blockingQueue.poll(40, TimeUnit.SECONDS);
+
+		assertNotNull(rollback);
+		assertEquals(EventTypes.ROLLBACK, rollback.getType());
+		assertEquals(ThemeInspireEventTypes.UPDATE, ((ThemeInspireRollbackEvent) rollback).getFailEventType());
+
+		// LLegó un mensaje de alerta
+		Message message = (Message) blockingQueueForAlerts.poll(40, TimeUnit.SECONDS);
+		assertNotNull(message);
+		assertEquals(AlertType.ERROR.name(), message.getType());
+	}
+
+	// ItemLockedException
+	@Test
+	public void updateThemeInspire_ThrowItemLockedExceptionAndSendRollbackEvent_IfItemLocked() throws Exception {
+
+		ThemeInspireCreatedEvent themeInspireCreatedEvent = ThemeInspireDataUtil
+				.getThemeInspireCreatedEvent(code + "13");
+		kafkaTemplate.send(theme_inspire_topic, themeInspireCreatedEvent.getAggregateId(), themeInspireCreatedEvent);
+		blockingQueue.poll(30, TimeUnit.SECONDS);
+
+		RollbackFailedEvent rollbackFailedEvent = new RollbackFailedEvent(ThemeInspireEventTypes.UPDATE_FAILED)
+				.buildFrom(themeInspireCreatedEvent);
+		kafkaTemplate.send(theme_inspire_topic, rollbackFailedEvent.getAggregateId(), rollbackFailedEvent);
+
+		Thread.sleep(8000);
+
+		try {
+			Whitebox.invokeMethod(themeInspireCommandHandler, "update", themeInspireCreatedEvent.getAggregateId(),
+					new UpdateThemeInspireCommand(themeInspireCreatedEvent.getThemeInspire()));
+		} catch (Exception e) {
+			assertTrue(e instanceof ItemLockedException);
+		}
+		Event rollback = (Event) blockingQueue.poll(40, TimeUnit.SECONDS);
+
+		assertNotNull(rollback);
+		assertEquals(EventTypes.ROLLBACK, rollback.getType());
+		assertEquals(rollbackFailedEvent.getFailEventType(), ((ThemeInspireRollbackEvent) rollback).getFailEventType());
+
+		// LLegó un mensaje de alerta
+		Message message = (Message) blockingQueueForAlerts.poll(50, TimeUnit.SECONDS);
+		assertNotNull(message);
+		assertEquals(AlertType.ERROR.name(), message.getType());
+	}
+
+	@Test
+	public void prepareRollbackEvent_SendThemeInspireRollbackEventWithFailEventTypeEqualToUpdateThemeInspire_IfItemIsLocked()
+			throws Exception {
+
+		ThemeInspireCreatedEvent themeInspireCreatedEvent = ThemeInspireDataUtil
+				.getThemeInspireCreatedEvent(code + "14");
+		kafkaTemplate.send(theme_inspire_topic, themeInspireCreatedEvent.getAggregateId(), themeInspireCreatedEvent);
+		blockingQueue.poll(30, TimeUnit.SECONDS);
+
+		UpdateThemeInspireEvent updateThemeInspireEvent = ThemeInspireDataUtil.getUpdateEvent(code + "14");
+		kafkaTemplate.send(theme_inspire_topic, updateThemeInspireEvent.getAggregateId(), updateThemeInspireEvent);
+
+		Thread.sleep(8000);
+
+		PrepareRollbackEvent event = (PrepareRollbackEvent) new ThemeInspireAggregate(null, null)
+				.getRollbackEvent(updateThemeInspireEvent);
+
+		kafkaTemplate.send(theme_inspire_topic, event.getAggregateId(), event);
+
+		Event rollback = (Event) blockingQueue.poll(40, TimeUnit.SECONDS);
+
+		assertNotNull(rollback);
+		assertEquals(ThemeInspireEventTypes.ROLLBACK, rollback.getType());
+		assertEquals(updateThemeInspireEvent.getType(), ((ThemeInspireRollbackEvent) rollback).getFailEventType());
+		assertEquals(event.getFailEventType(), ((ThemeInspireRollbackEvent) rollback).getFailEventType());
+		assertEquals(updateThemeInspireEvent.getThemeInspire(),
+				((ThemeInspireRollbackEvent) rollback).getLastSnapshotItem());
+	}
+
+	@Test
+	public void prepareRollbackEventAfterRollbackFail_SendThemeInspireRollbackEventWithFailEventTypeEqualToUpdateThemeInspire_IfItemIsLocked()
+			throws Exception {
+
+		ThemeInspireCreatedEvent themeInspireCreatedEvent = ThemeInspireDataUtil
+				.getThemeInspireCreatedEvent(code + "15");
+		kafkaTemplate.send(theme_inspire_topic, themeInspireCreatedEvent.getAggregateId(), themeInspireCreatedEvent);
+		blockingQueue.poll(30, TimeUnit.SECONDS);
+
+		UpdateThemeInspireEvent updateThemeInspireEvent = ThemeInspireDataUtil.getUpdateEvent(code + "15");
+		kafkaTemplate.send(theme_inspire_topic, updateThemeInspireEvent.getAggregateId(), updateThemeInspireEvent);
+
+		RollbackFailedEvent rollbackFailedEvent = new RollbackFailedEvent(ThemeInspireEventTypes.UPDATE_FAILED)
+				.buildFrom(updateThemeInspireEvent);
+		kafkaTemplate.send(theme_inspire_topic, rollbackFailedEvent.getAggregateId(), rollbackFailedEvent);
+
+		Thread.sleep(8000);
+
+		PrepareRollbackEvent event = (PrepareRollbackEvent) new ThemeInspireAggregate(null, null)
+				.getRollbackEvent(rollbackFailedEvent);
+
+		try {
+			kafkaTemplate.send(theme_inspire_topic, event.getAggregateId(), event);
+
+		} catch (Exception e) {
+			assertTrue(e instanceof ItemLockedException);
+		}
+		Event rollback = (Event) blockingQueue.poll(60, TimeUnit.SECONDS);
+		assertNotNull(rollback);
+		assertEquals(ThemeInspireEventTypes.ROLLBACK, rollback.getType());
+		assertEquals(event.getFailEventType(), ((ThemeInspireRollbackEvent) rollback).getFailEventType());
+		assertEquals(updateThemeInspireEvent.getThemeInspire(),
+				((ThemeInspireRollbackEvent) rollback).getLastSnapshotItem());
+	}
+
+	// Delete
+	// ConfirmationTimeoutException
+	@Test
+	public void deleteThemeInspire_ThrowConfirmationTimeoutExceptionAndSendRollbackEvent_IfConfirmationIsNotReceived()
+			throws Exception {
+
+		ThemeInspireCreatedEvent themeInspireCreatedEvent = ThemeInspireDataUtil
+				.getThemeInspireCreatedEvent(code + "16");
+		kafkaTemplate.send(theme_inspire_topic, themeInspireCreatedEvent.getAggregateId(), themeInspireCreatedEvent);
+		blockingQueue.poll(30, TimeUnit.SECONDS);
+
+		try {
+			Whitebox.invokeMethod(themeInspireCommandHandler, "update", themeInspireCreatedEvent.getAggregateId(),
+					new DeleteThemeInspireCommand(themeInspireCreatedEvent.getThemeInspire().getId()));
+		} catch (Exception e) {
+			assertTrue(e instanceof ConfirmationTimeoutException);
+		}
+
+		Event confirm = (Event) blockingQueue.poll(40, TimeUnit.SECONDS);
+
+		assertNotNull(confirm);
+		assertEquals(ThemeInspireEventTypes.DELETE_CHECKED, confirm.getType());
+
+		Event rollback = (Event) blockingQueue.poll(40, TimeUnit.SECONDS);
+
+		assertNotNull(rollback);
+		assertEquals(EventTypes.ROLLBACK, rollback.getType());
+		assertEquals(ThemeInspireEventTypes.CHECK_DELETE, ((ThemeInspireRollbackEvent) rollback).getFailEventType());
+
+		// LLegó un mensaje de alerta
+		Message message = (Message) blockingQueueForAlerts.poll(40, TimeUnit.SECONDS);
+		assertNotNull(message);
+		assertEquals(AlertType.ERROR.name(), message.getType());
+	}
+
+	// ItemLockedException
+	@Test
+	public void deleteThemeInspire_ThrowItemLockedExceptionAndSendRollbackEvent_IfItemLocked() throws Exception {
+
+		ThemeInspireCreatedEvent themeInspireCreatedEvent = ThemeInspireDataUtil
+				.getThemeInspireCreatedEvent(code + "17");
+		kafkaTemplate.send(theme_inspire_topic, themeInspireCreatedEvent.getAggregateId(), themeInspireCreatedEvent);
+		blockingQueue.poll(30, TimeUnit.SECONDS);
+
+		RollbackFailedEvent rollbackFailedEvent = new RollbackFailedEvent(ThemeInspireEventTypes.DELETE_FAILED)
+				.buildFrom(themeInspireCreatedEvent);
+		kafkaTemplate.send(theme_inspire_topic, rollbackFailedEvent.getAggregateId(), rollbackFailedEvent);
+
+		Thread.sleep(8000);
+
+		try {
+			Whitebox.invokeMethod(themeInspireCommandHandler, "update", themeInspireCreatedEvent.getAggregateId(),
+					new DeleteThemeInspireCommand(themeInspireCreatedEvent.getThemeInspire().getId()));
+		} catch (Exception e) {
+			assertTrue(e instanceof ItemLockedException);
+		}
+		Event rollback = (Event) blockingQueue.poll(40, TimeUnit.SECONDS);
+
+		assertNotNull(rollback);
+		assertEquals(EventTypes.ROLLBACK, rollback.getType());
+		assertEquals(rollbackFailedEvent.getFailEventType(), ((ThemeInspireRollbackEvent) rollback).getFailEventType());
+
+		// LLegó un mensaje de alerta
+		Message message = (Message) blockingQueueForAlerts.poll(50, TimeUnit.SECONDS);
+		assertNotNull(message);
+		assertEquals(AlertType.ERROR.name(), message.getType());
+	}
+
+	@Test
+	public void prepareRollbackEvent_SendThemeInspireRollbackEventWithFailEventTypeEqualToDeleteThemeInspire_IfItemIsLocked()
+			throws Exception {
+
+		ThemeInspireCreatedEvent themeInspireCreatedEvent = ThemeInspireDataUtil
+				.getThemeInspireCreatedEvent(code + "18");
+		kafkaTemplate.send(theme_inspire_topic, themeInspireCreatedEvent.getAggregateId(), themeInspireCreatedEvent);
+		blockingQueue.poll(30, TimeUnit.SECONDS);
+
+		DeleteThemeInspireEvent deleteThemeInspireEvent = ThemeInspireDataUtil.getDeleteEvent(code + "18");
+		kafkaTemplate.send(theme_inspire_topic, deleteThemeInspireEvent.getAggregateId(), deleteThemeInspireEvent);
+
+		Thread.sleep(8000);
+
+		PrepareRollbackEvent event = (PrepareRollbackEvent) new ThemeInspireAggregate(null, null)
+				.getRollbackEvent(deleteThemeInspireEvent);
+
+		kafkaTemplate.send(theme_inspire_topic, event.getAggregateId(), event);
+
+		Event rollback = (Event) blockingQueue.poll(40, TimeUnit.SECONDS);
+
+		assertNotNull(rollback);
+		assertEquals(ThemeInspireEventTypes.ROLLBACK, rollback.getType());
+		assertEquals(deleteThemeInspireEvent.getType(), ((ThemeInspireRollbackEvent) rollback).getFailEventType());
+		assertEquals(event.getFailEventType(), ((ThemeInspireRollbackEvent) rollback).getFailEventType());
+		assertEquals(themeInspireCreatedEvent.getThemeInspire(),
+				((ThemeInspireRollbackEvent) rollback).getLastSnapshotItem());
+	}
+
+	@Test
+	public void prepareRollbackEventAfterRollbackFail_SendThemeInspireRollbackEventWithFailEventTypeEqualToDeleteThemeInspire_IfItemIsLocked()
+			throws Exception {
+
+		ThemeInspireCreatedEvent themeInspireCreatedEvent = ThemeInspireDataUtil
+				.getThemeInspireCreatedEvent(code + "19");
+		kafkaTemplate.send(theme_inspire_topic, themeInspireCreatedEvent.getAggregateId(), themeInspireCreatedEvent);
+		blockingQueue.poll(30, TimeUnit.SECONDS);
+
+		DeleteThemeInspireEvent deleteThemeInspireEvent = ThemeInspireDataUtil.getDeleteEvent(code + "19");
+		kafkaTemplate.send(theme_inspire_topic, deleteThemeInspireEvent.getAggregateId(), deleteThemeInspireEvent);
+
+		RollbackFailedEvent rollbackFailedEvent = new RollbackFailedEvent(ThemeInspireEventTypes.DELETE_FAILED)
+				.buildFrom(deleteThemeInspireEvent);
+		kafkaTemplate.send(theme_inspire_topic, rollbackFailedEvent.getAggregateId(), rollbackFailedEvent);
+
+		Thread.sleep(8000);
+
+		PrepareRollbackEvent event = (PrepareRollbackEvent) new ThemeInspireAggregate(null, null)
+				.getRollbackEvent(rollbackFailedEvent);
+
+		try {
+			kafkaTemplate.send(theme_inspire_topic, event.getAggregateId(), event);
+
+		} catch (Exception e) {
+			assertTrue(e instanceof ItemLockedException);
+		}
+		Event rollback = (Event) blockingQueue.poll(60, TimeUnit.SECONDS);
 		assertNotNull(rollback);
 		assertEquals(ThemeInspireEventTypes.ROLLBACK, rollback.getType());
 		assertEquals(event.getFailEventType(), ((ThemeInspireRollbackEvent) rollback).getFailEventType());
@@ -446,6 +803,11 @@ public class ThemeInspireCommandHandlerTest extends KafkaBaseIntegrationTest {
 	public void themeInspireRollbackEvent(ThemeInspireRollbackEvent themeInspireRollbackEvent) {
 
 		blockingQueue.offer(themeInspireRollbackEvent);
+	}
+
+	@KafkaListener(topics = "${broker.topic.alert}", groupId = "test")
+	public void errorAlert(Message message) {
+		blockingQueueForAlerts.offer(message);
 	}
 
 	@KafkaHandler(isDefault = true)

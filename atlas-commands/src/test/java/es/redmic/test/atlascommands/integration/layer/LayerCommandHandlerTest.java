@@ -22,6 +22,8 @@ package es.redmic.test.atlascommands.integration.layer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
@@ -55,6 +57,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.concurrent.ListenableFuture;
 
 import es.redmic.atlascommands.AtlasCommandsApplication;
+import es.redmic.atlascommands.aggregate.LayerAggregate;
+import es.redmic.atlascommands.commands.layer.CreateLayerCommand;
+import es.redmic.atlascommands.commands.layer.DeleteLayerCommand;
+import es.redmic.atlascommands.commands.layer.RefreshLayerCommand;
+import es.redmic.atlascommands.commands.layer.UpdateLayerCommand;
 import es.redmic.atlascommands.handler.LayerCommandHandler;
 import es.redmic.atlaslib.dto.layer.LayerDTO;
 import es.redmic.atlaslib.events.layer.LayerEventTypes;
@@ -69,6 +76,7 @@ import es.redmic.atlaslib.events.layer.delete.DeleteLayerCancelledEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerCheckFailedEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerCheckedEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerConfirmedEvent;
+import es.redmic.atlaslib.events.layer.delete.DeleteLayerEvent;
 import es.redmic.atlaslib.events.layer.delete.DeleteLayerFailedEvent;
 import es.redmic.atlaslib.events.layer.delete.LayerDeletedEvent;
 import es.redmic.atlaslib.events.layer.fail.LayerRollbackEvent;
@@ -87,9 +95,15 @@ import es.redmic.atlaslib.events.themeinspire.create.ThemeInspireCreatedEvent;
 import es.redmic.atlaslib.events.themeinspire.update.ThemeInspireUpdatedEvent;
 import es.redmic.atlaslib.unit.utils.LayerDataUtil;
 import es.redmic.atlaslib.unit.utils.ThemeInspireDataUtil;
+import es.redmic.brokerlib.alert.AlertType;
+import es.redmic.brokerlib.alert.Message;
 import es.redmic.brokerlib.avro.common.Event;
+import es.redmic.brokerlib.avro.common.EventTypes;
 import es.redmic.brokerlib.avro.fail.PrepareRollbackEvent;
+import es.redmic.brokerlib.avro.fail.RollbackFailedEvent;
 import es.redmic.brokerlib.listener.SendListener;
+import es.redmic.commandslib.exceptions.ConfirmationTimeoutException;
+import es.redmic.commandslib.exceptions.ItemLockedException;
 import es.redmic.exception.data.DeleteItemException;
 import es.redmic.exception.data.ItemAlreadyExistException;
 import es.redmic.exception.data.ItemNotFoundException;
@@ -101,7 +115,8 @@ import es.redmic.testutils.kafka.KafkaBaseIntegrationTest;
 @ActiveProfiles("test")
 @DirtiesContext
 @KafkaListener(topics = "${broker.topic.layer}", groupId = "LayerCommandHandlerTest")
-@TestPropertySource(properties = { "spring.kafka.consumer.group-id=LayerCommandHandler", "schema.registry.port=19999" })
+@TestPropertySource(properties = { "spring.kafka.consumer.group-id=LayerCommandHandler", "schema.registry.port=19999",
+		"rest.eventsource.timeout.ms=20000" })
 public class LayerCommandHandlerTest extends KafkaBaseIntegrationTest {
 
 	protected static Logger logger = LogManager.getLogger();
@@ -123,6 +138,8 @@ public class LayerCommandHandlerTest extends KafkaBaseIntegrationTest {
 
 	protected static BlockingQueue<Object> blockingQueue;
 
+	protected static BlockingQueue<Object> blockingQueueForAlerts;
+
 	@Autowired
 	LayerCommandHandler layerCommandHandler;
 
@@ -137,6 +154,7 @@ public class LayerCommandHandlerTest extends KafkaBaseIntegrationTest {
 	public void setup() {
 
 		blockingQueue = new LinkedBlockingDeque<>();
+		blockingQueueForAlerts = new LinkedBlockingDeque<>();
 	}
 
 	// Success cases
@@ -479,19 +497,85 @@ public class LayerCommandHandlerTest extends KafkaBaseIntegrationTest {
 		assertEquals(layerUpdateEvent.getLayer(), ((DeleteLayerCancelledEvent) confirm).getLayer());
 	}
 
-	// Envía un evento de error de prepare rollback y debe provocar un evento
-	// LayerRollback con el item dentro
-	@Test
-	public void prepareRollbackEvent_SendLayerRollbackEvent_IfReceivesSuccess() throws Exception {
+	// Rollback
 
-		// Envía created para meterlo en el stream y lo saca de la cola
-		LayerCreatedEvent layerCreatedEvent = LayerDataUtil.getLayerCreatedEvent(code + "7");
-		kafkaTemplate.send(layer_topic, layerCreatedEvent.getAggregateId(), layerCreatedEvent);
+	// Create
+
+	// ConfirmationTimeoutException
+	@Test
+	public void createLayer_ThrowConfirmationTimeoutExceptionAndSendRollbackEvent_IfConfirmationIsNotReceived()
+			throws Exception {
+
+		// Envía themeInspireCreatedEvent
+		ThemeInspireCreatedEvent themeInspireCreatedEvent = ThemeInspireDataUtil.getThemeInspireCreatedEvent("cc");
+		kafkaTemplate.send(theme_inspire_topic, themeInspireCreatedEvent.getAggregateId(), themeInspireCreatedEvent);
+
+		Thread.sleep(4000);
+
+		try {
+			Whitebox.invokeMethod(layerCommandHandler, "save",
+					new CreateLayerCommand(LayerDataUtil.getLayer(code + 7)));
+		} catch (Exception e) {
+			assertTrue(e instanceof ConfirmationTimeoutException);
+		}
+
+		Event create = (Event) blockingQueue.poll(40, TimeUnit.SECONDS);
+
+		assertNotNull(create);
+		assertEquals(EventTypes.CREATE, create.getType());
+
+		Event rollback = (Event) blockingQueue.poll(40, TimeUnit.SECONDS);
+
+		assertNotNull(rollback);
+		assertEquals(EventTypes.ROLLBACK, rollback.getType());
+		assertEquals(LayerEventTypes.ENRICH_CREATE, ((LayerRollbackEvent) rollback).getFailEventType());
+
+		// LLegó un mensaje de alerta
+		Message message = (Message) blockingQueueForAlerts.poll(40, TimeUnit.SECONDS);
+		assertNotNull(message);
+		assertEquals(AlertType.ERROR.name(), message.getType());
+	}
+
+	// ItemLockedException
+	@Test
+	public void createLayer_ThrowItemLockedExceptionAndSendRollbackEvent_IfItemLocked() throws Exception {
+
+		RollbackFailedEvent rollbackFailedEvent = new RollbackFailedEvent(LayerEventTypes.CREATE_FAILED)
+				.buildFrom(LayerDataUtil.getLayerCreatedEvent(code + "8"));
+		kafkaTemplate.send(layer_topic, rollbackFailedEvent.getAggregateId(), rollbackFailedEvent);
+
+		Thread.sleep(8000);
+
+		try {
+			Whitebox.invokeMethod(layerCommandHandler, "save",
+					new CreateLayerCommand(LayerDataUtil.getLayer(code + "8")));
+		} catch (Exception e) {
+			assertTrue(e instanceof ItemLockedException);
+		}
+		Event rollback = (Event) blockingQueue.poll(40, TimeUnit.SECONDS);
+
+		assertNotNull(rollback);
+		assertEquals(EventTypes.ROLLBACK, rollback.getType());
+		assertEquals(rollbackFailedEvent.getFailEventType(), ((LayerRollbackEvent) rollback).getFailEventType());
+
+		// LLegó un mensaje de alerta
+		Message message = (Message) blockingQueueForAlerts.poll(40, TimeUnit.SECONDS);
+		assertNotNull(message);
+		assertEquals(AlertType.ERROR.name(), message.getType());
+	}
+
+	@Test
+	public void prepareRollbackEvent_SendLayerRollbackEventWithFailEventTypeEqualToCreateLayer_IfItemIsLocked()
+			throws Exception {
+
+		CreateLayerEvent createLayerEvent = LayerDataUtil.getCreateEvent(code + "9");
+		kafkaTemplate.send(layer_topic, createLayerEvent.getAggregateId(), createLayerEvent);
 		blockingQueue.poll(30, TimeUnit.SECONDS);
 
 		Thread.sleep(8000);
 
-		PrepareRollbackEvent event = LayerDataUtil.getPrepareRollbackEvent(code + "7");
+		PrepareRollbackEvent event = (PrepareRollbackEvent) new LayerAggregate(null, null)
+				.getRollbackEvent(createLayerEvent);
 
 		kafkaTemplate.send(layer_topic, event.getAggregateId(), event);
 
@@ -499,11 +583,443 @@ public class LayerCommandHandlerTest extends KafkaBaseIntegrationTest {
 
 		assertNotNull(rollback);
 		assertEquals(LayerEventTypes.ROLLBACK, rollback.getType());
+		assertEquals(createLayerEvent.getType(), event.getFailEventType());
 		assertEquals(event.getFailEventType(), ((LayerRollbackEvent) rollback).getFailEventType());
-		assertEquals(layerCreatedEvent.getLayer().getId(),
-				((LayerRollbackEvent) rollback).getLastSnapshotItem().getId());
-		assertEquals(layerCreatedEvent.getLayer().getUpdated().getMillis(),
-				((LayerRollbackEvent) rollback).getLastSnapshotItem().getUpdated().getMillis());
+		assertNull(((LayerRollbackEvent) rollback).getLastSnapshotItem());
+	}
+
+	@Test
+	public void prepareRollbackEventAfterRollbackFail_SendLayerRollbackEventWithFailEventTypeEqualToCreateLayer_IfItemIsLocked()
+			throws Exception {
+
+		CreateLayerEvent createLayerEvent = LayerDataUtil.getCreateEvent(code + "10");
+		kafkaTemplate.send(layer_topic, createLayerEvent.getAggregateId(), createLayerEvent);
+		blockingQueue.poll(30, TimeUnit.SECONDS);
+
+		RollbackFailedEvent rollbackFailedEvent = new RollbackFailedEvent(LayerEventTypes.CREATE_FAILED)
+				.buildFrom(createLayerEvent);
+		kafkaTemplate.send(layer_topic, rollbackFailedEvent.getAggregateId(), rollbackFailedEvent);
+
+		Thread.sleep(8000);
+
+		PrepareRollbackEvent event = (PrepareRollbackEvent) new LayerAggregate(null, null)
+				.getRollbackEvent(rollbackFailedEvent);
+
+		try {
+			kafkaTemplate.send(layer_topic, event.getAggregateId(), event);
+
+		} catch (Exception e) {
+			assertTrue(e instanceof ItemLockedException);
+		}
+		Event rollback = (Event) blockingQueue.poll(60, TimeUnit.SECONDS);
+		assertNotNull(rollback);
+		assertEquals(LayerEventTypes.ROLLBACK, rollback.getType());
+		assertEquals(event.getFailEventType(), ((LayerRollbackEvent) rollback).getFailEventType());
+		assertNull(((LayerRollbackEvent) rollback).getLastSnapshotItem());
+	}
+
+	// Update
+	// ConfirmationTimeoutException
+	@Test
+	public void updateLayer_ThrowConfirmationTimeoutExceptionAndSendRollbackEvent_IfConfirmationIsNotReceived()
+			throws Exception {
+
+		// Envía themeInspireCreatedEvent
+		ThemeInspireCreatedEvent themeInspireCreatedEvent = ThemeInspireDataUtil.getThemeInspireCreatedEvent("cc");
+		kafkaTemplate.send(theme_inspire_topic, themeInspireCreatedEvent.getAggregateId(), themeInspireCreatedEvent);
+
+		Thread.sleep(4000);
+
+		LayerCreatedEvent layerCreatedEvent = LayerDataUtil.getLayerCreatedEvent(code + "11");
+		kafkaTemplate.send(layer_topic, layerCreatedEvent.getAggregateId(), layerCreatedEvent);
+		blockingQueue.poll(30, TimeUnit.SECONDS);
+
+		try {
+			Whitebox.invokeMethod(layerCommandHandler, "update", layerCreatedEvent.getAggregateId(),
+					new UpdateLayerCommand(layerCreatedEvent.getLayer()));
+		} catch (Exception e) {
+			assertTrue(e instanceof ConfirmationTimeoutException);
+		}
+
+		Event update = (Event) blockingQueue.poll(40, TimeUnit.SECONDS);
+
+		assertNotNull(update);
+		assertEquals(EventTypes.UPDATE, update.getType());
+
+		Event rollback = (Event) blockingQueue.poll(40, TimeUnit.SECONDS);
+
+		assertNotNull(rollback);
+		assertEquals(EventTypes.ROLLBACK, rollback.getType());
+		assertEquals(LayerEventTypes.ENRICH_UPDATE, ((LayerRollbackEvent) rollback).getFailEventType());
+
+		// LLegó un mensaje de alerta
+		Message message = (Message) blockingQueueForAlerts.poll(40, TimeUnit.SECONDS);
+		assertNotNull(message);
+		assertEquals(AlertType.ERROR.name(), message.getType());
+	}
+
+	// ItemLockedException
+	@Test
+	public void updateLayer_ThrowItemLockedExceptionAndSendRollbackEvent_IfItemLocked() throws Exception {
+
+		LayerCreatedEvent layerCreatedEvent = LayerDataUtil.getLayerCreatedEvent(code + "12");
+		kafkaTemplate.send(layer_topic, layerCreatedEvent.getAggregateId(), layerCreatedEvent);
+		blockingQueue.poll(30, TimeUnit.SECONDS);
+
+		RollbackFailedEvent rollbackFailedEvent = new RollbackFailedEvent(LayerEventTypes.UPDATE_FAILED)
+				.buildFrom(layerCreatedEvent);
+		kafkaTemplate.send(layer_topic, rollbackFailedEvent.getAggregateId(), rollbackFailedEvent);
+
+		Thread.sleep(8000);
+
+		try {
+			Whitebox.invokeMethod(layerCommandHandler, "update", layerCreatedEvent.getAggregateId(),
+					new UpdateLayerCommand(layerCreatedEvent.getLayer()));
+		} catch (Exception e) {
+			assertTrue(e instanceof ItemLockedException);
+		}
+		Event rollback = (Event) blockingQueue.poll(40, TimeUnit.SECONDS);
+
+		assertNotNull(rollback);
+		assertEquals(EventTypes.ROLLBACK, rollback.getType());
+		assertEquals(rollbackFailedEvent.getFailEventType(), ((LayerRollbackEvent) rollback).getFailEventType());
+
+		// LLegó un mensaje de alerta
+		Message message = (Message) blockingQueueForAlerts.poll(50, TimeUnit.SECONDS);
+		assertNotNull(message);
+		assertEquals(AlertType.ERROR.name(), message.getType());
+	}
+
+	@Test
+	public void prepareRollbackEvent_SendLayerRollbackEventWithFailEventTypeEqualToUpdateLayer_IfItemIsLocked()
+			throws Exception {
+
+		LayerCreatedEvent layerCreatedEvent = LayerDataUtil.getLayerCreatedEvent(code + "13");
+		kafkaTemplate.send(layer_topic, layerCreatedEvent.getAggregateId(), layerCreatedEvent);
+		blockingQueue.poll(30, TimeUnit.SECONDS);
+
+		UpdateLayerEvent updateLayerEvent = LayerDataUtil.getUpdateEvent(code + "13");
+		kafkaTemplate.send(layer_topic, updateLayerEvent.getAggregateId(), updateLayerEvent);
+
+		Thread.sleep(8000);
+
+		PrepareRollbackEvent event = (PrepareRollbackEvent) new LayerAggregate(null, null)
+				.getRollbackEvent(updateLayerEvent);
+
+		kafkaTemplate.send(layer_topic, event.getAggregateId(), event);
+
+		Event update = (Event) blockingQueue.poll(40, TimeUnit.SECONDS);
+		assertNotNull(update);
+		assertEquals(LayerEventTypes.UPDATE, update.getType());
+
+		Event rollback = (Event) blockingQueue.poll(40, TimeUnit.SECONDS);
+
+		assertNotNull(rollback);
+		assertEquals(LayerEventTypes.ROLLBACK, rollback.getType());
+		assertEquals(updateLayerEvent.getType(), ((LayerRollbackEvent) rollback).getFailEventType());
+		assertEquals(event.getFailEventType(), ((LayerRollbackEvent) rollback).getFailEventType());
+		JSONAssert.assertEquals(layerCreatedEvent.getLayer().toString(),
+				((LayerRollbackEvent) rollback).getLastSnapshotItem().toString(), false);
+	}
+
+	@Test
+	public void prepareRollbackEventAfterRollbackFail_SendLayerRollbackEventWithFailEventTypeEqualToUpdateLayer_IfItemIsLocked()
+			throws Exception {
+
+		LayerCreatedEvent layerCreatedEvent = LayerDataUtil.getLayerCreatedEvent(code + "14");
+		kafkaTemplate.send(layer_topic, layerCreatedEvent.getAggregateId(), layerCreatedEvent);
+		blockingQueue.poll(30, TimeUnit.SECONDS);
+
+		UpdateLayerEvent updateLayerEvent = LayerDataUtil.getUpdateEvent(code + "14");
+		kafkaTemplate.send(layer_topic, updateLayerEvent.getAggregateId(), updateLayerEvent);
+
+		RollbackFailedEvent rollbackFailedEvent = new RollbackFailedEvent(LayerEventTypes.UPDATE_FAILED)
+				.buildFrom(updateLayerEvent);
+		kafkaTemplate.send(layer_topic, rollbackFailedEvent.getAggregateId(), rollbackFailedEvent);
+
+		Thread.sleep(8000);
+
+		PrepareRollbackEvent event = (PrepareRollbackEvent) new LayerAggregate(null, null)
+				.getRollbackEvent(rollbackFailedEvent);
+
+		try {
+			kafkaTemplate.send(layer_topic, event.getAggregateId(), event);
+
+		} catch (Exception e) {
+			assertTrue(e instanceof ItemLockedException);
+		}
+
+		Event update = (Event) blockingQueue.poll(60, TimeUnit.SECONDS);
+		assertNotNull(update);
+		assertEquals(LayerEventTypes.UPDATE, update.getType());
+
+		Event rollback = (Event) blockingQueue.poll(60, TimeUnit.SECONDS);
+		assertNotNull(rollback);
+		assertEquals(LayerEventTypes.ROLLBACK, rollback.getType());
+		assertEquals(event.getFailEventType(), ((LayerRollbackEvent) rollback).getFailEventType());
+		JSONAssert.assertEquals(layerCreatedEvent.getLayer().toString(),
+				((LayerRollbackEvent) rollback).getLastSnapshotItem().toString(), false);
+	}
+
+	// Refresh
+	// ConfirmationTimeoutException
+	@Test
+	public void refreshLayer_ThrowConfirmationTimeoutExceptionAndSendRollbackEvent_IfConfirmationIsNotReceived()
+			throws Exception {
+
+		// Envía themeInspireCreatedEvent
+		ThemeInspireCreatedEvent themeInspireCreatedEvent = ThemeInspireDataUtil.getThemeInspireCreatedEvent("cc");
+		kafkaTemplate.send(theme_inspire_topic, themeInspireCreatedEvent.getAggregateId(), themeInspireCreatedEvent);
+
+		Thread.sleep(4000);
+
+		LayerCreatedEvent layerCreatedEvent = LayerDataUtil.getLayerCreatedEvent(code + "15");
+		kafkaTemplate.send(layer_topic, layerCreatedEvent.getAggregateId(), layerCreatedEvent);
+		blockingQueue.poll(30, TimeUnit.SECONDS);
+
+		try {
+			Whitebox.invokeMethod(layerCommandHandler, "refresh", new RefreshLayerCommand(
+					layerCreatedEvent.getAggregateId(), LayerDataUtil.getLayerWMS(code + "15")));
+		} catch (Exception e) {
+			assertTrue(e instanceof ConfirmationTimeoutException);
+		}
+		Event evt = (Event) blockingQueue.poll(40, TimeUnit.SECONDS);
+
+		assertNotNull(evt);
+		if (!evt.getType().equals(EventTypes.ROLLBACK)) {
+			evt = (Event) blockingQueue.poll(40, TimeUnit.SECONDS);
+		}
+
+		assertNotNull(evt);
+		assertEquals(EventTypes.ROLLBACK, evt.getType());
+		assertEquals(LayerEventTypes.REFRESH, ((LayerRollbackEvent) evt).getFailEventType());
+
+		// LLegó un mensaje de alerta
+		Message message = (Message) blockingQueueForAlerts.poll(40, TimeUnit.SECONDS);
+		assertNotNull(message);
+		assertEquals(AlertType.ERROR.name(), message.getType());
+	}
+
+	// ItemLockedException
+	@Test
+	public void refreshLayer_ThrowItemLockedExceptionAndSendRollbackEvent_IfItemLocked() throws Exception {
+
+		LayerCreatedEvent layerCreatedEvent = LayerDataUtil.getLayerCreatedEvent(code + "16");
+		kafkaTemplate.send(layer_topic, layerCreatedEvent.getAggregateId(), layerCreatedEvent);
+		blockingQueue.poll(30, TimeUnit.SECONDS);
+
+		RollbackFailedEvent rollbackFailedEvent = new RollbackFailedEvent(LayerEventTypes.UPDATE_FAILED)
+				.buildFrom(layerCreatedEvent);
+		kafkaTemplate.send(layer_topic, rollbackFailedEvent.getAggregateId(), rollbackFailedEvent);
+
+		Thread.sleep(8000);
+
+		try {
+			Whitebox.invokeMethod(layerCommandHandler, "refresh", new RefreshLayerCommand(
+					layerCreatedEvent.getAggregateId(), LayerDataUtil.getLayerWMS(code + "16")));
+		} catch (Exception e) {
+			assertTrue(e instanceof ItemLockedException);
+		}
+		Event rollback = (Event) blockingQueue.poll(40, TimeUnit.SECONDS);
+
+		assertNotNull(rollback);
+		assertEquals(EventTypes.ROLLBACK, rollback.getType());
+		assertEquals(rollbackFailedEvent.getFailEventType(), ((LayerRollbackEvent) rollback).getFailEventType());
+
+		// LLegó un mensaje de alerta
+		Message message = (Message) blockingQueueForAlerts.poll(50, TimeUnit.SECONDS);
+		assertNotNull(message);
+		assertEquals(AlertType.ERROR.name(), message.getType());
+	}
+
+	@Test
+	public void prepareRollbackEvent_SendLayerRollbackEventWithFailEventTypeEqualToRefreshLayer_IfItemIsLocked()
+			throws Exception {
+
+		LayerCreatedEvent layerCreatedEvent = LayerDataUtil.getLayerCreatedEvent(code + "17");
+		kafkaTemplate.send(layer_topic, layerCreatedEvent.getAggregateId(), layerCreatedEvent);
+		blockingQueue.poll(30, TimeUnit.SECONDS);
+
+		RefreshLayerEvent refreshLayerEvent = LayerDataUtil.getRefreshEvent(code + "17");
+		kafkaTemplate.send(layer_topic, refreshLayerEvent.getAggregateId(), refreshLayerEvent);
+
+		Thread.sleep(8000);
+
+		PrepareRollbackEvent event = (PrepareRollbackEvent) new LayerAggregate(null, null)
+				.getRollbackEvent(refreshLayerEvent);
+
+		kafkaTemplate.send(layer_topic, event.getAggregateId(), event);
+
+		Event rollback = (Event) blockingQueue.poll(40, TimeUnit.SECONDS);
+
+		assertNotNull(rollback);
+		assertEquals(LayerEventTypes.ROLLBACK, rollback.getType());
+		assertEquals(refreshLayerEvent.getType(), ((LayerRollbackEvent) rollback).getFailEventType());
+		assertEquals(event.getFailEventType(), ((LayerRollbackEvent) rollback).getFailEventType());
+		JSONAssert.assertEquals(layerCreatedEvent.getLayer().toString(),
+				((LayerRollbackEvent) rollback).getLastSnapshotItem().toString(), false);
+	}
+
+	@Test
+	public void prepareRollbackEventAfterRollbackFail_SendLayerRollbackEventWithFailEventTypeEqualToRefreshLayer_IfItemIsLocked()
+			throws Exception {
+
+		LayerCreatedEvent layerCreatedEvent = LayerDataUtil.getLayerCreatedEvent(code + "18");
+		kafkaTemplate.send(layer_topic, layerCreatedEvent.getAggregateId(), layerCreatedEvent);
+		blockingQueue.poll(30, TimeUnit.SECONDS);
+
+		RefreshLayerEvent refreshLayerEvent = LayerDataUtil.getRefreshEvent(code + "18");
+		kafkaTemplate.send(layer_topic, refreshLayerEvent.getAggregateId(), refreshLayerEvent);
+
+		RollbackFailedEvent rollbackFailedEvent = new RollbackFailedEvent(LayerEventTypes.UPDATE_FAILED)
+				.buildFrom(refreshLayerEvent);
+		kafkaTemplate.send(layer_topic, rollbackFailedEvent.getAggregateId(), rollbackFailedEvent);
+
+		Thread.sleep(8000);
+
+		PrepareRollbackEvent event = (PrepareRollbackEvent) new LayerAggregate(null, null)
+				.getRollbackEvent(rollbackFailedEvent);
+
+		try {
+			kafkaTemplate.send(layer_topic, event.getAggregateId(), event);
+
+		} catch (Exception e) {
+			assertTrue(e instanceof ItemLockedException);
+		}
+		Event rollback = (Event) blockingQueue.poll(60, TimeUnit.SECONDS);
+		assertNotNull(rollback);
+		assertEquals(LayerEventTypes.ROLLBACK, rollback.getType());
+		assertEquals(event.getFailEventType(), ((LayerRollbackEvent) rollback).getFailEventType());
+		JSONAssert.assertEquals(layerCreatedEvent.getLayer().toString(),
+				((LayerRollbackEvent) rollback).getLastSnapshotItem().toString(), false);
+	}
+
+	// Delete
+	// ConfirmationTimeoutException
+	@Test
+	public void deleteLayer_ThrowConfirmationTimeoutExceptionAndSendRollbackEvent_IfConfirmationIsNotReceived()
+			throws Exception {
+
+		LayerCreatedEvent layerCreatedEvent = LayerDataUtil.getLayerCreatedEvent(code + "19");
+		kafkaTemplate.send(layer_topic, layerCreatedEvent.getAggregateId(), layerCreatedEvent);
+		blockingQueue.poll(30, TimeUnit.SECONDS);
+
+		try {
+			Whitebox.invokeMethod(layerCommandHandler, "update", layerCreatedEvent.getAggregateId(),
+					new DeleteLayerCommand(layerCreatedEvent.getLayer().getId()));
+		} catch (Exception e) {
+			assertTrue(e instanceof ConfirmationTimeoutException);
+		}
+
+		Event confirm = (Event) blockingQueue.poll(40, TimeUnit.SECONDS);
+
+		assertNotNull(confirm);
+		assertEquals(LayerEventTypes.DELETE_CHECKED, confirm.getType());
+
+		Event rollback = (Event) blockingQueue.poll(40, TimeUnit.SECONDS);
+
+		assertNotNull(rollback);
+		assertEquals(EventTypes.ROLLBACK, rollback.getType());
+		assertEquals(LayerEventTypes.CHECK_DELETE, ((LayerRollbackEvent) rollback).getFailEventType());
+
+		// LLegó un mensaje de alerta
+		Message message = (Message) blockingQueueForAlerts.poll(40, TimeUnit.SECONDS);
+		assertNotNull(message);
+		assertEquals(AlertType.ERROR.name(), message.getType());
+	}
+
+	// ItemLockedException
+	@Test
+	public void deleteLayer_ThrowItemLockedExceptionAndSendRollbackEvent_IfItemLocked() throws Exception {
+
+		LayerCreatedEvent layerCreatedEvent = LayerDataUtil.getLayerCreatedEvent(code + "20");
+		kafkaTemplate.send(layer_topic, layerCreatedEvent.getAggregateId(), layerCreatedEvent);
+		blockingQueue.poll(30, TimeUnit.SECONDS);
+
+		RollbackFailedEvent rollbackFailedEvent = new RollbackFailedEvent(LayerEventTypes.DELETE_FAILED)
+				.buildFrom(layerCreatedEvent);
+		kafkaTemplate.send(layer_topic, rollbackFailedEvent.getAggregateId(), rollbackFailedEvent);
+
+		Thread.sleep(8000);
+
+		try {
+			Whitebox.invokeMethod(layerCommandHandler, "update", layerCreatedEvent.getAggregateId(),
+					new DeleteLayerCommand(layerCreatedEvent.getLayer().getId()));
+		} catch (Exception e) {
+			assertTrue(e instanceof ItemLockedException);
+		}
+		Event rollback = (Event) blockingQueue.poll(40, TimeUnit.SECONDS);
+
+		assertNotNull(rollback);
+		assertEquals(EventTypes.ROLLBACK, rollback.getType());
+		assertEquals(rollbackFailedEvent.getFailEventType(), ((LayerRollbackEvent) rollback).getFailEventType());
+
+		// LLegó un mensaje de alerta
+		Message message = (Message) blockingQueueForAlerts.poll(50, TimeUnit.SECONDS);
+		assertNotNull(message);
+		assertEquals(AlertType.ERROR.name(), message.getType());
+	}
+
+	@Test
+	public void prepareRollbackEvent_SendLayerRollbackEventWithFailEventTypeEqualToDeleteLayer_IfItemIsLocked()
+			throws Exception {
+
+		LayerCreatedEvent layerCreatedEvent = LayerDataUtil.getLayerCreatedEvent(code + "21");
+		kafkaTemplate.send(layer_topic, layerCreatedEvent.getAggregateId(), layerCreatedEvent);
+		blockingQueue.poll(30, TimeUnit.SECONDS);
+
+		DeleteLayerEvent deleteLayerEvent = LayerDataUtil.getDeleteEvent(code + "21");
+		kafkaTemplate.send(layer_topic, deleteLayerEvent.getAggregateId(), deleteLayerEvent);
+
+		Thread.sleep(8000);
+
+		PrepareRollbackEvent event = (PrepareRollbackEvent) new LayerAggregate(null, null)
+				.getRollbackEvent(deleteLayerEvent);
+
+		kafkaTemplate.send(layer_topic, event.getAggregateId(), event);
+
+		Event rollback = (Event) blockingQueue.poll(40, TimeUnit.SECONDS);
+
+		assertNotNull(rollback);
+		assertEquals(LayerEventTypes.ROLLBACK, rollback.getType());
+		assertEquals(deleteLayerEvent.getType(), ((LayerRollbackEvent) rollback).getFailEventType());
+		assertEquals(event.getFailEventType(), ((LayerRollbackEvent) rollback).getFailEventType());
+		JSONAssert.assertEquals(layerCreatedEvent.getLayer().toString(),
+				((LayerRollbackEvent) rollback).getLastSnapshotItem().toString(), false);
+	}
+
+	@Test
+	public void prepareRollbackEventAfterRollbackFail_SendLayerRollbackEventWithFailEventTypeEqualToDeleteLayer_IfItemIsLocked()
+			throws Exception {
+
+		LayerCreatedEvent layerCreatedEvent = LayerDataUtil.getLayerCreatedEvent(code + "22");
+		kafkaTemplate.send(layer_topic, layerCreatedEvent.getAggregateId(), layerCreatedEvent);
+		blockingQueue.poll(30, TimeUnit.SECONDS);
+
+		DeleteLayerEvent deleteLayerEvent = LayerDataUtil.getDeleteEvent(code + "22");
+		kafkaTemplate.send(layer_topic, deleteLayerEvent.getAggregateId(), deleteLayerEvent);
+
+		RollbackFailedEvent rollbackFailedEvent = new RollbackFailedEvent(LayerEventTypes.DELETE_FAILED)
+				.buildFrom(deleteLayerEvent);
+		kafkaTemplate.send(layer_topic, rollbackFailedEvent.getAggregateId(), rollbackFailedEvent);
+
+		Thread.sleep(8000);
+
+		PrepareRollbackEvent event = (PrepareRollbackEvent) new LayerAggregate(null, null)
+				.getRollbackEvent(rollbackFailedEvent);
+
+		try {
+			kafkaTemplate.send(layer_topic, event.getAggregateId(), event);
+
+		} catch (Exception e) {
+			assertTrue(e instanceof ItemLockedException);
+		}
+		Event rollback = (Event) blockingQueue.poll(60, TimeUnit.SECONDS);
+		assertNotNull(rollback);
+		assertEquals(LayerEventTypes.ROLLBACK, rollback.getType());
+		assertEquals(event.getFailEventType(), ((LayerRollbackEvent) rollback).getFailEventType());
+		JSONAssert.assertEquals(layerCreatedEvent.getLayer().toString(),
+				((LayerRollbackEvent) rollback).getLastSnapshotItem().toString(), false);
 	}
 
 	@KafkaHandler
@@ -576,6 +1092,11 @@ public class LayerCommandHandlerTest extends KafkaBaseIntegrationTest {
 	public void layerRollbackEvent(LayerRollbackEvent layerRollbackEvent) {
 
 		blockingQueue.offer(layerRollbackEvent);
+	}
+
+	@KafkaListener(topics = "${broker.topic.alert}", groupId = "test")
+	public void errorAlert(Message message) {
+		blockingQueueForAlerts.offer(message);
 	}
 
 	@KafkaHandler(isDefault = true)
