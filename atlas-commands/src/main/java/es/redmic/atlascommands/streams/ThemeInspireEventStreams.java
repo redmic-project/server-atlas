@@ -173,6 +173,6 @@ public class ThemeInspireEventStreams extends EventSourcingStreams {
 	protected Event getRollbackEvent(Event prepareRollbackEvent, Event lastSuccessEvent) {
 
 		return ThemeInspireEventFactory.getEvent(prepareRollbackEvent, ThemeInspireEventTypes.ROLLBACK,
-				((ThemeInspireEvent) lastSuccessEvent).getThemeInspire());
+				lastSuccessEvent != null ? ((ThemeInspireEvent) lastSuccessEvent).getThemeInspire() : null);
 	}
 }

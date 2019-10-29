@@ -184,6 +184,6 @@ public class CategoryEventStreams extends EventSourcingStreams {
 	protected Event getRollbackEvent(Event prepareRollbackEvent, Event lastSuccessEvent) {
 
 		return CategoryEventFactory.getEvent(prepareRollbackEvent, CategoryEventTypes.ROLLBACK,
-				((CategoryEvent) lastSuccessEvent).getCategory());
+				lastSuccessEvent != null ? ((CategoryEvent) lastSuccessEvent).getCategory() : null);
 	}
 }

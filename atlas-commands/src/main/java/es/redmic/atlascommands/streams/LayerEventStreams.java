@@ -420,6 +420,6 @@ public class LayerEventStreams extends EventSourcingStreams {
 	protected Event getRollbackEvent(Event prepareRollbackEvent, Event lastSuccessEvent) {
 
 		return LayerEventFactory.getEvent(prepareRollbackEvent, LayerEventTypes.ROLLBACK,
-				((LayerEvent) lastSuccessEvent).getLayer());
+				lastSuccessEvent != null ? ((LayerEvent) lastSuccessEvent).getLayer() : null);
 	}
 }
