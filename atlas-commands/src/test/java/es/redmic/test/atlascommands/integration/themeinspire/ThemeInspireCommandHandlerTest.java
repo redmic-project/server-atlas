@@ -503,6 +503,8 @@ public class ThemeInspireCommandHandlerTest extends KafkaBaseIntegrationTest {
 		kafkaTemplate.send(theme_inspire_topic, themeInspireCreatedEvent.getAggregateId(), themeInspireCreatedEvent);
 		blockingQueue.poll(30, TimeUnit.SECONDS);
 
+		Thread.sleep(8000);
+
 		try {
 			Whitebox.invokeMethod(themeInspireCommandHandler, "update", themeInspireCreatedEvent.getAggregateId(),
 					new UpdateThemeInspireCommand(themeInspireCreatedEvent.getThemeInspire()));
@@ -628,6 +630,8 @@ public class ThemeInspireCommandHandlerTest extends KafkaBaseIntegrationTest {
 				.getThemeInspireCreatedEvent(code + "16");
 		kafkaTemplate.send(theme_inspire_topic, themeInspireCreatedEvent.getAggregateId(), themeInspireCreatedEvent);
 		blockingQueue.poll(30, TimeUnit.SECONDS);
+
+		Thread.sleep(8000);
 
 		try {
 			Whitebox.invokeMethod(themeInspireCommandHandler, "update", themeInspireCreatedEvent.getAggregateId(),

@@ -628,11 +628,11 @@ public class LayerCommandHandlerTest extends KafkaBaseIntegrationTest {
 		ThemeInspireCreatedEvent themeInspireCreatedEvent = ThemeInspireDataUtil.getThemeInspireCreatedEvent("cc");
 		kafkaTemplate.send(theme_inspire_topic, themeInspireCreatedEvent.getAggregateId(), themeInspireCreatedEvent);
 
-		Thread.sleep(4000);
-
 		LayerCreatedEvent layerCreatedEvent = LayerDataUtil.getLayerCreatedEvent(code + "11");
 		kafkaTemplate.send(layer_topic, layerCreatedEvent.getAggregateId(), layerCreatedEvent);
 		blockingQueue.poll(30, TimeUnit.SECONDS);
+
+		Thread.sleep(8000);
 
 		try {
 			Whitebox.invokeMethod(layerCommandHandler, "update", layerCreatedEvent.getAggregateId(),
@@ -771,11 +771,11 @@ public class LayerCommandHandlerTest extends KafkaBaseIntegrationTest {
 		ThemeInspireCreatedEvent themeInspireCreatedEvent = ThemeInspireDataUtil.getThemeInspireCreatedEvent("cc");
 		kafkaTemplate.send(theme_inspire_topic, themeInspireCreatedEvent.getAggregateId(), themeInspireCreatedEvent);
 
-		Thread.sleep(4000);
-
 		LayerCreatedEvent layerCreatedEvent = LayerDataUtil.getLayerCreatedEvent(code + "15");
 		kafkaTemplate.send(layer_topic, layerCreatedEvent.getAggregateId(), layerCreatedEvent);
 		blockingQueue.poll(30, TimeUnit.SECONDS);
+
+		Thread.sleep(4000);
 
 		try {
 			Whitebox.invokeMethod(layerCommandHandler, "refresh", new RefreshLayerCommand(
@@ -903,6 +903,8 @@ public class LayerCommandHandlerTest extends KafkaBaseIntegrationTest {
 		LayerCreatedEvent layerCreatedEvent = LayerDataUtil.getLayerCreatedEvent(code + "19");
 		kafkaTemplate.send(layer_topic, layerCreatedEvent.getAggregateId(), layerCreatedEvent);
 		blockingQueue.poll(30, TimeUnit.SECONDS);
+
+		Thread.sleep(8000);
 
 		try {
 			Whitebox.invokeMethod(layerCommandHandler, "update", layerCreatedEvent.getAggregateId(),

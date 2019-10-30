@@ -457,6 +457,8 @@ public class CategoryCommandHandlerTest extends KafkaBaseIntegrationTest {
 		kafkaTemplate.send(category_topic, categoryCreatedEvent.getAggregateId(), categoryCreatedEvent);
 		blockingQueue.poll(30, TimeUnit.SECONDS);
 
+		Thread.sleep(8000);
+
 		try {
 			Whitebox.invokeMethod(categoryCommandHandler, "update", categoryCreatedEvent.getAggregateId(),
 					new UpdateCategoryCommand(categoryCreatedEvent.getCategory()));
@@ -576,6 +578,8 @@ public class CategoryCommandHandlerTest extends KafkaBaseIntegrationTest {
 		CategoryCreatedEvent categoryCreatedEvent = CategoryDataUtil.getCategoryCreatedEvent(code + "15");
 		kafkaTemplate.send(category_topic, categoryCreatedEvent.getAggregateId(), categoryCreatedEvent);
 		blockingQueue.poll(30, TimeUnit.SECONDS);
+
+		Thread.sleep(8000);
 
 		try {
 			Whitebox.invokeMethod(categoryCommandHandler, "update", categoryCreatedEvent.getAggregateId(),
