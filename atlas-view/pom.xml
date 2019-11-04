@@ -17,9 +17,9 @@
 	
 	<properties>
 		<!-- REDMIC -->
-		<redmic.elasticsearch-lib.version>0.12.0-feature-atlasMicroservice</redmic.elasticsearch-lib.version>
-		<redmic.view-lib.version>0.10.0-feature-atlasMicroservice</redmic.view-lib.version>
-		<redmic.user-settings-lib.version>0.1.0</redmic.user-settings-lib.version>
+		<redmic.elasticsearch-lib.version>0.13.0</redmic.elasticsearch-lib.version>
+		<redmic.view-lib.version>0.11.0</redmic.view-lib.version>
+		<redmic.user-settings-lib.version>0.2.0</redmic.user-settings-lib.version>
 		<!-- OTROS -->
 		<elasticsearch.version>6.5.1</elasticsearch.version>
 		<mapstruct.version>1.3.0.Final</mapstruct.version>

@@ -16,8 +16,8 @@
 	<description>Atlas management microservice (add/edit/delete atlas layers)</description>
 
 	<properties>
-		<redmic.commands-lib.version>0.9.0-feature-atlasMicroservice</redmic.commands-lib.version>
-		<redmic.user-settings-lib.version>0.1.0</redmic.user-settings-lib.version>
+		<redmic.commands-lib.version>0.10.0</redmic.commands-lib.version>
+		<redmic.user-settings-lib.version>0.2.0</redmic.user-settings-lib.version>
 		
 		<mapstruct.version>1.3.0.Final</mapstruct.version>
 	</properties>
