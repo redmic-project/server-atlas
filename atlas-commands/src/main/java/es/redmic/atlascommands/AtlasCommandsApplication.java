@@ -2,7 +2,7 @@ package es.redmic.atlascommands;
 
 /*-
  * #%L
- * atlas commands
+ * Atlas-management
  * %%
  * Copyright (C) 2019 REDMIC Project / Server
  * %%
@@ -20,29 +20,42 @@ package es.redmic.atlascommands;
  * #L%
  */
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCustomizer;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
+import com.fasterxml.jackson.databind.Module;
+
+import es.redmic.jts4jackson.module.JTSModule;
+import es.redmic.restlib.config.ResourceBundleMessageSource;
 import io.micrometer.core.instrument.MeterRegistry;
 
 @SpringBootApplication
-@ComponentScan({ "es.redmic.atlascommands" })
+@ComponentScan({ "es.redmic.atlascommands", "es.redmic.restlib", "es.redmic.commandslib", "es.redmic.brokerlib.alert" })
 public class AtlasCommandsApplication {
-	
+
 	@Value("${info.microservice.name}")
 	String microserviceName;
 
 	public static void main(String[] args) {
 		SpringApplication.run(AtlasCommandsApplication.class, args);
 	}
-	
-	@PostConstruct
+
+	@Bean
+	public MessageSource messageSource() {
+
+		return new ResourceBundleMessageSource();
+	}
+
+	@Bean
+	public Module jtsModule() {
+		return new JTSModule();
+	}
+
 	@Bean
 	MeterRegistryCustomizer<MeterRegistry> metricsCommonTags() {
 		return registry -> registry.config().commonTags("application", microserviceName);

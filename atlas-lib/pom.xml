@@ -4,13 +4,13 @@
 	<parent>
 		<groupId>es.redmic.atlas</groupId>
 		<artifactId>atlas</artifactId>
-		<version>0.1.0</version>
+		<version>0.2.0</version>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>atlas-lib</artifactId>
 	<packaging>jar</packaging>
-	<name>atlas-lib</name>
+	<name>Atlas-lib</name>
 
 	<dependencies>
 		<!-- REDMIC -->
@@ -20,5 +20,44 @@
 			<version>${redmic.broker-lib.version}</version>
 			<scope>provided</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>es.redmic.lib</groupId>
+			<artifactId>models</artifactId>
+			<version>${redmic.models.version}</version>
+		</dependency>
+
+		<!-- Test -->
+
+		<dependency>
+			<groupId>es.redmic.lib</groupId>
+			<artifactId>test-utils</artifactId>
+			<version>${redmic.test-utils.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.glassfish</groupId>
+			<artifactId>javax.el</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>Jar Tests Package</id>
+						<phase>package</phase>
+						<goals>
+							<goal>test-jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

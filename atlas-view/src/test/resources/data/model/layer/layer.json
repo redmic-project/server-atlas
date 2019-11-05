@@ -1,0 +1,139 @@
+{
+	"id": "635",
+	"name": "SpeciesInCell100m",
+	"joinIndex": {
+		"parent": "category-333",
+		"name": "layer"
+	},
+	"description": "Registros de especies representados en cuadrículas de cuadrículas100x100m",
+	"alias": "Especies en cuadrículas 100x100m",
+	"atlas": true,
+	"themeInspire": {
+		"code": "sd",
+		"name": "Distribución de las especies",
+		"id": "32",
+		"name_en": "Species distribution"
+	},
+	"refresh": 0,
+	"title": "Especies en cuadrículas 100x100m",
+	"abstractLayer": "Registros de especies representados en cuadrículas de cuadrículas 100x100m",
+	"keywords": [
+		"100m"
+	],
+	"srs": [
+		"EPSG:3857",
+		"EPSG:4326",
+		"EPSG:32628",
+		"CRS:84"
+	],
+	"stylesLayer": [
+		{
+			"name": "el:batimetria50mCanarias",
+			"title": "Isobatas cada 50 m azules",
+			"abstractStyle": "Apropiado para representar isobatas con 50 m de equidistancia, en varios niveles de escala o zoom, en los que se adapta el etiquetado para mejorar la visualización",
+			"format": "image/png",
+			"url": "http://atlas.redmic.es:80/el/ows?service=WMS&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=batimetriaCanarias"
+		},
+		{
+			"name": "el:batimetriaMacaronesia",
+			"title": null,
+			"abstractStyle": null,
+			"format": "image/png",
+			"url": "http://atlas.redmic.es:80/el/ows?service=WMS&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=batimetriaCanarias&style=batimetriaMacaronesia"
+		},
+		{
+			"name": "el:batimetria1mCanarias",
+			"title": null,
+			"abstractStyle": null,
+			"format": "image/png",
+			"url": "http://atlas.redmic.es:80/el/ows?service=WMS&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=batimetriaCanarias&style=batimetria1mCanarias"
+		},
+		{
+			"name": "el:batimetria50mCanariasGroup",
+			"title": null,
+			"abstractStyle": null,
+			"format": "image/png",
+			"url": "http://atlas.redmic.es:80/el/ows?service=WMS&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=batimetriaCanarias&style=batimetria50mCanariasGroup"
+		}
+	],
+	"contact": {
+		"name": "José Andrés Sevilla",
+		"organization": "Observatorio Ambiental Granadilla",
+		"contactPosition": "Technical GIS",
+		"email": "gis@oag-fundacion.org",
+		"phone": "+34922298700",
+		"fax": "",
+		"address": "Edf. Puerto Ciudad S/C de Tenerife 38101 España "
+	},
+	"activities": [
+		{
+			"path": "root.1.12",
+			"name": "Banco de datos de especies marinas de Canarias (DIADEMA)",
+			"id": 12
+		}
+	],
+	"urlSource": "https://atlas.redmic.es/geoserver/sd/wms",
+	"queryable": true,
+	"formats": [
+		"image/png",
+		"application/atom+xml",
+		"application/json;type=geojson",
+		"application/json;type=topojson",
+		"application/json;type=utfgrid",
+		"application/vnd.google-earth.kml+xml",
+		"application/vnd.google-earth.kml+xml;mode=networklink",
+		"application/vnd.google-earth.kmz",
+		"application/vnd.mapbox-vector-tile",
+		"image/png; mode=8bit",
+		"text/html; subtype=openlayers",
+		"text/html; subtype=openlayers2",
+		"text/html; subtype=openlayers3"
+	],
+	"image": "/api/mediastorage/photobank/layers/635.png",
+	"latLonBoundsImage": {
+		"minY": 28.56990337371826,
+		"minX": -16.3326358795166,
+		"maxY": 28.58088970184326,
+		"maxX": -16.3216495513916
+	},
+	"protocols": [
+		{
+			"type": "WMS",
+			"url": "https://atlas.redmic.es/geoserver/sd/wms"
+		}
+	],
+	"geometry": {
+		"type": "Polygon",
+		"coordinates": [
+			[
+				[-18.1745567321777, 27.6111183166504],
+				[-18.1745567321777, 29.4221172332764],
+				[-13.3011913299561, 29.4221172332764],
+				[-13.3011913299561, 27.6111183166504],
+				[-18.1745567321777, 27.6111183166504]
+			]
+		]
+	},
+	"legend": "https://redmic.local/ww",
+	"attribution": {
+		"title": "Observatorio Ambiental Granadilla",
+		"onlineResource": "http://www.oag-fundacion.org",
+		"logoURL": {
+			"format": "image/jpeg",
+			"onlineResource": "http://www.oag-fundacion.org/content/logos/oag_sinmedusa.jpg"
+		}
+	},
+	"timeDimension": {
+		"name": "time",
+		"units": "ISO8601",
+		"defaultValue": "P30M/PRESENT"
+	},
+	"elevationDimension": {
+		"name": "elevation",
+		"units": "ISO8601",
+		"unitSymbol": "m",
+		"defaultValue": "1"
+	},
+	"updated": "2017-05-23T12:35:12.052+00:00",
+	"inserted": "2017-05-23T12:35:12.052+00:00"
+}

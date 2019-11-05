@@ -1,0 +1,28 @@
+{
+	"took": 1,
+	"timed_out": false,
+	"_shards": {
+		"total": 5,
+		"successful": 5,
+		"failed": 0
+	},
+	"hits": {
+		"total": 1,
+		"max_score": null,
+		"hits": [
+			{
+				"_index": "theme-inspire",
+				"_type": "_doc",
+				"_id": "themeinspire-code-gg",
+				"_version": 1,
+				"_score": 1,
+				"_source": {
+					"id": "themeinspire-code-gg",
+					"code": "gg",
+					"name": "Sistema de cuadrículas geográficas",
+					"name_en": "Geographical grid systems"
+				}
+			}
+		]
+	}
+}

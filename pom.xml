@@ -12,19 +12,18 @@
 	<groupId>es.redmic.atlas</groupId>
 	<artifactId>atlas</artifactId>
 	<packaging>pom</packaging>
-	<version>0.1.0</version>
+	<version>0.2.0</version>
 	<name>atlas</name>
 
 	<properties>
 		<!-- Versions of the REDMIC library used in the children -->
-		<redmic.broker-lib.version>0.10.0</redmic.broker-lib.version>
-		<!-- Añadir versión de la librería de la unidad funcional -->
-		<redmic.commands-lib.version>0.9.0</redmic.commands-lib.version>
-		<redmic.test-utils.version>0.9.0</redmic.test-utils.version>
-		<!-- Añadir versión de la librería del tipo de vista elegida (elasticsearch/postgresql) -->
-		<redmic.view-lib.version>0.10.0</redmic.view-lib.version>
-
+		<redmic.broker-lib.version>0.11.0</redmic.broker-lib.version>
+		<redmic.models.version>0.11.0</redmic.models.version>
+		<redmic.test-utils.version>0.10.0</redmic.test-utils.version>
+		<redmic.atlas-lib.version>0.2.0</redmic.atlas-lib.version>
+		<redmic.exceptions.version>0.10.0</redmic.exceptions.version>
 		<!-- Versions of the OTHERS library used in the children -->
+		<kafka.version>2.0.1</kafka.version>
 
 		<!-- Plugins -->
 		<asciidoctor.maven.plugin.version>1.5.6</asciidoctor.maven.plugin.version>
@@ -51,10 +50,41 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- REDMIC -->
+
 		<dependency>
 			<groupId>es.redmic.lib</groupId>
-			<artifactId>test-utils</artifactId>
-			<version>${redmic.test-utils.version}</version>
+			<artifactId>exceptions</artifactId>
+			<version>${redmic.exceptions.version}</version>
+		</dependency>
+
+		<!-- Override kafkaClient version -->
+
+		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka-clients</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka-clients</artifactId>
+			<version>${kafka.version}</version>
+			<classifier>test</classifier>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka_2.11</artifactId>
+			<version>${kafka.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka_2.11</artifactId>
+			<version>${kafka.version}</version>
+			<classifier>test</classifier>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -68,6 +98,16 @@
 			<id>snapshots</id>
 			<name>libs-snapshot</name>
 			<url>https://artifactory.redmic.net/artifactory/libs-snapshot</url>
+		</repository>
+		<repository>
+			<id>osgeo</id>
+			<name>Open Source Geospatial Foundation Repository</name>
+			<url>http://download.osgeo.org/webdav/geotools/</url>
+		</repository>
+		<repository>
+			<id>confluent</id>
+			<name>Confluent</name>
+			<url>https://packages.confluent.io/maven/</url>
 		</repository>
 	</repositories>
 	<modules>

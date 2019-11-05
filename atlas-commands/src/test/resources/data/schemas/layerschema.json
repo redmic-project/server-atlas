@@ -1,0 +1,88 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"title": "Layer Info DTO",
+	"type": "object",
+	"properties": {
+		"id": {
+			"type": ["string", "null"]
+		},
+		"name": {
+			"type": "string",
+			"minLength": 1,
+			"maxLength": 500
+		},
+		"themeInspire": {
+			"type": ["string", "null"],
+			"url": "/api/atlas/view/themeinspire"
+		},
+		"latLonBoundsImage": {
+			"$ref": "#/definitions/LatLonBoundingBoxDTO"
+		},
+		"protocols": {
+			"type": "array",
+			"uniqueItemsByRequiredProperties": true,
+			"minItems": 1,
+			"uniqueItems": true,
+			"items": {
+				"$ref": "#/definitions/ProtocolDTO"
+			}
+		},
+		"description": {
+			"type": ["string", "null"],
+			"maxLength": 1500
+		},
+		"alias": {
+			"type": ["string", "null"],
+			"maxLength": 250
+		},
+		"atlas": {
+			"type": "boolean",
+			"default": "false"
+		},
+		"refresh": {
+			"type": "integer",
+			"default": "0"
+		},
+		"urlSource": {
+			"type": "string"
+		},
+		"parent": {
+			"type": "string",
+			"url": "/api/atlas/view/category"
+		}
+	},
+	"required": ["name", "protocols", "atlas", "refresh", "urlSource", "parent"],
+	"definitions": {
+		"LatLonBoundingBoxDTO": {
+			"type": ["object", "null"],
+			"properties": {
+				"minX": {
+					"type": "number"
+				},
+				"minY": {
+					"type": "number"
+				},
+				"maxX": {
+					"type": "number"
+				},
+				"maxY": {
+					"type": "number"
+				}
+			},
+			"required": ["minX", "minY", "maxX", "maxY"]
+		},
+		"ProtocolDTO": {
+			"type": "object",
+			"properties": {
+				"type": {
+					"type": "string"
+				},
+				"url": {
+					"type": "string",
+					"format": "url"
+				}
+			},
+			"required": ["type", "url"]
+		}
+	}
+}

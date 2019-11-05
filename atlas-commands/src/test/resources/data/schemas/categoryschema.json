@@ -1,0 +1,1 @@
+{"$schema":"http://json-schema.org/draft-04/schema#", "title":"Category DTO", "type":"object", "properties":{"id":{"type":["string","null"]}, "name":{"type":"string", "minLength":3, "maxLength":150}}, "required":["name"]}

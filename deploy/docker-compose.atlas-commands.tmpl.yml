@@ -2,9 +2,11 @@ version: '3.5'
 
 services:
   atlas-commands:
-    image: ${IMAGE_NAME}:${IMAGE_TAG:-latest}
+    image: ${IMAGE_NAME:-registry.gitlab.com/redmic-project/server/atlas}:${IMAGE_TAG:-latest}
     environment:
-      - COMMANDS_PORT
+      - UNIT_NAME
+      - MICROSERVICE_PATH=commands
+      - PORT
       - SPRING_PROFILES_ACTIVE
       - OAUTH_CLIENT_ID
       - OAUTH_CLIENT_SECRET
@@ -16,19 +18,15 @@ services:
       - kafka-net
       - redmic-net
       - traefik-net
-    healthcheck:
-      test: wget --spider -q http://localhost:${COMMANDS_PORT}/api/${UNIT_NAME}/commands/actuator/health
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 2m
+    volumes:
+      - commands-vol:/tmp/kafka
     deploy:
       mode: replicated
       replicas: 1
       labels:
         traefik.frontend.rule: Host:${PUBLIC_HOSTNAME};PathPrefix:/api/${UNIT_NAME}/commands
         traefik.backend: ${UNIT_NAME}-commands
-        traefik.port: '${COMMANDS_PORT}'
+        traefik.port: '${PORT}'
       restart_policy:
         delay: 10s
         window: 3m

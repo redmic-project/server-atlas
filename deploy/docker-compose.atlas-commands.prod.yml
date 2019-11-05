@@ -11,12 +11,12 @@ services:
           cpus: '0.5'
           memory: 512M
         reservations:
+          cpus: '0.01'
           memory: 410M
 
 volumes:
   commands-vol:
+    name: '${UNIT_NAME}-commands-{{.Task.Slot}}-vol'
     driver: 'cloudstor:aws'
     driver_opts:
-      backing: relocatable
-      size: 1
-      ebstype: gp2
+      backing: shared
