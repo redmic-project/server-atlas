@@ -9,7 +9,7 @@ include:
     ref: master
     file: '/packaging.yml'
   - project: 'redmic-project/gitlab-ci-templates'
-    ref: master
+    ref: feature-updateDeployment
     file: '/deployment-functional-unit.yml'
 
 stages:
@@ -22,22 +22,12 @@ stages:
 
 variables:
   DOCKER_BUILD_ARGS: --build-arg PARENT_IMAGE_NAME=${REDMIC_SERVER_IMAGE_NAME} --build-arg PARENT_IMAGE_TAG=${REDMIC_SERVER_IMAGE_TAG}
-  STACK: atlas
   LOGGING_LEVEL_ROOT: error
   LOGGING_LEVEL_ORG_SPRINGFRAMEWORK: error
   LOGGING_LEVEL_ES_REDMIC: error
-  STATUS_CHECK_DELAY: 200
 
 maven-build-view:
   variables:
     GIT_SUBMODULE_STRATEGY: normal
   before_script:
     - mvn -f elasticsearch-cluster-runner compile exec:java -Dexec.args="-numOfNode 1 -clusterName ${ELASTIC_CLUSTERNAME}" &
-
-.deploy-commands:
-  environment:
-    url: https://${PUBLIC_HOSTNAME}/api/${CI_PROJECT_NAME}/commands
-
-.deploy-view:
-  environment:
-    url: https://${PUBLIC_HOSTNAME}/api/${CI_PROJECT_NAME}/view
