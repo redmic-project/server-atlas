@@ -9,7 +9,7 @@ include:
     ref: master
     file: '/packaging.yml'
   - project: 'redmic-project/gitlab-ci-templates'
-    ref: feature-updateDeployment
+    ref: master
     file: '/deployment-functional-unit.yml'
 
 stages:
