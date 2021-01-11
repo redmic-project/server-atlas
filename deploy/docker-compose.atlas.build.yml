@@ -1,0 +1,12 @@
+version: '3.5'
+
+services:
+  atlas:
+    image: ${IMAGE_NAME:-registry.gitlab.com/redmic-project/server/atlas}:${IMAGE_TAG:-latest}
+    build:
+      context: ..
+      dockerfile: ${DOCKERFILE:-Dockerfile}
+      args:
+        PARENT_IMAGE_NAME:
+        PARENT_IMAGE_TAG:
+        PORT:
