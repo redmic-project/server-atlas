@@ -2,10 +2,13 @@ version: '3.5'
 
 services:
   atlas-view:
+    environment:
+      SPRING_PROFILES_ACTIVE: pre
     deploy:
       resources:
         limits:
-          cpus: '0.5'
-          memory: 512M
+          cpus: '${ATLAS_VIEW_RESOURCES_LIMITS_CPUS:-0.5}'
+          memory: ${ATLAS_VIEW_RESOURCES_LIMITS_MEMORY:-512M}
         reservations:
-          memory: 410M
+          cpus: '${ATLAS_VIEW_RESOURCES_RESERVATIONS_CPUS:-0.001}'
+          memory: ${ATLAS_VIEW_RESOURCES_RESERVATIONS_MEMORY:-410M}
