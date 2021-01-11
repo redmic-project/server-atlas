@@ -39,7 +39,7 @@ variables:
     OAUTH_IMAGE_TAG: latest
   services:
     - ${DIND_IMAGE_NAME}:${DIND_IMAGE_TAG}
-  before_script:
+  before_script: &maven-build-microservice-before-script
     - >
       mkdir -p sql;
       chmod -R 755 sql;
@@ -85,7 +85,7 @@ variables:
       docker exec postgres psql -h localhost \
         -d redmic \
         -U ${POSTGRES_USER} \
-        -c "ALTER ROLE ${USER_SPRING_DATASOURCE_USERNAME} WITH PASSWORD '${USER_SPRING_DATASOURCE_PASSWORD}'";
+        -c "ALTER ROLE ${SPRING_DATASOURCE_USERNAME} WITH PASSWORD '${SPRING_DATASOURCE_PASSWORD}'";
       docker exec postgres psql -h localhost \
         -d redmic \
         -U ${POSTGRES_USER} \
@@ -115,6 +115,7 @@ maven-build-view:
     GIT_SUBMODULE_STRATEGY: normal
   before_script:
     - mvn -f elasticsearch-cluster-runner compile exec:java -Dexec.args="-numOfNode 1 -clusterName ${ELASTIC_CLUSTERNAME}" &
+    - *maven-build-microservice-before-script
 
 .docker-build:
   variables:
