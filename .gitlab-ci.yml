@@ -105,13 +105,12 @@ variables:
         -e SPRING_PROFILES_ACTIVE=dev \
         -e SPRING_DATASOURCE_USERNAME \
         -e SPRING_DATASOURCE_PASSWORD \
-        ${OAUTH_IMAGE_NAME}:${OAUTH_IMAGE_TAG}
-
-      docker exec postgres psql -h localhost \
-        -d redmic \
-        -U ${POSTGRES_USER} \
-        -c "SELECT * from app.user"
-
+        ${OAUTH_IMAGE_NAME}:${OAUTH_IMAGE_TAG};
+      docker logs -f oauth &> oauth.log &
+  artifacts:
+    paths:
+      - oauth.log
+    expire_in: 1 day
   after_script:
     - rm -rf .m2/repository/es
     - docker stop oauth postgres
