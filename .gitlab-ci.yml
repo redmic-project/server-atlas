@@ -37,7 +37,6 @@ variables:
     OAUTH_SERVER: http://docker:8081
     OAUTH_IMAGE_NAME: registry.gitlab.com/redmic-project/server/oauth/master
     OAUTH_IMAGE_TAG: latest
-    SPRING_DATASOURCE_URL: jdbc:postgresql://docker:5432/redmic?currentSchema=app
   services:
     - ${DIND_IMAGE_NAME}:${DIND_IMAGE_TAG}
   before_script: &maven-build-microservice-before-script
@@ -100,7 +99,7 @@ variables:
         -U ${POSTGRES_USER} \
         -f /sql/user_database_data_test.sql
     - >
-      docker run -d --rm --name oauth \
+      docker run --rm --name oauth \
         -p 8081:8081 \
         --network test \
         -e SPRING_PROFILES_ACTIVE=dev \
@@ -115,8 +114,8 @@ maven-build-view:
   variables:
     GIT_SUBMODULE_STRATEGY: normal
   before_script:
-    - mvn -f elasticsearch-cluster-runner compile exec:java -Dexec.args="-numOfNode 1 -clusterName ${ELASTIC_CLUSTERNAME}" &
     - *maven-build-microservice-before-script
+    - mvn -f elasticsearch-cluster-runner compile exec:java -Dexec.args="-numOfNode 1 -clusterName ${ELASTIC_CLUSTERNAME}" &
 
 .docker-build:
   variables:
