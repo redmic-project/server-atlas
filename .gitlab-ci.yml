@@ -110,6 +110,7 @@ variables:
   artifacts:
     paths:
       - oauth.log
+    when: always
     expire_in: 1 day
   after_script:
     - rm -rf .m2/repository/es
