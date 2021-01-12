@@ -110,7 +110,7 @@ variables:
       docker exec postgres psql -h localhost \
         -d redmic \
         -U ${POSTGRES_USER} \
-        -c "SELECT * from app.user'"
+        -c "SELECT * from app.user"
 
   after_script:
     - rm -rf .m2/repository/es
