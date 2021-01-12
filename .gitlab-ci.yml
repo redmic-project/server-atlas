@@ -99,13 +99,19 @@ variables:
         -U ${POSTGRES_USER} \
         -f /sql/user_database_data_test.sql
     - >
-      docker run --rm --name oauth \
+      docker run -d --rm --name oauth \
         -p 8081:8081 \
         --network test \
         -e SPRING_PROFILES_ACTIVE=dev \
         -e SPRING_DATASOURCE_USERNAME \
         -e SPRING_DATASOURCE_PASSWORD \
         ${OAUTH_IMAGE_NAME}:${OAUTH_IMAGE_TAG}
+
+      docker exec postgres psql -h localhost \
+        -d redmic \
+        -U ${POSTGRES_USER} \
+        -c "SELECT * from app.user'"
+
   after_script:
     - rm -rf .m2/repository/es
     - docker stop oauth postgres
