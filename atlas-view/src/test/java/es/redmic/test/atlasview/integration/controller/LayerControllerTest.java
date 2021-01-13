@@ -9,9 +9,9 @@ package es.redmic.test.atlasview.integration.controller;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -59,6 +59,7 @@ import es.redmic.atlasview.model.category.Category;
 import es.redmic.atlasview.model.layer.Layer;
 import es.redmic.atlasview.repository.category.CategoryESRepository;
 import es.redmic.atlasview.repository.layer.LayerESRepository;
+import es.redmic.models.es.administrative.model.ActivityCompact;
 import es.redmic.models.es.common.query.dto.AggsPropertiesDTO;
 import es.redmic.models.es.common.query.dto.BboxQueryDTO;
 import es.redmic.models.es.common.query.dto.GeoDataQueryDTO;
@@ -122,7 +123,7 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 		repository.save(layer, PARENT_ID);
 
 		// @formatter:off
-		
+
 		mockMvc = MockMvcBuilders
 				.webAppContextSetup(webApplicationContext)
 				.addFilters(springSecurityFilterChain)
@@ -143,13 +144,13 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 	public void getLayer_Return200_WhenItemExist() throws Exception {
 
 		// @formatter:off
-		
+
 		this.mockMvc.perform(get(LAYER_PATH + "/" + layer.getId()).accept(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.success", is(true)))
 			.andExpect(jsonPath("$.body", notNullValue()))
 			.andExpect(jsonPath("$.body.id", is(layer.getId())));
-		
+
 		// @formatter:on
 	}
 
@@ -160,7 +161,7 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 		dataQuery.setSize(1);
 
 		// @formatter:off
-		
+
 		this.mockMvc
 				.perform(post(LAYER_PATH + "/_search").content(mapper.writeValueAsString(dataQuery))
 					.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
@@ -170,7 +171,7 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 				.andExpect(jsonPath("$.body.data[0]", notNullValue()))
 				.andExpect(jsonPath("$.body.data.length()", is(1)))
 					.andDo(getSimpleQueryFieldsDescriptor());
-		
+
 		// @formatter:on
 	}
 
@@ -198,7 +199,7 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 		query.remove("accessibilityIds");
 
 		// @formatter:off
-		
+
 		this.mockMvc
 				.perform(post(LAYER_PATH + "/_search").content(mapper.writeValueAsString(query))
 					.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
@@ -218,7 +219,7 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 				.andExpect(jsonPath("$.body._aggs.protocols.protocols.buckets.length()", is(1)))
 				.andExpect(jsonPath("$.body._aggs.themeInspire.buckets.length()", is(1)))
 				.andExpect(jsonPath("$.body._aggs.keywords.buckets.length()", is(1)));
-		
+
 		// @formatter:on
 	}
 
@@ -250,7 +251,7 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 		query.remove("accessibilityIds");
 
 		// @formatter:off
-		
+
 		this.mockMvc
 				.perform(post(LAYER_PATH + "/_search").content(mapper.writeValueAsString(query))
 					.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
@@ -270,7 +271,7 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 				.andExpect(jsonPath("$.body._aggs.protocols.protocols.buckets.length()", is(1)))
 				.andExpect(jsonPath("$.body._aggs.themeInspire.buckets.length()", is(1)))
 				.andExpect(jsonPath("$.body._aggs.keywords.buckets.length()", is(1)));
-		
+
 		// @formatter:on
 	}
 
@@ -295,7 +296,7 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 		query.remove("accessibilityIds");
 
 		// @formatter:off
-		
+
 		this.mockMvc
 				.perform(post(LAYER_PATH + "/_search").content(mapper.writeValueAsString(query))
 					.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
@@ -304,7 +305,7 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 				.andExpect(jsonPath("$.body.data", notNullValue()))
 				.andExpect(jsonPath("$.body.data[0]", notNullValue()))
 				.andExpect(jsonPath("$.body.data.length()", is(1)));
-		
+
 		// @formatter:on
 	}
 
@@ -329,7 +330,7 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 		query.remove("accessibilityIds");
 
 		// @formatter:off
-		
+
 		this.mockMvc
 				.perform(post(LAYER_PATH + "/_search").content(mapper.writeValueAsString(query))
 					.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
@@ -337,7 +338,7 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 				.andExpect(jsonPath("$.success", is(true)))
 				.andExpect(jsonPath("$.body.data", notNullValue()))
 				.andExpect(jsonPath("$.body.data.length()", is(0)));
-		
+
 		// @formatter:on
 	}
 
@@ -350,7 +351,7 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 		dataQuery.addTerm("atlas", true);
 
 		// @formatter:off
-		
+
 		this.mockMvc
 				.perform(post(LAYER_PATH + "/_search").content(mapper.writeValueAsString(dataQuery))
 					.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
@@ -358,7 +359,7 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 				.andExpect(jsonPath("$.success", is(true)))
 				.andExpect(jsonPath("$.body.data", notNullValue()))
 				.andExpect(jsonPath("$.body.data.length()", is(0)));
-		
+
 		// @formatter:on
 	}
 
@@ -377,7 +378,7 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 		repository.save(layerAtlas, PARENT_ID);
 
 		// @formatter:off
-		
+
 		this.mockMvc
 				.perform(post(LAYER_PATH + "/_search").content(mapper.writeValueAsString(dataQuery))
 					.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
@@ -386,17 +387,65 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 				.andExpect(jsonPath("$.body.data", notNullValue()))
 				.andExpect(jsonPath("$.body.data[0]", notNullValue()))
 				.andExpect(jsonPath("$.body.data.length()", is(1)));
-		
+
 		// @formatter:on
 
 		repository.delete(layerAtlas.getId(), PARENT_ID);
 	}
 
 	@Test
+	public void searchLayersPost_ReturnResult_WhenSearchLayersByActivities() throws Exception {
+
+		SimpleQueryDTO dataQuery = new SimpleQueryDTO();
+		dataQuery.setSize(1);
+
+		List<Integer> activityIds = new ArrayList<Integer>();
+		activityIds.add(135);
+
+		dataQuery.addTerm("activities", activityIds);
+
+		Layer layerAtlas = (Layer) JsonToBeanTestUtil.getBean("/data/model/layer/layer.json", Layer.class);
+		layerAtlas.setId("layer-1234b");
+		layerAtlas.setName("atlas");
+		layerAtlas.getJoinIndex().setParent(PARENT_ID);
+		List<ActivityCompact> activities = new ArrayList<>() ;
+		ActivityCompact activity = new ActivityCompact();
+		activity.setId(135L);
+		activity.setName("prueba");
+		activity.setPath("r.1.10.135");
+		activities.add(activity);
+		layerAtlas.setActivities(activities);
+		repository.save(layerAtlas, PARENT_ID);
+
+
+		Layer layerAtlasC = (Layer) JsonToBeanTestUtil.getBean("/data/model/layer/layer.json", Layer.class);
+		layerAtlasC.setId("layer-1234c");
+		layerAtlasC.setName("atlasC");
+		layerAtlasC.getJoinIndex().setParent(PARENT_ID);
+		repository.save(layerAtlasC, PARENT_ID);
+
+		// @formatter:off
+
+		this.mockMvc
+				.perform(post(LAYER_PATH + "/_search").content(mapper.writeValueAsString(dataQuery))
+					.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.success", is(true)))
+				.andExpect(jsonPath("$.body.data", notNullValue()))
+				.andExpect(jsonPath("$.body.data[0]", notNullValue()))
+				.andExpect(jsonPath("$.body.data.length()", is(1)));
+
+		// @formatter:on
+
+		repository.delete(layerAtlas.getId(), PARENT_ID);
+		repository.delete(layerAtlasC.getId(), PARENT_ID);
+	}
+
+	@Test
 	public void searchLayersQueryString_Return200_WhenSearchIsCorrect() throws Exception {
 
 		// @formatter:off
-		
+
 		this.mockMvc
 			.perform(get(LAYER_PATH)
 					.param("fields", "{keywords, alias, title}")
@@ -409,26 +458,26 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 				.andExpect(jsonPath("$.body.data[0]", notNullValue()))
 				.andExpect(jsonPath("$.body.data.length()", is(1)))
 				.andDo(getSearchSimpleParametersDescription());
-		
+
 		// @formatter:off
 	}
-	
+
 	@Test
 	public void textSearchQueryWithHighlight_ReturnRecordsAndHighlight_WhenSearchIsCorrect() throws Exception {
 
 		// @formatter:off
-		
+
 		SimpleQueryDTO dataQuery = new SimpleQueryDTO();
 		dataQuery.setSize(1);
-		
+
 		TextQueryDTO textQuery = new TextQueryDTO();
-		
+
 		textQuery.setSearchFields(new String[] { "keywords.suggest", "alias.suggest", "title.suggest"});
 		textQuery.setHighlightFields(new String[] { "keywords.suggest", "alias.suggest", "title.suggest"});
 		textQuery.setText(layer.getTitle());
-		
+
 		dataQuery.setText(textQuery );
-		
+
 		this.mockMvc
 			.perform(post(LAYER_PATH + "/_search")
 					.content(mapper.writeValueAsString(dataQuery))
@@ -444,7 +493,7 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 				.andExpect(jsonPath("$.body.data[0]._meta.highlight.title", notNullValue()))
 				.andExpect(jsonPath("$.body.data[0]._meta.highlight.alias.length()", is(1)))
 				.andExpect(jsonPath("$.body.data[0]._meta.highlight.title.length()", is(1)));
-		
+
 		// @formatter:off
 	}
 
@@ -456,7 +505,7 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 		mgetQuery.setFields(Arrays.asList("id"));
 
 		// @formatter:off
-		
+
 		this.mockMvc
 			.perform(post(LAYER_PATH + "/_mget").content(mapper.writeValueAsString(mgetQuery))
 					.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
@@ -474,7 +523,7 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 	public void suggestLayersQueryString_Return200_WhenSuggestIsCorrect() throws Exception {
 
 		// @formatter:off
-		
+
 		this.mockMvc
 			.perform(get(LAYER_PATH + "/_suggest")
 					.param("fields", new String[] { "keywords", "alias", "title" })
@@ -488,7 +537,7 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 				.andExpect(jsonPath("$.body[0]", startsWith("<b>")))
 				.andExpect(jsonPath("$.body[0]", endsWith("</b>")))
 					.andDo(getSuggestParametersDescription());
-		
+
 		// @formatter:on
 	}
 
@@ -500,7 +549,7 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 		dataQuery.createSimpleQueryDTOFromSuggestQueryParams(new String[] { "name" }, layer.getName(), 1);
 
 		// @formatter:off
-		
+
 		this.mockMvc
 			.perform(post(LAYER_PATH + "/_suggest").content(mapper.writeValueAsString(dataQuery))
 					.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
@@ -511,8 +560,8 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 				.andExpect(jsonPath("$.body[0]", startsWith("<b>")))
 				.andExpect(jsonPath("$.body[0]", endsWith("</b>")))
 					.andDo(getSimpleQueryFieldsDescriptor());;
-				
-		
+
+
 		// @formatter:on
 	}
 
@@ -524,7 +573,7 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 				.getBean("/data/schemas/geodataquerydtoschema.json", Map.class);
 
 		// @formatter:off
-		
+
 		this.mockMvc.perform(get(LAYER_PATH + filterSchemaPath)
 				.accept(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
