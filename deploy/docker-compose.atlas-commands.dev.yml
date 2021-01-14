@@ -18,4 +18,9 @@ services:
 
 volumes:
   commands-vol:
-    name: ${COMMANDS_VOL_NAME:-${UNIT_NAME}-commands-{{.Task.Slot}}-vol}
+    name: ${COMMANDS_VOL_NAME:-atlas-commands-{{.Task.Slot}}-vol}
+    driver: local
+    driver_opts:
+      type: ${COMMANDS_VOL_TYPE:-nfs4}
+      o: addr=${COMMANDS_VOL_ADDR:-127.0.0.1},${COMMANDS_VOL_OPTIONS:-rw,nolock,noatime,tcp,rsize=8192,wsize=8192,timeo=14}
+      device: ${COMMANDS_VOL_DEVICE:-:/atlas-commands-{{.Task.Slot}}-vol/}
