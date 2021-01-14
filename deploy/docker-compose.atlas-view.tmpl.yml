@@ -4,9 +4,6 @@ services:
   atlas-view:
     image: ${IMAGE_NAME:-registry.gitlab.com/redmic-project/server/atlas}:${IMAGE_TAG:-latest}
     environment:
-      UNIT_NAME:
-      MICROSERVICE_PATH: view
-      PORT:
       SERVER_PORT: ${PORT}
       OAUTH_CLIENT_ID:
       OAUTH_CLIENT_SECRET:
@@ -23,7 +20,7 @@ services:
       redmic-net:
       traefik-net:
     healthcheck:
-      test: wget --spider -q http://localhost:${MICROSERVICE_PORT}/${MICROSERVICE_NAME}/actuator/health
+      test: wget --spider -q http://localhost:${PORT}/api/${UNIT_NAME}/view/actuator/health
       interval: ${ATLAS_VIEW_HEALTHCHECK_INTERVAL:-30s}
       timeout: ${ATLAS_VIEW_HEALTHCHECK_TIMEOUT:-15s}
       retries: ${ATLAS_VIEW_HEALTHCHECK_RETRIES:-10}
