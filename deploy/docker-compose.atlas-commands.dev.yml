@@ -23,4 +23,4 @@ volumes:
     driver_opts:
       type: ${COMMANDS_VOL_TYPE:-nfs4}
       o: addr=${COMMANDS_VOL_ADDR:-127.0.0.1},${COMMANDS_VOL_OPTIONS:-rw,nolock,noatime,tcp,rsize=8192,wsize=8192,timeo=14}
-      device: ${COMMANDS_VOL_DEVICE:-:/atlas-commands-{{.Task.Slot}}-vol/}
+      device: :/atlas-commands-{{.Task.Slot}}-vol/
