@@ -18,7 +18,7 @@ services:
 
 volumes:
   commands-vol:
-    name: ${COMMANDS_VOL_NAME:-atlas-commands-{{.Task.Slot}}-vol}
+    name: atlas-commands-{{.Task.Slot}}-vol
     driver: local
     driver_opts:
       type: ${COMMANDS_VOL_TYPE:-nfs4}
