@@ -9,9 +9,9 @@ package es.redmic.atlascommands.config;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,30 +37,30 @@ public class Oauth2SecurityConfiguration {
 		@Override
 		public void configure(HttpSecurity http) throws Exception {
 			// @formatter:off
-			
+
 			http.cors().and().anonymous().and().authorizeRequests()
 				.antMatchers(HttpMethod.GET, "/actuator/**").permitAll();
-			
+
 			http.authorizeRequests()
 				.antMatchers(HttpMethod.POST, "/discover-layers/**").permitAll();
-			
-			http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/**/settings/**").access(
+
+			http.authorizeRequests().antMatchers("/**/settings/**").access(
 					"#oauth2.hasScope('write') and hasAnyRole('ROLE_ADMINISTRATOR', 'ROLE_OAG', 'ROLE_COLLABORATOR', 'ROLE_USER')");
-			
+
 			http.authorizeRequests().antMatchers(HttpMethod.POST, "/**/settings/select").permitAll();
 			http.authorizeRequests().antMatchers(HttpMethod.PUT, "/**/settings/select/**").permitAll();
 			http.authorizeRequests().antMatchers(HttpMethod.PUT, "/**/settings/deselect/**").permitAll();
 			http.authorizeRequests().antMatchers(HttpMethod.PUT, "/**/settings/clearselection/**").permitAll();
 			http.authorizeRequests().antMatchers(HttpMethod.PUT, "/**/settings/clone/**").permitAll();
 			http.authorizeRequests().antMatchers(HttpMethod.OPTIONS, "/**/settings/**").permitAll();
-			
+
 			http.authorizeRequests().antMatchers(HttpMethod.POST, "/**").access(
 					"#oauth2.hasScope('write') and "
 					+ "hasAnyRole('ROLE_ADMINISTRATOR', 'ROLE_OAG', 'ROLE_COLLABORATOR')");
-			
+
 			http.authorizeRequests().antMatchers(HttpMethod.PUT, "/**").access(
 					"#oauth2.hasScope('write') and hasAnyRole('ROLE_ADMINISTRATOR', 'ROLE_OAG', 'ROLE_COLLABORATOR')");
-			
+
 			http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/**").access(
 					"#oauth2.hasScope('write') and "
 					+ "hasAnyRole('ROLE_ADMINISTRATOR', 'ROLE_OAG', 'ROLE_COLLABORATOR')");
