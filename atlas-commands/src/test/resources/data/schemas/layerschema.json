@@ -11,6 +11,14 @@
 			"minLength": 1,
 			"maxLength": 500
 		},
+		"activities": {
+			"type": ["array", "null"],
+			"uniqueItemsByRequiredProperties": true,
+			"uniqueItems": true,
+			"items": {
+				"$ref": "#/definitions/LayerActivityDTO"
+			}
+		},
 		"themeInspire": {
 			"type": ["string", "null"],
 			"url": "/api/atlas/view/themeinspire"
@@ -53,6 +61,15 @@
 	},
 	"required": ["name", "protocols", "atlas", "refresh", "urlSource", "parent"],
 	"definitions": {
+		"LayerActivityDTO": {
+			"type": ["object", "null"],
+			"properties": {
+				"activity": {
+					"type": ["string", "null"],
+					"url": "/api/atlas/view/activities"
+				}
+			}
+		},
 		"LatLonBoundingBoxDTO": {
 			"type": ["object", "null"],
 			"properties": {

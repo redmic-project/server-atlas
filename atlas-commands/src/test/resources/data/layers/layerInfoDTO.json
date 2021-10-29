@@ -3,6 +3,11 @@
 		"id": "category-213423",
 		"name": "Batimetrías"
 	},
+	"activities": [
+		{
+			"id": "817"
+		}
+	],
 	"themeInspire": {
 		"id": "themeInspire-el",
 		"code": "el",

@@ -9,9 +9,9 @@ package es.redmic.atlascommands.mapper;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,7 +37,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
-import es.redmic.atlaslib.dto.layer.ActivityDTO;
 import es.redmic.atlaslib.dto.layer.AttributionDTO;
 import es.redmic.atlaslib.dto.layer.DimensionDTO;
 import es.redmic.atlaslib.dto.layer.LogoURLDTO;
@@ -50,7 +49,7 @@ public interface LayerWMSMapper {
 	final int SRID = 4326;
 
 	// @formatter:off
-	
+
 	// TODO: Pasar por contexto
 
 	final String SRS = "EPSG:4326",
@@ -61,14 +60,14 @@ public interface LayerWMSMapper {
 			timeDimensionProperty = "time",
 			elevationDimensionProperty = "elevation",
 			legendGraphicUrlParameters = "?request=GetLegendGraphic&version=1.0.0&format=image/png&layer=topp:states";
-	
+
 	// @formatter:on
 	@Mapping(source = "layer", target = "legend", qualifiedByName = "legend")
 	@Mapping(source = "layer", target = "timeDimension", qualifiedByName = "timeDimension")
 	@Mapping(source = "layer", target = "elevationDimension", qualifiedByName = "elevationDimension")
 	@Mapping(source = "layer", target = "stylesLayer", qualifiedByName = "stylesLayer")
 	@Mapping(source = "layer", target = "abstractLayer", qualifiedByName = "abstractLayer")
-	@Mapping(source = "layer", target = "activities", qualifiedByName = "activities")
+	//@Mapping(source = "layer", target = "activities", qualifiedByName = "activities")
 	@Mapping(source = "layer", target = "geometry", qualifiedByName = "geometry")
 	@Mapping(source = "layer", target = "keywords", qualifiedByName = "keywords")
 	@Mapping(source = "layer", target = "attribution", qualifiedByName = "attribution")
@@ -138,7 +137,7 @@ public interface LayerWMSMapper {
 		return abstractLayer;
 	}
 
-	@Named("activities")
+	/*-@Named("activities")
 	default List<ActivityDTO> getActivities(Layer layer, @Context String urlSource) {
 
 		if (layer.get_abstract() == null)
@@ -165,7 +164,7 @@ public interface LayerWMSMapper {
 			activities.add(activity);
 		}
 		return activities;
-	}
+	}-*/
 
 	@Named("geometry")
 	default Polygon getGeometry(Layer layer, @Context String urlSource) {

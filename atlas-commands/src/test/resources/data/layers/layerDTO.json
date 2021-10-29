@@ -132,7 +132,7 @@
 		"name": "Elevaciones",
 		"name_en": "Elevation"
 	},
-	
+
 	"latLonBoundsImage": {
 		"maxX": -15.826663970947266,
 		"maxY": 27.962779998779297,
@@ -147,7 +147,5 @@
 	"alias": "Batimetrías by operator",
 	"atlas": true,
 	"refresh": "1",
-	"urlSource": "file:/home/REDMIC/redmic_project/server/atlas/atlas-commands/src/test/resources/data/capabilities/wms.xml",
-	"name": "batimetriaGlobal",
 	"id": "layer-1234"
 }
