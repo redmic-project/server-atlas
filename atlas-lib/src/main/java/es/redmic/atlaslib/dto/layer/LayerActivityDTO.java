@@ -20,61 +20,34 @@ package es.redmic.atlaslib.dto.layer;
  * #L%
  */
 
-import javax.validation.constraints.NotNull;
 
 import org.apache.avro.Schema;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.kjetland.jackson.jsonSchema.annotations.JsonSchemaUrl;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class ActivityDTO extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
+public class LayerActivityDTO extends org.apache.avro.specific.SpecificRecordBase {
 
 	// @formatter:off
 
 	@JsonIgnore
 	public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse(
-		"{\"type\":\"record\",\"name\":\"ActivityDTO\",\"namespace\":\"es.redmic.atlaslib.dto.layer\",\"fields\":["
-				+ "{\"name\": \"id\",\"type\": \"string\"}]}");
+		"{\"type\":\"record\",\"name\":\"LayerActivityDTO\",\"namespace\":\"es.redmic.atlaslib.dto.layer\",\"fields\":["
+				+ "{\"name\": \"activity\",\"type\":" + ActivityDTO.SCHEMA$ + "}]}");
 	// @formatter:on
 
-	public ActivityDTO() {
+	public LayerActivityDTO() {
 	}
 
-	@NotNull
-	String id;
+	@JsonSchemaUrl(value="controller.mapping.ACTIVITY")
+	private ActivityDTO activity;
 
-	public String getId() {
-		return id;
+	public ActivityDTO getActivity() {
+		return this.activity;
 	}
 
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		ActivityDTO other = (ActivityDTO) obj;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		return true;
+	public void setActivity(ActivityDTO activity) {
+		this.activity = activity;
 	}
 
 	@JsonIgnore
@@ -88,7 +61,7 @@ public class ActivityDTO extends org.apache.avro.specific.SpecificRecordBase imp
 	public java.lang.Object get(int field$) {
 		switch (field$) {
 		case 0:
-			return id;
+			return activity;
 		default:
 			throw new org.apache.avro.AvroRuntimeException("Bad index");
 		}
@@ -99,7 +72,7 @@ public class ActivityDTO extends org.apache.avro.specific.SpecificRecordBase imp
 	public void put(int field$, java.lang.Object value$) {
 		switch (field$) {
 		case 0:
-			id = value$ != null ? value$.toString() : null;
+			activity = (ActivityDTO) value$;
 			break;
 		default:
 			throw new org.apache.avro.AvroRuntimeException("Bad index");

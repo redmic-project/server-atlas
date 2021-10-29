@@ -9,9 +9,9 @@ package es.redmic.atlaslib.dto.layerinfo;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,7 +21,6 @@ package es.redmic.atlaslib.dto.layerinfo;
  */
 
 import javax.validation.constraints.NotNull;
-
 import org.apache.avro.Schema;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -30,6 +29,8 @@ import com.kjetland.jackson.jsonSchema.annotations.JsonSchemaUrl;
 
 import es.redmic.atlaslib.dto.category.CategoryDTO;
 import es.redmic.atlaslib.dto.layer.LatLonBoundingBoxDTO;
+import es.redmic.atlaslib.dto.layer.LayerActivityDTO;
+
 import es.redmic.atlaslib.dto.layer.LayerCompactDTO;
 import es.redmic.atlaslib.dto.layer.ProtocolDTO;
 import es.redmic.atlaslib.dto.themeinspire.ThemeInspireDTO;
@@ -38,9 +39,9 @@ import es.redmic.brokerlib.deserializer.CustomRelationDeserializer;
 /**
  * DTO de entrada para datos enviados por el cliente y que complementan a los
  * obtenidos vía getCapability.
- * 
+ *
  * Necesario validación DTO
- * 
+ *
  */
 public class LayerInfoDTO extends LayerCompactDTO {
 
@@ -50,6 +51,7 @@ public class LayerInfoDTO extends LayerCompactDTO {
 	public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse(
 		"{\"type\":\"record\",\"name\":\"LayerDTO\",\"namespace\":\"es.redmic.atlaslib.dto.layerinfo\",\"fields\":["
 			+ "{\"name\":\"parent\",\"type\":" + CategoryDTO.SCHEMA$ + "},"
+			+ "{\"name\": \"activities\",\"type\": [{\"type\": \"array\",\"items\":" + LayerActivityDTO.SCHEMA$ + "},\"null\"]},"
 			+ "{\"name\":\"themeInspire\",\"type\":[" + ThemeInspireDTO.SCHEMA$ + ", \"null\"]},"
 			+ "{\"name\":\"latLonBoundsImage\",\"type\":[" + LatLonBoundingBoxDTO.SCHEMA$ + ", \"null\"]},"
 			+ "{\"name\": \"protocols\",\"type\": [{\"type\": \"array\",\"items\":" + ProtocolDTO.SCHEMA$ + "},\"null\"]},"
@@ -92,24 +94,26 @@ public class LayerInfoDTO extends LayerCompactDTO {
 		case 0:
 			return getParent();
 		case 1:
-			return getThemeInspire();
+			return getActivities();
 		case 2:
-			return getLatLonBoundsImage();
+			return getThemeInspire();
 		case 3:
-			return getProtocols();
+			return getLatLonBoundsImage();
 		case 4:
-			return getDescription();
+			return getProtocols();
 		case 5:
-			return getAlias();
+			return getDescription();
 		case 6:
-			return getAtlas();
+			return getAlias();
 		case 7:
-			return getRefresh();
+			return getAtlas();
 		case 8:
-			return getUrlSource();
+			return getRefresh();
 		case 9:
-			return getName();
+			return getUrlSource();
 		case 10:
+			return getName();
+		case 11:
 			return getId();
 		default:
 			throw new org.apache.avro.AvroRuntimeException("Bad index");
@@ -125,33 +129,36 @@ public class LayerInfoDTO extends LayerCompactDTO {
 			setParent((CategoryDTO) value);
 			break;
 		case 1:
-			setThemeInspire(value != null ? (ThemeInspireDTO) value : null);
+			setActivities(value != null ? (java.util.List) value : null);
 			break;
 		case 2:
-			setLatLonBoundsImage(value != null ? (LatLonBoundingBoxDTO) value : null);
+			setThemeInspire(value != null ? (ThemeInspireDTO) value : null);
 			break;
 		case 3:
-			setProtocols(value != null ? (java.util.List) value : null);
+			setLatLonBoundsImage(value != null ? (LatLonBoundingBoxDTO) value : null);
 			break;
 		case 4:
-			setDescription(value != null ? value.toString() : null);
+			setProtocols(value != null ? (java.util.List) value : null);
 			break;
 		case 5:
-			setAlias(value != null ? value.toString() : null);
+			setDescription(value != null ? value.toString() : null);
 			break;
 		case 6:
-			setAtlas((Boolean) value);
+			setAlias(value != null ? value.toString() : null);
 			break;
 		case 7:
-			setRefresh((int) value);
+			setAtlas((Boolean) value);
 			break;
 		case 8:
-			setUrlSource(value != null ? value.toString() : null);
+			setRefresh((int) value);
 			break;
 		case 9:
-			setName(value.toString());
+			setUrlSource(value != null ? value.toString() : null);
 			break;
 		case 10:
+			setName(value.toString());
+			break;
+		case 11:
 			setId(value.toString());
 			break;
 		default:

@@ -9,9 +9,9 @@ package es.redmic.atlaslib.dto.layer;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,8 +39,13 @@ public abstract class LayerCompactDTO extends LayerBaseDTO {
 
 	public LayerCompactDTO() {
 		super();
-		this.protocols = new ArrayList<ProtocolDTO>();
+		this.protocols = new ArrayList<>();
+		this.activities = new ArrayList<>();
 	}
+
+	@JsonSchemaUniqueItemsByRequiredProperties
+	@Valid
+	private List<LayerActivityDTO> activities;
 
 	@JsonDeserialize(using = CustomRelationDeserializer.class)
 	@JsonSchemaUrl(value = "controller.mapping.THEME_INSPIRE")
@@ -71,6 +76,14 @@ public abstract class LayerCompactDTO extends LayerBaseDTO {
 
 	@NotNull
 	private String urlSource;
+
+	public List<LayerActivityDTO> getActivities() {
+		return this.activities;
+	}
+
+	public void setActivities(List<LayerActivityDTO> activities) {
+		this.activities = activities;
+	}
 
 	public ThemeInspireDTO getThemeInspire() {
 		return themeInspire;
@@ -148,6 +161,7 @@ public abstract class LayerCompactDTO extends LayerBaseDTO {
 		result = prime * result + ((refresh == null) ? 0 : refresh.hashCode());
 		result = prime * result + ((urlSource == null) ? 0 : urlSource.hashCode());
 		result = prime * result + ((themeInspire == null) ? 0 : themeInspire.hashCode());
+		result = prime * result + ((activities == null) ? 0 : activities.hashCode());
 		return result;
 	}
 
@@ -199,6 +213,11 @@ public abstract class LayerCompactDTO extends LayerBaseDTO {
 			if (other.themeInspire != null)
 				return false;
 		} else if (!themeInspire.equals(other.themeInspire))
+			return false;
+		if (activities == null) {
+			if (other.activities != null)
+				return false;
+		} else if (!activities.equals(other.activities))
 			return false;
 		return true;
 	}

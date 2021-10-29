@@ -9,9 +9,9 @@ package es.redmic.atlaslib.unit.utils;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,6 +39,7 @@ import es.redmic.atlaslib.dto.layer.AttributionDTO;
 import es.redmic.atlaslib.dto.layer.ContactDTO;
 import es.redmic.atlaslib.dto.layer.DimensionDTO;
 import es.redmic.atlaslib.dto.layer.LatLonBoundingBoxDTO;
+import es.redmic.atlaslib.dto.layer.LayerActivityDTO;
 import es.redmic.atlaslib.dto.layer.LayerDTO;
 import es.redmic.atlaslib.dto.layer.ProtocolDTO;
 import es.redmic.atlaslib.dto.layer.StyleLayerDTO;
@@ -571,7 +572,6 @@ public abstract class LayerDataUtil {
 		layer.setFormats(formats);
 
 		layer.setGeometry(getGeometry());
-		layer.setActivities(getActivities());
 		layer.setContact(getContact());
 		layer.setStylesLayer(getStylesLayer());
 
@@ -607,6 +607,7 @@ public abstract class LayerDataUtil {
 		layerInfo.setDescription("Prueba");
 		layerInfo.setUrlSource("http://redmic.es");
 		layerInfo.setParent(CategoryDataUtil.getCategory("3442"));
+		layerInfo.setActivities(getActivities());
 		layerInfo.setThemeInspire(ThemeInspireDataUtil.getThemeInspire("cc"));
 		layerInfo.setProtocols(getProtocols());
 		layerInfo.setLatLonBoundsImage(getLatLonBoundingBoxDTO());
@@ -636,16 +637,17 @@ public abstract class LayerDataUtil {
 	}
 
 	@SuppressWarnings("serial")
-	public static List<ActivityDTO> getActivities() {
+	public static List<LayerActivityDTO> getActivities() {
 
 		ActivityDTO activity = new ActivityDTO();
 		activity.setId("3");
-		activity.setName("AIS");
-		activity.setPath("r.1.2.3");
 
-		return new ArrayList<ActivityDTO>() {
+		LayerActivityDTO layerActivity = new LayerActivityDTO();
+		layerActivity.setActivity(activity);
+
+		return new ArrayList<LayerActivityDTO>() {
 			{
-				add(activity);
+				add(layerActivity);
 			}
 		};
 	}
