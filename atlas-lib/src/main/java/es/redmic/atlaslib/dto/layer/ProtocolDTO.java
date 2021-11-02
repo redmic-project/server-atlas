@@ -9,9 +9,9 @@ package es.redmic.atlaslib.dto.layer;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,7 +40,9 @@ public class ProtocolDTO extends org.apache.avro.specific.SpecificRecordBase
 	public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse(
 		"{\"type\":\"record\",\"name\":\"ProtocolDTO\",\"namespace\":\"es.redmic.atlaslib.dto.layer\",\"fields\":["
 				+ "{\"name\": \"type\",\"type\": \"string\"},"
-				+ "{\"name\": \"url\",\"type\": \"string\"}]}");
+				+ "{\"name\": \"url\",\"type\": \"string\"},"
+				+ "{\"name\": \"style\",\"type\": [\"string\", \"null\"]},"
+				+ "{\"name\": \"version\",\"type\": [\"string\", \"null\"]}]}");
 	// @formatter:on
 
 	@NotNull
@@ -50,6 +52,10 @@ public class ProtocolDTO extends org.apache.avro.specific.SpecificRecordBase
 	@ValidateUrl()
 	@NotNull
 	private String url;
+
+	private String style;
+
+	private String version;
 
 	public ProtocolDTO() {
 	}
@@ -88,12 +94,30 @@ public class ProtocolDTO extends org.apache.avro.specific.SpecificRecordBase
 		this.url = url;
 	}
 
+	public String getStyle() {
+		return this.style;
+	}
+
+	public void setStyle(String style) {
+		this.style = style;
+	}
+
+	public String getVersion() {
+		return this.version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		result = prime * result + ((url == null) ? 0 : url.hashCode());
+		result = prime * result + ((style == null) ? 0 : style.hashCode());
+		result = prime * result + ((version == null) ? 0 : version.hashCode());
 		return result;
 	}
 
@@ -116,6 +140,16 @@ public class ProtocolDTO extends org.apache.avro.specific.SpecificRecordBase
 				return false;
 		} else if (!url.equals(other.url))
 			return false;
+		if (style == null) {
+			if (other.style != null)
+				return false;
+		} else if (!style.equals(other.style))
+			return false;
+		if (version == null) {
+			if (other.version != null)
+				return false;
+		} else if (!version.equals(other.version))
+			return false;
 		return true;
 	}
 
@@ -133,6 +167,10 @@ public class ProtocolDTO extends org.apache.avro.specific.SpecificRecordBase
 			return type;
 		case 1:
 			return url;
+		case 2:
+			return style;
+		case 3:
+			return version;
 		default:
 			throw new org.apache.avro.AvroRuntimeException("Bad index");
 		}
@@ -147,6 +185,12 @@ public class ProtocolDTO extends org.apache.avro.specific.SpecificRecordBase
 			break;
 		case 1:
 			url = value$ != null ? value$.toString() : null;
+			break;
+		case 2:
+			style = style != null ? value$.toString() : null;
+			break;
+		case 3:
+			version = version != null ? value$.toString() : null;
 			break;
 		default:
 			throw new org.apache.avro.AvroRuntimeException("Bad index");

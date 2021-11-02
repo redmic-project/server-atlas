@@ -109,7 +109,9 @@
 			"protocols": [
 				{
 					"type": "WMS",
-					"url": "https://atlas.redmic.es/geoserver/sd/wms"
+					"url": "https://atlas.redmic.es/geoserver/sd/wms",
+					"style": "el:batimetria50mCanarias",
+					"version": "1.1.1"
 				}
 			],
 			"geometry": {
