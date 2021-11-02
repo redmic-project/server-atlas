@@ -67,9 +67,9 @@
 	},
 	"activities": [
 		{
-			"path": "root.1.12",
-			"name": "Banco de datos de especies marinas de Canarias (DIADEMA)",
-			"id": 12
+			"activity": {
+				"id": "12"
+			}
 		}
 	],
 	"urlSource": "https://atlas.redmic.es/geoserver/sd/wms",

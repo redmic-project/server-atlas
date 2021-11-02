@@ -9,9 +9,9 @@ package es.redmic.atlasview.model.layer;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,7 +27,6 @@ import org.locationtech.jts.geom.Polygon;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import es.redmic.elasticsearchlib.common.model.JoinIndex;
-import es.redmic.models.es.administrative.model.ActivityCompact;
 import es.redmic.models.es.common.model.BaseAbstractStringES;
 
 public class LayerWMS extends BaseAbstractStringES {
@@ -45,7 +44,7 @@ public class LayerWMS extends BaseAbstractStringES {
 	private List<String> srs;
 	private List<StyleLayer> stylesLayer;
 	private Contact contact;
-	private List<ActivityCompact> activities;
+	private List<LayerActivity> activities;
 	private List<String> formats;
 	private Polygon geometry;
 	private String legend;
@@ -131,11 +130,11 @@ public class LayerWMS extends BaseAbstractStringES {
 		this.contact = contact;
 	}
 
-	public List<ActivityCompact> getActivities() {
+	public List<LayerActivity> getActivities() {
 		return activities;
 	}
 
-	public void setActivities(List<ActivityCompact> activities) {
+	public void setActivities(List<LayerActivity> activities) {
 		this.activities = activities;
 	}
 

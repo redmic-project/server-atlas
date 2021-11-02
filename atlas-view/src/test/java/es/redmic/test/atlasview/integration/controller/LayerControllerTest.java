@@ -56,10 +56,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import es.redmic.atlasview.AtlasViewApplication;
 import es.redmic.atlasview.model.category.Category;
+import es.redmic.atlasview.model.layer.Activity;
 import es.redmic.atlasview.model.layer.Layer;
+import es.redmic.atlasview.model.layer.LayerActivity;
 import es.redmic.atlasview.repository.category.CategoryESRepository;
 import es.redmic.atlasview.repository.layer.LayerESRepository;
-import es.redmic.models.es.administrative.model.ActivityCompact;
 import es.redmic.models.es.common.query.dto.AggsPropertiesDTO;
 import es.redmic.models.es.common.query.dto.BboxQueryDTO;
 import es.redmic.models.es.common.query.dto.GeoDataQueryDTO;
@@ -408,12 +409,12 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 		layerAtlas.setId("layer-1234b");
 		layerAtlas.setName("atlas");
 		layerAtlas.getJoinIndex().setParent(PARENT_ID);
-		List<ActivityCompact> activities = new ArrayList<>() ;
-		ActivityCompact activity = new ActivityCompact();
-		activity.setId(135L);
-		activity.setName("prueba");
-		activity.setPath("r.1.10.135");
-		activities.add(activity);
+		List<LayerActivity> activities = new ArrayList<>() ;
+		LayerActivity layerActivity = new LayerActivity();
+		Activity activity = new Activity();
+		activity.setId("135");
+		layerActivity.setActivity(activity);
+		activities.add(layerActivity);
 		layerAtlas.setActivities(activities);
 		repository.save(layerAtlas, PARENT_ID);
 

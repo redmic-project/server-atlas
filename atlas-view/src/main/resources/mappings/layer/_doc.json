@@ -49,24 +49,10 @@
 					"dynamic": false,
 					"type": "nested",
 					"properties": {
-						"id": {
-							"type": "long"
-						},
-						"name": {
-							"type": "text",
-							"fields": {
-								"keyword": {
-									"type": "keyword",
-									"ignore_above": 256
-								}
-							}
-						},
-						"path": {
-							"type": "text",
-							"fields": {
-								"keyword": {
-									"type": "keyword",
-									"ignore_above": 256
+						"activity": {
+							"properties": {
+								"id": {
+									"type": "long"
 								}
 							}
 						}
