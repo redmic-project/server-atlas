@@ -60,6 +60,13 @@ public abstract class LayerCompactDTO extends LayerBaseDTO {
 	@Size(min = 1)
 	private List<ProtocolDTO> protocols;
 
+	@JsonSchemaUniqueItemsByRequiredProperties
+	@Valid
+	private List<DownloadDTO> downloads;
+
+	@Valid
+	private TimeDefinitionDTO timeDefinition;
+
 	@Size(min = 0, max = 1500)
 	private String description;
 
@@ -76,6 +83,8 @@ public abstract class LayerCompactDTO extends LayerBaseDTO {
 
 	@NotNull
 	private String urlSource;
+
+	private String styles;
 
 	public List<LayerActivityDTO> getActivities() {
 		return this.activities;
@@ -107,6 +116,22 @@ public abstract class LayerCompactDTO extends LayerBaseDTO {
 
 	public void setProtocols(List<ProtocolDTO> protocols) {
 		this.protocols = protocols;
+	}
+
+	public List<DownloadDTO> getDownloads() {
+		return this.downloads;
+	}
+
+	public void setDownloads(List<DownloadDTO> downloads) {
+		this.downloads = downloads;
+	}
+
+	public TimeDefinitionDTO getTimeDefinition() {
+		return this.timeDefinition;
+	}
+
+	public void setTimeDefinition(TimeDefinitionDTO timeDefinition) {
+		this.timeDefinition = timeDefinition;
 	}
 
 	public String getDescription() {
@@ -149,6 +174,14 @@ public abstract class LayerCompactDTO extends LayerBaseDTO {
 		this.urlSource = urlSource;
 	}
 
+	public String getStyles() {
+		return this.styles;
+	}
+
+	public void setStyles(String styles) {
+		this.styles = styles;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -158,8 +191,11 @@ public abstract class LayerCompactDTO extends LayerBaseDTO {
 		result = prime * result + ((description == null) ? 0 : description.hashCode());
 		result = prime * result + ((latLonBoundsImage == null) ? 0 : latLonBoundsImage.hashCode());
 		result = prime * result + ((protocols == null) ? 0 : protocols.hashCode());
+		result = prime * result + ((downloads == null) ? 0 : downloads.hashCode());
+		result = prime * result + ((timeDefinition == null) ? 0 : timeDefinition.hashCode());
 		result = prime * result + ((refresh == null) ? 0 : refresh.hashCode());
 		result = prime * result + ((urlSource == null) ? 0 : urlSource.hashCode());
+		result = prime * result + ((styles == null) ? 0 : styles.hashCode());
 		result = prime * result + ((themeInspire == null) ? 0 : themeInspire.hashCode());
 		result = prime * result + ((activities == null) ? 0 : activities.hashCode());
 		return result;
@@ -199,6 +235,16 @@ public abstract class LayerCompactDTO extends LayerBaseDTO {
 				return false;
 		} else if (!protocols.equals(other.protocols))
 			return false;
+		if (downloads == null) {
+			if (other.downloads != null)
+				return false;
+		} else if (!downloads.equals(other.downloads))
+			return false;
+		if (timeDefinition == null) {
+			if (other.timeDefinition != null)
+				return false;
+		} else if (!timeDefinition.equals(other.timeDefinition))
+			return false;
 		if (refresh == null) {
 			if (other.refresh != null)
 				return false;
@@ -208,6 +254,11 @@ public abstract class LayerCompactDTO extends LayerBaseDTO {
 			if (other.urlSource != null)
 				return false;
 		} else if (!urlSource.equals(other.urlSource))
+			return false;
+		if (styles == null) {
+			if (other.styles != null)
+				return false;
+		} else if (!styles.equals(other.styles))
 			return false;
 		if (themeInspire == null) {
 			if (other.themeInspire != null)

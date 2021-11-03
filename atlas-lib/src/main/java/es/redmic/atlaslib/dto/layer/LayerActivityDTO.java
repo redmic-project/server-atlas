@@ -50,6 +50,31 @@ public class LayerActivityDTO extends org.apache.avro.specific.SpecificRecordBas
 		this.activity = activity;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((activity == null) ? 0 : activity.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		LayerActivityDTO other = (LayerActivityDTO) obj;
+		if (activity == null) {
+			if (other.activity != null)
+				return false;
+		} else if (!activity.equals(other.activity))
+			return false;
+		return true;
+	}
+
 	@JsonIgnore
 	@Override
 	public Schema getSchema() {

@@ -606,6 +606,7 @@ public abstract class LayerDataUtil {
 		layerInfo.setAlias("Prueba");
 		layerInfo.setDescription("Prueba");
 		layerInfo.setUrlSource("http://redmic.es");
+		layerInfo.setStyles("styles");
 		layerInfo.setParent(CategoryDataUtil.getCategory("3442"));
 		layerInfo.setActivities(getActivities());
 		layerInfo.setThemeInspire(ThemeInspireDataUtil.getThemeInspire("cc"));

@@ -28,11 +28,13 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.kjetland.jackson.jsonSchema.annotations.JsonSchemaUrl;
 
 import es.redmic.atlaslib.dto.category.CategoryDTO;
+import es.redmic.atlaslib.dto.layer.DownloadDTO;
 import es.redmic.atlaslib.dto.layer.LatLonBoundingBoxDTO;
 import es.redmic.atlaslib.dto.layer.LayerActivityDTO;
 
 import es.redmic.atlaslib.dto.layer.LayerCompactDTO;
 import es.redmic.atlaslib.dto.layer.ProtocolDTO;
+import es.redmic.atlaslib.dto.layer.TimeDefinitionDTO;
 import es.redmic.atlaslib.dto.themeinspire.ThemeInspireDTO;
 import es.redmic.brokerlib.deserializer.CustomRelationDeserializer;
 
@@ -51,15 +53,18 @@ public class LayerInfoDTO extends LayerCompactDTO {
 	public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse(
 		"{\"type\":\"record\",\"name\":\"LayerDTO\",\"namespace\":\"es.redmic.atlaslib.dto.layerinfo\",\"fields\":["
 			+ "{\"name\":\"parent\",\"type\":" + CategoryDTO.SCHEMA$ + "},"
-			+ "{\"name\": \"activities\",\"type\": [{\"type\": \"array\",\"items\":" + LayerActivityDTO.SCHEMA$ + "},\"null\"]},"
+			+ "{\"name\":\"activities\",\"type\": [{\"type\": \"array\",\"items\":" + LayerActivityDTO.SCHEMA$ + "},\"null\"]},"
 			+ "{\"name\":\"themeInspire\",\"type\":[" + ThemeInspireDTO.SCHEMA$ + ", \"null\"]},"
 			+ "{\"name\":\"latLonBoundsImage\",\"type\":[" + LatLonBoundingBoxDTO.SCHEMA$ + ", \"null\"]},"
-			+ "{\"name\": \"protocols\",\"type\": [{\"type\": \"array\",\"items\":" + ProtocolDTO.SCHEMA$ + "},\"null\"]},"
+			+ "{\"name\":\"protocols\",\"type\": [{\"type\": \"array\",\"items\":" + ProtocolDTO.SCHEMA$ + "},\"null\"]},"
+			+ "{\"name\":\"downloads\",\"type\": [{\"type\": \"array\",\"items\":" + DownloadDTO.SCHEMA$ + "},\"null\"]},"
+			+ "{\"name\":\"timeDefinition\",\"type\":[" + TimeDefinitionDTO.SCHEMA$ + ", \"null\"]},"
 			+ "{\"name\":\"description\",\"type\":[\"string\", \"null\"]},"
 			+ "{\"name\":\"alias\",\"type\":[\"string\", \"null\"]},"
 			+ "{\"name\":\"atlas\",\"type\":\"boolean\", \"default\": \"false\"},"
 			+ "{\"name\":\"refresh\",\"type\":\"int\", \"default\": \"0\"},"
 			+ "{\"name\":\"urlSource\",\"type\":\"string\"},"
+			+ "{\"name\":\"styles\",\"type\": [\"string\", \"null\"]},"
 			+ "{\"name\":\"name\",\"type\":\"string\"},"
 			+ "{\"name\":\"id\",\"type\":\"string\"}]}");
 	// @formatter:on
@@ -102,18 +107,24 @@ public class LayerInfoDTO extends LayerCompactDTO {
 		case 4:
 			return getProtocols();
 		case 5:
-			return getDescription();
+			return getDownloads();
 		case 6:
-			return getAlias();
+			return getTimeDefinition();
 		case 7:
-			return getAtlas();
+			return getDescription();
 		case 8:
-			return getRefresh();
+			return getAlias();
 		case 9:
-			return getUrlSource();
+			return getAtlas();
 		case 10:
-			return getName();
+			return getRefresh();
 		case 11:
+			return getUrlSource();
+		case 12:
+			return getStyles();
+		case 13:
+			return getName();
+		case 14:
 			return getId();
 		default:
 			throw new org.apache.avro.AvroRuntimeException("Bad index");
@@ -141,24 +152,33 @@ public class LayerInfoDTO extends LayerCompactDTO {
 			setProtocols(value != null ? (java.util.List) value : null);
 			break;
 		case 5:
-			setDescription(value != null ? value.toString() : null);
+			setDownloads(value != null ? (java.util.List) value : null);
 			break;
 		case 6:
-			setAlias(value != null ? value.toString() : null);
+			setTimeDefinition(value != null ? (TimeDefinitionDTO) value : null);
 			break;
 		case 7:
-			setAtlas((Boolean) value);
+			setDescription(value != null ? value.toString() : null);
 			break;
 		case 8:
-			setRefresh((int) value);
+			setAlias(value != null ? value.toString() : null);
 			break;
 		case 9:
-			setUrlSource(value != null ? value.toString() : null);
+			setAtlas((Boolean) value);
 			break;
 		case 10:
-			setName(value.toString());
+			setRefresh((int) value);
 			break;
 		case 11:
+			setUrlSource(value != null ? value.toString() : null);
+			break;
+		case 12:
+			setStyles(value != null ? value.toString() : null);
+			break;
+		case 13:
+			setName(value.toString());
+			break;
+		case 14:
 			setId(value.toString());
 			break;
 		default:

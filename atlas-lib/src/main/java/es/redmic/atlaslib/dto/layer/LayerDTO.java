@@ -80,15 +80,18 @@ public class LayerDTO extends LayerInfoDTO {
 			+ "{\"name\":\"updated\",\"type\":[\"null\",{\"type\":\"long\",\"logicalType\":\"timestamp-millis\"}],"
 				+ "\"default\": null},"
 			+ "{\"name\":\"parent\",\"type\":" + CategoryDTO.SCHEMA$ + "},"
-			+ "{\"name\": \"activities\",\"type\": [{\"type\": \"array\",\"items\": "+ LayerActivityDTO.SCHEMA$ +"},\"null\"]},"
+			+ "{\"name\":\"activities\",\"type\": [{\"type\": \"array\",\"items\": "+ LayerActivityDTO.SCHEMA$ +"},\"null\"]},"
 			+ "{\"name\":\"themeInspire\",\"type\":["+ ThemeInspireDTO.SCHEMA$ +", \"null\"]},"
 			+ "{\"name\":\"latLonBoundsImage\",\"type\":[" + LatLonBoundingBoxDTO.SCHEMA$ + ", \"null\"]},"
-			+ "{\"name\": \"protocols\",\"type\": [{\"type\": \"array\",\"items\":" + ProtocolDTO.SCHEMA$ + "},\"null\"]},"
+			+ "{\"name\":\"protocols\",\"type\": [{\"type\": \"array\",\"items\":" + ProtocolDTO.SCHEMA$ + "},\"null\"]},"
+			+ "{\"name\":\"downloads\",\"type\": [{\"type\": \"array\",\"items\":" + DownloadDTO.SCHEMA$ + "},\"null\"]},"
+			+ "{\"name\":\"timeDefinition\",\"type\":[" + TimeDefinitionDTO.SCHEMA$ + ", \"null\"]},"
 			+ "{\"name\":\"description\",\"type\":[\"string\", \"null\"]},"
 			+ "{\"name\":\"alias\",\"type\":[\"string\", \"null\"]},"
 			+ "{\"name\":\"atlas\",\"type\":\"boolean\", \"default\": \"false\"},"
 			+ "{\"name\":\"refresh\",\"type\":\"int\", \"default\": \"0\"},"
 			+ "{\"name\":\"urlSource\",\"type\":\"string\"},"
+			+ "{\"name\":\"styles\",\"type\": [\"string\", \"null\"]},"
 			+ "{\"name\":\"name\",\"type\":\"string\"},"
 			+ "{\"name\":\"id\",\"type\":\"string\"}]}");
 	// @formatter:on
@@ -337,18 +340,24 @@ public class LayerDTO extends LayerInfoDTO {
 		case 20:
 			return getProtocols();
 		case 21:
-			return getDescription();
+			return getDownloads();
 		case 22:
-			return getAlias();
+			return getTimeDefinition();
 		case 23:
-			return getAtlas();
+			return getDescription();
 		case 24:
-			return getRefresh();
+			return getAlias();
 		case 25:
-			return getUrlSource();
+			return getAtlas();
 		case 26:
-			return getName();
+			return getRefresh();
 		case 27:
+			return getUrlSource();
+		case 28:
+			return getStyles();
+		case 29:
+			return getName();
+		case 30:
 			return getId();
 		default:
 			throw new org.apache.avro.AvroRuntimeException("Bad index");
@@ -430,24 +439,33 @@ public class LayerDTO extends LayerInfoDTO {
 			setProtocols(value != null ? (java.util.List) value : null);
 			break;
 		case 21:
-			setDescription(value != null ? value.toString() : null);
+			setDownloads(value != null ? (java.util.List) value : null);
 			break;
 		case 22:
-			setAlias(value != null ? value.toString() : null);
+			setTimeDefinition(value != null ? (TimeDefinitionDTO) value : null);
 			break;
 		case 23:
-			setAtlas((Boolean) value);
+			setDescription(value != null ? value.toString() : null);
 			break;
 		case 24:
-			setRefresh((int) value);
+			setAlias(value != null ? value.toString() : null);
 			break;
 		case 25:
-			setUrlSource(value != null ? value.toString() : null);
+			setAtlas((Boolean) value);
 			break;
 		case 26:
-			setName(value.toString());
+			setRefresh((int) value);
 			break;
 		case 27:
+			setUrlSource(value != null ? value.toString() : null);
+			break;
+		case 28:
+			setStyles(value != null ? value.toString() : null);
+			break;
+		case 29:
+			setName(value.toString());
+			break;
+		case 30:
 			setId(value.toString());
 			break;
 		default:
