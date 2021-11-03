@@ -96,9 +96,9 @@
 	},
 	"activities": [
 		{
-			"id": "817",
-			"name": null,
-			"path": null
+			"activity": {
+				"id": "817"
+			}
 		}
 	],
 	"timeDimension": {
@@ -143,6 +143,15 @@
 		"type": "WMS",
 		"url" :"https://atlas.redmic.es/geoserver/tn/wms"
 	}],
+	"downloads": [{
+		"name": "geoserver",
+		"url" :"https://atlas.redmic.es/geoserver/tn/wms"
+	}],
+	"timeDefinition": {
+		"startDate": "2017-05-23T12:35:12.052+00:00",
+		"endDate": "2019-05-23T12:35:12.052+00:00",
+		"interval": "1h"
+	},
 	"description": "Batimetrías de costera de las Islas Canarias (DGC)",
 	"alias": "Batimetrías by operator",
 	"atlas": true,

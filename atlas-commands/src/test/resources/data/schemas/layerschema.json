@@ -35,6 +35,17 @@
 				"$ref": "#/definitions/ProtocolDTO"
 			}
 		},
+		"downloads": {
+			"type": ["array", "null"],
+			"uniqueItemsByRequiredProperties": true,
+			"uniqueItems": true,
+			"items": {
+				"$ref": "#/definitions/DownloadDTO"
+			}
+		},
+		"timeDefinition": {
+			"$ref": "#/definitions/TimeDefinitionDTO"
+		},
 		"description": {
 			"type": ["string", "null"],
 			"maxLength": 1500
@@ -57,6 +68,9 @@
 		"parent": {
 			"type": "string",
 			"url": "/api/atlas/view/category"
+		},
+		"styles": {
+			"type": ["string","null"]
 		}
 	},
 	"required": ["name", "protocols", "atlas", "refresh", "urlSource", "parent"],
@@ -100,6 +114,34 @@
 				}
 			},
 			"required": ["type", "url"]
+		},
+		"DownloadDTO": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"type": "string"
+				},
+				"url": {
+					"type": "string",
+					"format": "url"
+				}
+			},
+			"required": ["name", "url"]
+		},
+		"TimeDefinitionDTO": {
+			"type": ["object", "null"],
+			"properties": {
+				"startDate": {
+					"type": "string"
+				},
+				"endDate": {
+					"type": ["string", "null"]
+				},
+				"interval": {
+					"type": ["string", "null"]
+				}
+			},
+			"required": ["startDate"]
 		}
 	}
 }

@@ -95,13 +95,6 @@
 		"address": "Edf. Puerto-Ciudad, of. 1b, S/C de Tenerife 38001 Spain ",
 		"email": "gis@oag-fundacion.org"
 	},
-	"activities": [
-		{
-			"id": "817",
-			"name": null,
-			"path": null
-		}
-	],
 	"timeDimension": {
 		"name": "time",
 		"units": "ISO8601",

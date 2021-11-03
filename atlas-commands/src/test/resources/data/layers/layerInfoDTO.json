@@ -5,7 +5,9 @@
 	},
 	"activities": [
 		{
-			"id": "817"
+			"activity": {
+				"id": "817"
+			}
 		}
 	],
 	"themeInspire": {
@@ -18,6 +20,15 @@
 		"type": "WMS",
 		"url" :"https://atlas.redmic.es/geoserver/tn/wms"
 	}],
+	"downloads": [{
+		"name": "geoserver",
+		"url" :"https://atlas.redmic.es/geoserver/tn/wms"
+	}],
+	"timeDefinition": {
+		"startDate": "2017-05-23T12:35:12.052+00:00",
+		"endDate": "2019-05-23T12:35:12.052+00:00",
+		"interval": "1h"
+	},
 	"latLonBoundsImage": {
 		"maxX": -15.826663970947266,
 		"maxY": 27.962779998779297,
