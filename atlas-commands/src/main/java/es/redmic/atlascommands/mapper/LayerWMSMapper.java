@@ -67,7 +67,6 @@ public interface LayerWMSMapper {
 	@Mapping(source = "layer", target = "elevationDimension", qualifiedByName = "elevationDimension")
 	@Mapping(source = "layer", target = "stylesLayer", qualifiedByName = "stylesLayer")
 	@Mapping(source = "layer", target = "abstractLayer", qualifiedByName = "abstractLayer")
-	//@Mapping(source = "layer", target = "activities", qualifiedByName = "activities")
 	@Mapping(source = "layer", target = "geometry", qualifiedByName = "geometry")
 	@Mapping(source = "layer", target = "keywords", qualifiedByName = "keywords")
 	@Mapping(source = "layer", target = "attribution", qualifiedByName = "attribution")
@@ -136,35 +135,6 @@ public interface LayerWMSMapper {
 		}
 		return abstractLayer;
 	}
-
-	/*-@Named("activities")
-	default List<ActivityDTO> getActivities(Layer layer, @Context String urlSource) {
-
-		if (layer.get_abstract() == null)
-			return null;
-
-		String abstractLayer = layer.get_abstract().replaceAll(endLineRegex, " ");
-
-		if (!abstractLayer.matches(refInBracketsRegex))
-			return null;
-
-		String ref = abstractLayer.replaceAll(refInBracketsRegex, "$1");
-
-		if (!ref.matches(refRegex))
-			return null;
-
-		List<ActivityDTO> activities = new ArrayList<>();
-
-		String listAct = ref.replaceAll(refRegex, "$1");
-		String[] listActSplit = listAct.split(",");
-
-		for (int i = 0; i < listActSplit.length; i++) {
-			ActivityDTO activity = new ActivityDTO();
-			activity.setId(listActSplit[i]);
-			activities.add(activity);
-		}
-		return activities;
-	}-*/
 
 	@Named("geometry")
 	default Polygon getGeometry(Layer layer, @Context String urlSource) {

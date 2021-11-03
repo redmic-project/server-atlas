@@ -1,5 +1,7 @@
 package es.redmic.atlascommands.mapper;
 
+import java.util.List;
+
 /*-
  * #%L
  * Atlas-management
@@ -9,9 +11,9 @@ package es.redmic.atlascommands.mapper;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,8 +24,10 @@ package es.redmic.atlascommands.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
+import es.redmic.atlaslib.dto.layer.LayerActivityDTO;
 import es.redmic.atlaslib.dto.layer.LayerDTO;
 import es.redmic.atlaslib.dto.layerinfo.LayerInfoDTO;
 import es.redmic.atlaslib.dto.layerwms.LayerWMSDTO;
@@ -37,7 +41,13 @@ public interface LayerInfoDTOMapper {
 	@Mapping(target = "alias",
 		expression = "java(layerInfoDTO.getAlias() != null ? "
 				+ "layerInfoDTO.getAlias() : (layerDTO.getTitle() != null ? layerDTO.getTitle() : layerDTO.getName()))")
+	@Mapping(source = "layerInfoDTO", target = "activities", qualifiedByName = "activities")
 	LayerDTO map(LayerInfoDTO layerInfoDTO, LayerWMSDTO layerWMSDTO);
-	
+
+	@Named("activities")
+	default List<LayerActivityDTO> getActivities(LayerInfoDTO value) {
+		return value.getActivities();
+	}
+
 	// @formatter:on
 }
