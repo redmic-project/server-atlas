@@ -65,12 +65,12 @@
 		"urlSource": {
 			"type": "string"
 		},
+		"styles": {
+			"type": ["string","null"]
+		},
 		"parent": {
 			"type": "string",
 			"url": "/api/atlas/view/category"
-		},
-		"styles": {
-			"type": ["string","null"]
 		}
 	},
 	"required": ["name", "protocols", "atlas", "refresh", "urlSource", "parent"],
@@ -138,7 +138,8 @@
 					"type": ["string", "null"]
 				},
 				"interval": {
-					"type": ["string", "null"]
+					"type": ["string", "null"],
+					"default": "1h"
 				}
 			},
 			"required": ["startDate"]
