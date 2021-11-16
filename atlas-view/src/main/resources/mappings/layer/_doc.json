@@ -465,6 +465,9 @@
 				},
 				"urlSource": {
 					"type": "keyword"
+				},
+				"styles": {
+					"type": "keyword"
 				}
 			}
 		}
