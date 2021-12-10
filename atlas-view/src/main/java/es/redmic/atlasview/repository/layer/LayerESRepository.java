@@ -11,9 +11,9 @@ import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,8 +24,10 @@ import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.action.search.MultiSearchRequest;
 import org.elasticsearch.action.search.MultiSearchResponse;
 import org.elasticsearch.action.search.MultiSearchResponse.Item;
@@ -67,7 +69,7 @@ public class LayerESRepository extends RWDataESRepository<Layer, GeoDataQueryDTO
 	private static final String DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZZ";
 
 	// @formatter:off
-	
+
 	private final String ID_PROPERTY = "id",
 			NAME_PROPERTY = "name",
 			URL_SOURCE_PROPERTY = "urlSource";
@@ -152,19 +154,19 @@ public class LayerESRepository extends RWDataESRepository<Layer, GeoDataQueryDTO
 	@Override
 	protected EventApplicationResult checkUpdateConstraintsFulfilled(Layer modelToIndex) {
 		// @formatter:off
-		
+
 		BoolQueryBuilder nameAndUrlSourceTerm = QueryBuilders.boolQuery()
 				.must(QueryBuilders.boolQuery()
 						.must(QueryBuilders.termQuery(NAME_PROPERTY, modelToIndex.getName()))
 						.must(QueryBuilders.termQuery(URL_SOURCE_PROPERTY, modelToIndex.getUrlSource())))
 				.mustNot(QueryBuilders.termQuery(ID_PROPERTY, modelToIndex.getId()));
-		
+
 		MultiSearchRequest request = new MultiSearchRequest();
-		
+
 		SearchSourceBuilder requestBuilder = new SearchSourceBuilder().query(nameAndUrlSourceTerm).size(1);
-		
+
 		request.add(new SearchRequest().indices(getIndex()).source(requestBuilder));
-		
+
 		// @formatter:on
 
 		MultiSearchResponse sr;
@@ -263,7 +265,7 @@ public class LayerESRepository extends RWDataESRepository<Layer, GeoDataQueryDTO
 	 * un conjunto de términos, nos devuelve una query de elasticsearch. Debe estar
 	 * implementado en cada repositorio para darle una funcionalidad específica y
 	 * aquí estarán las funcionalidades que comparten todos los repositorios.
-	 * 
+	 *
 	 * @param terms
 	 *            Map de términos pasados por la query.
 	 * @param query
@@ -276,6 +278,12 @@ public class LayerESRepository extends RWDataESRepository<Layer, GeoDataQueryDTO
 
 		if (terms.containsKey("atlas")) {
 			query.must(QueryBuilders.termQuery("atlas", Boolean.valueOf(terms.get("atlas").toString())));
+		}
+		if (terms.containsKey("activities")) {
+
+			List<Integer> ids = (List<Integer>) terms.get("activities");
+			query.must(QueryBuilders.nestedQuery("activities", QueryBuilders.boolQuery().filter(QueryBuilders.termsQuery("activities.id", ids)),
+				ScoreMode.Avg));
 		}
 		return super.getTermQuery(terms, query);
 	}

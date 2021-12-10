@@ -6,11 +6,7 @@ FROM ${PARENT_IMAGE_NAME}:${PARENT_IMAGE_TAG}
 COPY /*/dist/*.jar ./
 
 ARG PORT=8080
+
 EXPOSE ${PORT}
 
-HEALTHCHECK \
-	--interval=30s \
-	--timeout=15s \
-	--start-period=3m \
-	--retries=10 \
-CMD wget --spider -q http://localhost:${PORT}/api/${UNIT_NAME}/${MICROSERVICE_PATH}/actuator/health
+ENV PORT=${PORT}

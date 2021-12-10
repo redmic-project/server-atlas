@@ -20,7 +20,7 @@
 		<redmic.broker-lib.version>0.11.0</redmic.broker-lib.version>
 		<redmic.models.version>0.11.0</redmic.models.version>
 		<redmic.test-utils.version>0.10.0</redmic.test-utils.version>
-		<redmic.atlas-lib.version>0.2.0</redmic.atlas-lib.version>
+		<redmic.atlas-lib.version>${project.version}</redmic.atlas-lib.version>
 		<redmic.exceptions.version>0.10.0</redmic.exceptions.version>
 		<!-- Versions of the OTHERS library used in the children -->
 		<kafka.version>2.0.1</kafka.version>
@@ -88,28 +88,6 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	<repositories>
-		<repository>
-			<id>central</id>
-			<name>libs-release</name>
-			<url>https://artifactory.redmic.net/artifactory/libs-release</url>
-		</repository>
-		<repository>
-			<id>snapshots</id>
-			<name>libs-snapshot</name>
-			<url>https://artifactory.redmic.net/artifactory/libs-snapshot</url>
-		</repository>
-		<repository>
-			<id>osgeo</id>
-			<name>Open Source Geospatial Foundation Repository</name>
-			<url>http://download.osgeo.org/webdav/geotools/</url>
-		</repository>
-		<repository>
-			<id>confluent</id>
-			<name>Confluent</name>
-			<url>https://packages.confluent.io/maven/</url>
-		</repository>
-	</repositories>
 	<modules>
 		<module>atlas-commands</module>
 		<module>atlas-view</module>

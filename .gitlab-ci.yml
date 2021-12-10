@@ -13,26 +13,119 @@ include:
     file: '/deployment-functional-unit.yml'
 
 stages:
+  - build-parent
   - build-lib
   - build-service
   - license-list
+  - pre-package
   - package
-  - test-package
+  - post-package
   - deploy
 
 variables:
-  DOCKER_BUILD_ARGS: --build-arg PARENT_IMAGE_NAME=${REDMIC_SERVER_IMAGE_NAME} --build-arg PARENT_IMAGE_TAG=${REDMIC_SERVER_IMAGE_TAG}
-  STACK: atlas
-  LOGGING_LEVEL_ROOT: error
-  LOGGING_LEVEL_ORG_SPRINGFRAMEWORK: error
-  LOGGING_LEVEL_ES_REDMIC: error
-  STATUS_CHECK_DELAY: 200
+  PROJECT_PARENT_NAME: atlas
+
+.maven-build-microservice:
+  variables:
+    DIND_IMAGE_NAME: docker
+    DIND_IMAGE_TAG: dind
+    DOCKER_HOST: tcp://docker:2375
+    POSTGRES_IMAGE_TAG: 10.13-alpine
+    POSTGRES_DB: redmic
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: password
+    OAUTH_SERVER: http://docker:8081
+    OAUTH_IMAGE_NAME: registry.gitlab.com/redmic-project/server/oauth/master
+    OAUTH_IMAGE_TAG: latest
+  services:
+    - ${DIND_IMAGE_NAME}:${DIND_IMAGE_TAG}
+  before_script: &maven-build-microservice-before-script
+    - >
+      mkdir -p sql;
+      chmod -R 755 sql;
+      docker network create test
+    - >
+      docker run -d --rm --name postgres \
+        -p 5432:5432 \
+        --network test \
+        --network-alias db \
+        -e POSTGRES_DB \
+        -e POSTGRES_USER \
+        -e POSTGRES_PASSWORD \
+        -v $(pwd)/sql:/sql \
+        postgres:${POSTGRES_IMAGE_TAG}
+    - >
+      curl -s --header "PRIVATE-TOKEN: ${GITLAB_TOKEN_READ_API}" \
+        -o sql/oauth_database_structure_test.sql \
+        "https://gitlab.com/api/v4/snippets/${OAUTH_DATABASE_STRUCTURE_TEST_SNIPPET_ID}/raw";
+      curl -s --header "PRIVATE-TOKEN: ${GITLAB_TOKEN_READ_API}" \
+        -o sql/oauth_database_data_test.sql \
+        "https://gitlab.com/api/v4/snippets/${OAUTH_DATABASE_DATA_TEST_SNIPPET_ID}/raw";
+      curl -s --header "PRIVATE-TOKEN: ${GITLAB_TOKEN_READ_API}" \
+        -o sql/user_database_structure_test.sql \
+        "https://gitlab.com/api/v4/snippets/${USER_DATABASE_STRUCTURE_TEST_SNIPPET_ID}/raw";
+      curl -s --header "PRIVATE-TOKEN: ${GITLAB_TOKEN_READ_API}" \
+        -o sql/user_database_data_test.sql \
+        "https://gitlab.com/api/v4/snippets/${USER_DATABASE_DATA_TEST_SNIPPET_ID}/raw"
+    - >
+      RETRIES=10;
+      until docker exec postgres psql -h localhost \
+          -d redmic \
+          -U ${POSTGRES_USER} \
+          -c 'select 1' > /dev/null 2>&1 || [ $RETRIES -eq 0 ];
+      do
+          RETRIES=$((RETRIES-=1));
+          echo "Waiting for postgres server, ${RETRIES} remaining attempts...";
+          sleep 1;
+      done;
+      docker exec postgres psql -h localhost \
+        -d redmic \
+        -U ${POSTGRES_USER} \
+        -f /sql/oauth_database_structure_test.sql;
+      docker exec postgres psql -h localhost \
+        -d redmic \
+        -U ${POSTGRES_USER} \
+        -c "ALTER ROLE ${SPRING_DATASOURCE_USERNAME} WITH PASSWORD '${SPRING_DATASOURCE_PASSWORD}'";
+      docker exec postgres psql -h localhost \
+        -d redmic \
+        -U ${POSTGRES_USER} \
+        -f /sql/oauth_database_data_test.sql;
+      docker exec postgres psql -h localhost \
+        -d redmic \
+        -U ${POSTGRES_USER} \
+        -f /sql/user_database_structure_test.sql;
+      docker exec postgres psql -h localhost \
+        -d redmic \
+        -U ${POSTGRES_USER} \
+        -f /sql/user_database_data_test.sql
+    - >
+      docker run -d --rm --name oauth \
+        -p 8081:8081 \
+        --network test \
+        -e SPRING_PROFILES_ACTIVE=dev \
+        -e SPRING_DATASOURCE_USERNAME \
+        -e SPRING_DATASOURCE_PASSWORD \
+        ${OAUTH_IMAGE_NAME}:${OAUTH_IMAGE_TAG}
+  after_script:
+    - rm -rf .m2/repository/es
+    - docker stop oauth postgres
 
 maven-build-view:
   variables:
     GIT_SUBMODULE_STRATEGY: normal
   before_script:
+    - *maven-build-microservice-before-script
     - mvn -f elasticsearch-cluster-runner compile exec:java -Dexec.args="-numOfNode 1 -clusterName ${ELASTIC_CLUSTERNAME}" &
+
+.docker-build:
+  variables:
+    COMPOSE_FILE_NAME: docker-compose.atlas.build.yml
+    DBLD_PARENT_IMAGE_NAME: ${REDMIC_SERVER_IMAGE_NAME}
+    DBLD_PARENT_IMAGE_TAG: ${REDMIC_SERVER_IMAGE_TAG}
+
+.deploy:
+  variables:
+    STACK: atlas
 
 .deploy-commands:
   environment:
