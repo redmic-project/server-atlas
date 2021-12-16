@@ -26,6 +26,7 @@ import org.apache.avro.Schema;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.kjetland.jackson.jsonSchema.annotations.JsonSchemaUrl;
+import com.kjetland.jackson.jsonSchema.annotations.JsonSchemaUrlUuid;
 
 import es.redmic.atlaslib.dto.category.CategoryDTO;
 import es.redmic.atlaslib.dto.layer.DownloadDTO;
@@ -75,7 +76,7 @@ public class LayerInfoDTO extends LayerCompactDTO {
 
 	@NotNull
 	@JsonDeserialize(using = CustomRelationDeserializer.class)
-	@JsonSchemaUrl(value = "controller.mapping.CATEGORY")
+	@JsonSchemaUrlUuid(value = "controller.mapping.CATEGORY")
 	CategoryDTO parent;
 
 	public CategoryDTO getParent() {

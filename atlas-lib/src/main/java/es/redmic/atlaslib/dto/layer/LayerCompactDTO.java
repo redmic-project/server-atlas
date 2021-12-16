@@ -30,7 +30,7 @@ import javax.validation.constraints.Size;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.kjetland.jackson.jsonSchema.annotations.JsonSchemaDefault;
 import com.kjetland.jackson.jsonSchema.annotations.JsonSchemaUniqueItemsByRequiredProperties;
-import com.kjetland.jackson.jsonSchema.annotations.JsonSchemaUrl;
+import com.kjetland.jackson.jsonSchema.annotations.JsonSchemaUrlUuid;
 
 import es.redmic.atlaslib.dto.themeinspire.ThemeInspireDTO;
 import es.redmic.brokerlib.deserializer.CustomRelationDeserializer;
@@ -48,7 +48,7 @@ public abstract class LayerCompactDTO extends LayerBaseDTO {
 	private List<LayerActivityDTO> activities;
 
 	@JsonDeserialize(using = CustomRelationDeserializer.class)
-	@JsonSchemaUrl(value = "controller.mapping.THEME_INSPIRE")
+	@JsonSchemaUrlUuid(value = "controller.mapping.THEME_INSPIRE")
 	private ThemeInspireDTO themeInspire;
 
 	@Valid
