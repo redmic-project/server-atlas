@@ -18,7 +18,7 @@
 	<properties>
 		<!-- Versions of the REDMIC library used in the children -->
 		<redmic.broker-lib.version>0.11.0</redmic.broker-lib.version>
-		<redmic.models.version>0.11.0</redmic.models.version>
+		<redmic.models.version>0.13.0</redmic.models.version>
 		<redmic.test-utils.version>0.10.0</redmic.test-utils.version>
 		<redmic.atlas-lib.version>${project.version}</redmic.atlas-lib.version>
 		<redmic.exceptions.version>0.10.0</redmic.exceptions.version>
