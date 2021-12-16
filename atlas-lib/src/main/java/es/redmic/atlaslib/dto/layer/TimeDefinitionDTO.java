@@ -20,11 +20,9 @@ package es.redmic.atlaslib.dto.layer;
  * #L%
  */
 
-import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.kjetland.jackson.jsonSchema.annotations.JsonSchemaDefault;
 
 import org.apache.avro.Schema;
 
@@ -36,7 +34,7 @@ public class TimeDefinitionDTO extends org.apache.avro.specific.SpecificRecordBa
 	@JsonIgnore
 	public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse(
 		"{\"type\":\"record\",\"name\":\"TimeDefinitionDTO\",\"namespace\":\"es.redmic.atlaslib.dto.layer\",\"fields\":["
-				+ "{\"name\": \"startDate\",\"type\": \"string\"},"
+				+ "{\"name\": \"startDate\",\"type\": [\"string\", \"null\"]},"
 				+ "{\"name\":\"endDate\",\"type\":[\"string\", \"null\"]},"
 				+ "{\"name\":\"interval\",\"type\":[\"string\", \"null\"]}]}");
 	// @formatter:on
@@ -45,12 +43,10 @@ public class TimeDefinitionDTO extends org.apache.avro.specific.SpecificRecordBa
 
 	}
 
-	@NotNull
 	private String startDate;
 
 	private String endDate;
 
-	@JsonSchemaDefault(value = "1h")
 	private String interval;
 
 	public String getStartDate() {
