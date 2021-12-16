@@ -132,17 +132,15 @@
 			"type": ["object", "null"],
 			"properties": {
 				"startDate": {
-					"type": "string"
+					"type": ["string", "null"]
 				},
 				"endDate": {
 					"type": ["string", "null"]
 				},
 				"interval": {
-					"type": ["string", "null"],
-					"default": "1h"
+					"type": ["string", "null"]
 				}
-			},
-			"required": ["startDate"]
+			}
 		}
 	}
 }
