@@ -38,7 +38,8 @@ public class Oauth2SecurityConfiguration {
 		public void configure(HttpSecurity http) throws Exception {
 			// @formatter:off
 			
-			http.cors();
+			http.cors().and().anonymous().and().authorizeRequests()
+				.antMatchers(HttpMethod.GET, "/actuator/**").permitAll();
 			
 			http.authorizeRequests().antMatchers(HttpMethod.GET, "/**/settings/_suggest").access(
 					"#oauth2.hasScope('write') and hasAnyRole('ROLE_ADMINISTRATOR', 'ROLE_OAG', 'ROLE_COLLABORATOR', 'ROLE_USER')");
@@ -47,8 +48,6 @@ public class Oauth2SecurityConfiguration {
 			
 			http.authorizeRequests().antMatchers("/**/settings/**").access(
 					"#oauth2.hasScope('write') and hasAnyRole('ROLE_ADMINISTRATOR', 'ROLE_OAG', 'ROLE_COLLABORATOR', 'ROLE_USER')");
-			
-			http.authorizeRequests().antMatchers(HttpMethod.GET, "/actuator/**").permitAll();
 			
 			http.authorizeRequests().antMatchers(HttpMethod.GET, "/**").permitAll();
 			
