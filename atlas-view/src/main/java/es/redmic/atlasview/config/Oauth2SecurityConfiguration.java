@@ -60,7 +60,13 @@ public class Oauth2SecurityConfiguration {
 
 			http.authorizeRequests().antMatchers(HttpMethod.GET, "/**/_search/_schema").permitAll();
 
-			http.authorizeRequests().antMatchers("/**").access(
+			http.authorizeRequests().antMatchers(HttpMethod.POST, "/**").access(
+					"#oauth2.hasScope('read') and hasAnyRole('ROLE_ADMINISTRATOR', 'ROLE_OAG', 'ROLE_COLLABORATOR')");
+
+			http.authorizeRequests().antMatchers(HttpMethod.PUT, "/**").access(
+					"#oauth2.hasScope('read') and hasAnyRole('ROLE_ADMINISTRATOR', 'ROLE_OAG', 'ROLE_COLLABORATOR')");
+
+			http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/**").access(
 					"#oauth2.hasScope('read') and hasAnyRole('ROLE_ADMINISTRATOR', 'ROLE_OAG', 'ROLE_COLLABORATOR')");
 		}
 	}
