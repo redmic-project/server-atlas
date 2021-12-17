@@ -24,7 +24,7 @@ package es.redmic.atlaslib.dto.layer;
 import org.apache.avro.Schema;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.kjetland.jackson.jsonSchema.annotations.JsonSchemaUrl;
+import com.kjetland.jackson.jsonSchema.annotations.JsonSchemaUrlUuid;
 
 public class LayerActivityDTO extends org.apache.avro.specific.SpecificRecordBase {
 
@@ -39,7 +39,7 @@ public class LayerActivityDTO extends org.apache.avro.specific.SpecificRecordBas
 	public LayerActivityDTO() {
 	}
 
-	@JsonSchemaUrl(value="controller.mapping.ACTIVITY")
+	@JsonSchemaUrlUuid(value="controller.mapping.ACTIVITY")
 	private ActivityDTO activity;
 
 	public ActivityDTO getActivity() {
