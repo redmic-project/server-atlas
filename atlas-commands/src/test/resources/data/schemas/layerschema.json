@@ -79,7 +79,7 @@
 			"type": ["object", "null"],
 			"properties": {
 				"activity": {
-					"type": ["integer", "null"],
+					"type": ["string", "null"],
 					"url": "/api/atlas/view/activities"
 				}
 			}
