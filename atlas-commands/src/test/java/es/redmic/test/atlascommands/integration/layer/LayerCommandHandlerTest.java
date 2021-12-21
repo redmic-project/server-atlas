@@ -9,9 +9,9 @@ package es.redmic.test.atlascommands.integration.layer;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -116,7 +116,7 @@ import es.redmic.testutils.kafka.KafkaBaseIntegrationTest;
 @DirtiesContext
 @KafkaListener(topics = "${broker.topic.layer}", groupId = "LayerCommandHandlerTest")
 @TestPropertySource(properties = { "spring.kafka.consumer.group-id=LayerCommandHandler", "schema.registry.port=19999",
-		"rest.eventsource.timeout.ms=20000" })
+		"rest.eventsource.timeout.ms=400000" })
 public class LayerCommandHandlerTest extends KafkaBaseIntegrationTest {
 
 	protected static Logger logger = LogManager.getLogger();
