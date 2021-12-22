@@ -85,13 +85,13 @@ public class LayerDTO extends LayerInfoDTO {
 			+ "{\"name\":\"latLonBoundsImage\",\"type\":[" + LatLonBoundingBoxDTO.SCHEMA$ + ", \"null\"]},"
 			+ "{\"name\":\"protocols\",\"type\": [{\"type\": \"array\",\"items\":" + ProtocolDTO.SCHEMA$ + "}]},"
 			+ "{\"name\":\"downloads\",\"type\": [\"null\", {\"type\": \"array\",\"items\":" + DownloadDTO.SCHEMA$ + "}],\"default\":null},"
-			+ "{\"name\":\"timeDefinition\",\"type\":[" + TimeDefinitionDTO.SCHEMA$ + ", \"null\"]},"
+			+ "{\"name\":\"timeDefinition\",\"type\":[" + TimeDefinitionDTO.SCHEMA$ + ", \"null\"],\"default\":null},"
 			+ "{\"name\":\"description\",\"type\":[\"string\", \"null\"]},"
 			+ "{\"name\":\"alias\",\"type\":[\"string\", \"null\"]},"
 			+ "{\"name\":\"atlas\",\"type\":\"boolean\", \"default\": \"false\"},"
 			+ "{\"name\":\"refresh\",\"type\":\"int\", \"default\": \"0\"},"
 			+ "{\"name\":\"urlSource\",\"type\":\"string\"},"
-			+ "{\"name\":\"styles\",\"type\": [\"string\", \"null\"]},"
+			+ "{\"name\":\"styles\",\"type\": [\"string\", \"null\"],\"default\":null},"
 			+ "{\"name\":\"name\",\"type\":\"string\"},"
 			+ "{\"name\":\"id\",\"type\":\"string\"}]}");
 	// @formatter:on
