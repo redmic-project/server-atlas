@@ -34,9 +34,9 @@ public class TimeDefinitionDTO extends org.apache.avro.specific.SpecificRecordBa
 	@JsonIgnore
 	public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse(
 		"{\"type\":\"record\",\"name\":\"TimeDefinitionDTO\",\"namespace\":\"es.redmic.atlaslib.dto.layer\",\"fields\":["
-				+ "{\"name\": \"startDate\",\"type\": [\"string\", \"null\"]},"
-				+ "{\"name\":\"endDate\",\"type\":[\"string\", \"null\"]},"
-				+ "{\"name\":\"interval\",\"type\":[\"string\", \"null\"]}]}");
+				+ "{\"name\": \"startDate\",\"type\": [\"string\", \"null\"], \"default\": null },"
+				+ "{\"name\":\"endDate\",\"type\":[\"string\", \"null\"], \"default\": null },"
+				+ "{\"name\":\"interval\",\"type\":[\"string\", \"null\"], \"default\": null }]}");
 	// @formatter:on
 
 	public TimeDefinitionDTO() {

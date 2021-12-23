@@ -12,9 +12,9 @@ import javax.validation.constraints.Size;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,18 +32,18 @@ import es.redmic.brokerlib.avro.common.CommonDTO;
 /**
  * DTO de entrada para datos enviados por el cliente y que corresponde con una
  * categoría que englobará un conjunto de capas
- * 
+ *
  * Necesario validación DTO
- * 
+ *
  */
 public class CategoryDTO extends CommonDTO {
 
 	// @formatter:off
-	
+
 	@JsonIgnore
 	public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse(
 		"{\"type\":\"record\",\"name\":\"CategoryDTO\",\"namespace\":\"es.redmic.atlaslib.dto.category\",\"fields\":["
-				+ "{\"name\":\"name\",\"type\":[\"string\", \"null\"]},"
+				+ "{\"name\":\"name\",\"type\":[\"string\", \"null\"], \"default\": null },"
 				+ "{\"name\":\"id\",\"type\":\"string\"}]}");
 	// @formatter:on
 
