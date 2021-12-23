@@ -42,7 +42,7 @@ import es.redmic.test.atlascommands.integration.KafkaEmbeddedConfig;
 @DirtiesContext
 @KafkaListener(topics = "${broker.topic.settings}", groupId = "SettingsCommandHandlerTests")
 @TestPropertySource(properties = { "spring.kafka.consumer.group-id=SettingsCommandHandler",
-		"schema.registry.port=19199", "rest.eventsource.timeout.ms=400000" })
+		"schema.registry.port=19199", "rest.eventsource.timeout.ms=100000" })
 public class SettingsCommandHandlerTests extends SettingsCommandHandlerBase {
 
 	@ClassRule

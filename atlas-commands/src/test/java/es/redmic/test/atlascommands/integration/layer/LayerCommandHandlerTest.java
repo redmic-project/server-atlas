@@ -116,7 +116,7 @@ import es.redmic.testutils.kafka.KafkaBaseIntegrationTest;
 @DirtiesContext
 @KafkaListener(topics = "${broker.topic.layer}", groupId = "LayerCommandHandlerTest")
 @TestPropertySource(properties = { "spring.kafka.consumer.group-id=LayerCommandHandler", "schema.registry.port=19999",
-		"rest.eventsource.timeout.ms=400000" })
+		"rest.eventsource.timeout.ms=100000" })
 public class LayerCommandHandlerTest extends KafkaBaseIntegrationTest {
 
 	protected static Logger logger = LogManager.getLogger();
