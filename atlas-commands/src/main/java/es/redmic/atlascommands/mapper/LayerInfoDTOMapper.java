@@ -46,7 +46,7 @@ public interface LayerInfoDTOMapper {
 
 	@Named("activities")
 	default List<LayerActivityDTO> getActivities(LayerInfoDTO value) {
-		return value.getActivities();
+		return value.getRelatedActivities();
 	}
 
 	// @formatter:on
