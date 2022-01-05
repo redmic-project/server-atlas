@@ -41,11 +41,11 @@ public interface LayerInfoDTOMapper {
 	@Mapping(target = "alias",
 		expression = "java(layerInfoDTO.getAlias() != null ? "
 				+ "layerInfoDTO.getAlias() : (layerDTO.getTitle() != null ? layerDTO.getTitle() : layerDTO.getName()))")
-	@Mapping(source = "layerInfoDTO", target = "activities", qualifiedByName = "activities")
+	@Mapping(source = "layerInfoDTO", target = "relatedActivities", qualifiedByName = "relatedActivities")
 	LayerDTO map(LayerInfoDTO layerInfoDTO, LayerWMSDTO layerWMSDTO);
 
-	@Named("activities")
-	default List<LayerActivityDTO> getActivities(LayerInfoDTO value) {
+	@Named("relatedActivities")
+	default List<LayerActivityDTO> getRelatedActivities(LayerInfoDTO value) {
 		return value.getRelatedActivities();
 	}
 
