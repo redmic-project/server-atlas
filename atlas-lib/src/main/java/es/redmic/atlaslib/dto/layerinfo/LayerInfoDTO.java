@@ -54,7 +54,7 @@ public class LayerInfoDTO extends LayerCompactDTO {
 	public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse(
 		"{\"type\":\"record\",\"name\":\"LayerDTO\",\"namespace\":\"es.redmic.atlaslib.dto.layerinfo\",\"fields\":["
 			+ "{\"name\":\"parent\",\"type\":" + CategoryDTO.SCHEMA$ + "},"
-			+ "{\"name\":\"activities\",\"type\": [\"null\", {\"type\": \"array\",\"items\": "+ LayerActivityDTO.SCHEMA$ +"}],\"default\":null},"
+			+ "{\"name\":\"relatedActivities\",\"type\": [\"null\", {\"type\": \"array\",\"items\": "+ LayerActivityDTO.SCHEMA$ +"}],\"default\":null},"
 			+ "{\"name\":\"themeInspire\",\"type\":[" + ThemeInspireDTO.SCHEMA$ + ", \"null\"], \"default\": null },"
 			+ "{\"name\":\"latLonBoundsImage\",\"type\":[" + LatLonBoundingBoxDTO.SCHEMA$ + ", \"null\"], \"default\": null },"
 			+ "{\"name\":\"protocols\",\"type\": [{\"type\": \"array\",\"items\":" + ProtocolDTO.SCHEMA$ + "}]},"
@@ -100,7 +100,7 @@ public class LayerInfoDTO extends LayerCompactDTO {
 		case 0:
 			return getParent();
 		case 1:
-			return getActivities();
+			return getRelatedActivities();
 		case 2:
 			return getThemeInspire();
 		case 3:
@@ -141,7 +141,7 @@ public class LayerInfoDTO extends LayerCompactDTO {
 			setParent((CategoryDTO) value);
 			break;
 		case 1:
-			setActivities(value != null ? (java.util.List) value : null);
+			setRelatedActivities(value != null ? (java.util.List) value : null);
 			break;
 		case 2:
 			setThemeInspire(value != null ? (ThemeInspireDTO) value : null);

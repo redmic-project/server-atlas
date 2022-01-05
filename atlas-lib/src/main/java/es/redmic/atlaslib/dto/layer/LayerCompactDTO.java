@@ -40,12 +40,12 @@ public abstract class LayerCompactDTO extends LayerBaseDTO {
 	public LayerCompactDTO() {
 		super();
 		this.protocols = new ArrayList<>();
-		this.activities = new ArrayList<>();
+		this.relatedActivities = new ArrayList<>();
 	}
 
 	@JsonSchemaUniqueItemsByRequiredProperties
 	@Valid
-	private List<LayerActivityDTO> activities;
+	private List<LayerActivityDTO> relatedActivities;
 
 	@JsonDeserialize(using = CustomRelationDeserializer.class)
 	@JsonSchemaUrlUuid(value = "controller.mapping.THEME_INSPIRE")
@@ -86,12 +86,12 @@ public abstract class LayerCompactDTO extends LayerBaseDTO {
 
 	private String styles;
 
-	public List<LayerActivityDTO> getActivities() {
-		return this.activities;
+	public List<LayerActivityDTO> getRelatedActivities() {
+		return this.relatedActivities;
 	}
 
-	public void setActivities(List<LayerActivityDTO> activities) {
-		this.activities = activities;
+	public void setRelatedActivities(List<LayerActivityDTO> relatedActivities) {
+		this.relatedActivities = relatedActivities;
 	}
 
 	public ThemeInspireDTO getThemeInspire() {
@@ -197,7 +197,7 @@ public abstract class LayerCompactDTO extends LayerBaseDTO {
 		result = prime * result + ((urlSource == null) ? 0 : urlSource.hashCode());
 		result = prime * result + ((styles == null) ? 0 : styles.hashCode());
 		result = prime * result + ((themeInspire == null) ? 0 : themeInspire.hashCode());
-		result = prime * result + ((activities == null) ? 0 : activities.hashCode());
+		result = prime * result + ((relatedActivities == null) ? 0 : relatedActivities.hashCode());
 		return result;
 	}
 
@@ -265,10 +265,10 @@ public abstract class LayerCompactDTO extends LayerBaseDTO {
 				return false;
 		} else if (!themeInspire.equals(other.themeInspire))
 			return false;
-		if (activities == null) {
-			if (other.activities != null)
+		if (relatedActivities == null) {
+			if (other.relatedActivities != null)
 				return false;
-		} else if (!activities.equals(other.activities))
+		} else if (!relatedActivities.equals(other.relatedActivities))
 			return false;
 		return true;
 	}

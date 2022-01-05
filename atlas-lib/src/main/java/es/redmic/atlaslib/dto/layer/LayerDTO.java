@@ -80,7 +80,7 @@ public class LayerDTO extends LayerInfoDTO {
 			+ "{\"name\":\"updated\",\"type\":[\"null\",{\"type\":\"long\",\"logicalType\":\"timestamp-millis\"}],"
 				+ "\"default\": null},"
 			+ "{\"name\":\"parent\",\"type\":" + CategoryDTO.SCHEMA$ + "},"
-			+ "{\"name\":\"activities\",\"type\": [\"null\", {\"type\": \"array\",\"items\": "+ LayerActivityDTO.SCHEMA$ +"}],\"default\":null},"
+			+ "{\"name\":\"relatedActivities\",\"type\": [\"null\", {\"type\": \"array\",\"items\": "+ LayerActivityDTO.SCHEMA$ +"}],\"default\":null},"
 			+ "{\"name\":\"themeInspire\",\"type\":["+ ThemeInspireDTO.SCHEMA$ +", \"null\"], \"default\": null },"
 			+ "{\"name\":\"latLonBoundsImage\",\"type\":[" + LatLonBoundingBoxDTO.SCHEMA$ + ", \"null\"], \"default\": null },"
 			+ "{\"name\":\"protocols\",\"type\": [{\"type\": \"array\",\"items\":" + ProtocolDTO.SCHEMA$ + "}]},"
@@ -332,7 +332,7 @@ public class LayerDTO extends LayerInfoDTO {
 		case 16:
 			return getParent();
 		case 17:
-			return getActivities();
+			return getRelatedActivities();
 		case 18:
 			return getThemeInspire();
 		case 19:
@@ -427,7 +427,7 @@ public class LayerDTO extends LayerInfoDTO {
 			setParent((CategoryDTO) value);
 			break;
 		case 17:
-			setActivities(value != null ? (java.util.List) value : null);
+			setRelatedActivities(value != null ? (java.util.List) value : null);
 			break;
 		case 18:
 			setThemeInspire(value != null ? (ThemeInspireDTO) value : null);

@@ -530,7 +530,7 @@ public abstract class LayerDataUtil {
 		layer.setFormats(formats);
 
 		layer.setGeometry(getGeometry());
-		layer.setActivities(getActivities());
+		layer.setRelatedActivities(getActivities());
 		layer.setContact(getContact());
 		layer.setParent(CategoryDataUtil.getCategory("3442"));
 		layer.setThemeInspire(ThemeInspireDataUtil.getThemeInspire("cc"));
@@ -608,7 +608,7 @@ public abstract class LayerDataUtil {
 		layerInfo.setUrlSource("http://redmic.es");
 		layerInfo.setStyles("styles");
 		layerInfo.setParent(CategoryDataUtil.getCategory("3442"));
-		layerInfo.setActivities(getActivities());
+		layerInfo.setRelatedActivities(getActivities());
 		layerInfo.setThemeInspire(ThemeInspireDataUtil.getThemeInspire("cc"));
 		layerInfo.setProtocols(getProtocols());
 		layerInfo.setLatLonBoundsImage(getLatLonBoundingBoxDTO());

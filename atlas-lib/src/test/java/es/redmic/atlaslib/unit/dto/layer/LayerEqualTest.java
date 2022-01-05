@@ -530,7 +530,7 @@ public class LayerEqualTest {
 
 		LayerDTO dto2 = LayerDataUtil.getLayer();
 
-		dto1.getActivities().get(0).getActivity().setId("32434");
+		dto1.getRelatedActivities().get(0).getActivity().setId("32434");
 
 		assertFalse(dto1.equals(dto2));
 	}
@@ -542,7 +542,7 @@ public class LayerEqualTest {
 
 		LayerDTO dto2 = LayerDataUtil.getLayer();
 
-		dto1.setActivities(null);
+		dto1.setRelatedActivities(null);
 		assertFalse(dto1.equals(dto2));
 	}
 
