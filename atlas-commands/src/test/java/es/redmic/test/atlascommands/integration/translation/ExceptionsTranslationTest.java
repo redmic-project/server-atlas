@@ -106,23 +106,6 @@ public class ExceptionsTranslationTest {
 	}
 
 	@Test
-	public void getRussianLanguageMessage_returnCode_WhenI18nFileNotExist() {
-
-		try {
-			aggregate.process(new UpdateThemeInspireCommand());
-		} catch (HistoryNotFoundException e) {
-
-			String code = e.getCode().toString();
-
-			String[] fields = (String[]) e.getFieldErrors().toArray();
-
-			String mess = messageSource.getMessage(code, fields, new Locale("ru", "RU"));
-
-			Assert.assertEquals(code, mess);
-		}
-	}
-
-	@Test
 	public void getMessage_returnCode_WhenCodeNotInI18nFile() {
 
 		String code = "CodeNotFound";
