@@ -415,7 +415,7 @@ public class LayerControllerTest extends DocumentationViewBaseTest {
 		activity.setId("135");
 		layerActivity.setActivity(activity);
 		activities.add(layerActivity);
-		layerAtlas.setActivities(activities);
+		layerAtlas.setRelatedActivities(activities);
 		repository.save(layerAtlas, PARENT_ID);
 
 

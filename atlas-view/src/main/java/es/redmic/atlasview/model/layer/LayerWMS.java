@@ -44,7 +44,7 @@ public class LayerWMS extends BaseAbstractStringES {
 	private List<String> srs;
 	private List<StyleLayer> stylesLayer;
 	private Contact contact;
-	private List<LayerActivity> activities;
+	private List<LayerActivity> relatedActivities;
 	private List<String> formats;
 	private Polygon geometry;
 	private String legend;
@@ -130,12 +130,12 @@ public class LayerWMS extends BaseAbstractStringES {
 		this.contact = contact;
 	}
 
-	public List<LayerActivity> getActivities() {
-		return activities;
+	public List<LayerActivity> getRelatedActivities() {
+		return relatedActivities;
 	}
 
-	public void setActivities(List<LayerActivity> activities) {
-		this.activities = activities;
+	public void setRelatedActivities(List<LayerActivity> relatedActivities) {
+		this.relatedActivities = relatedActivities;
 	}
 
 	public List<String> getFormats() {

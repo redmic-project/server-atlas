@@ -61,7 +61,7 @@
 		"fax": "",
 		"address": "Edf. Puerto Ciudad S/C de Tenerife 38101 España "
 	},
-	"activities": [
+	"relatedActivities": [
 		{
 			"activity": {
 				"id": "12"

@@ -287,7 +287,7 @@ public class LayerESRepository extends RWDataESRepository<Layer, GeoDataQueryDTO
 		if (terms.containsKey("activities")) {
 
 			List<Integer> ids = (List<Integer>) terms.get("activities");
-			query.must(QueryBuilders.nestedQuery("activities", QueryBuilders.boolQuery().filter(QueryBuilders.termsQuery("activities.activity.id", ids)),
+			query.must(QueryBuilders.nestedQuery("relatedActivities", QueryBuilders.boolQuery().filter(QueryBuilders.termsQuery("relatedActivities.activity.id", ids)),
 				ScoreMode.Avg));
 		}
 		return super.getTermQuery(terms, query);

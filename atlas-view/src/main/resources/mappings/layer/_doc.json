@@ -45,7 +45,7 @@
 						}
 					}
 				},
-				"activities": {
+				"relatedActivities": {
 					"dynamic": false,
 					"type": "nested",
 					"properties": {
