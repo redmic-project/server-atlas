@@ -41,6 +41,10 @@ public class ActivityDTO extends org.apache.avro.specific.SpecificRecordBase imp
 	public ActivityDTO() {
 	}
 
+	public ActivityDTO(String id) {
+		setId(id);
+	}
+
 	@NotNull
 	String id;
 
