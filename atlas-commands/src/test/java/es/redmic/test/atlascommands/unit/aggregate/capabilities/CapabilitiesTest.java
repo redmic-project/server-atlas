@@ -61,10 +61,6 @@ public class CapabilitiesTest {
 		layers = Capabilities.getCapabilities(URL_CAPABILITIES);
 
 		expectedLayer = (LayerWMSDTO) JsonToBeanTestUtil.getBean("/data/layers/layer.json", LayerWMSDTO.class);
-
-		// Establece urlSource dinámicamente (depende de donde se ejecute)
-		expectedLayer.setLegend(
-				URL_CAPABILITIES + "?request=GetLegendGraphic&version=1.0.0&format=image/png&layer=topp:states");
 	}
 
 	@Test(expected = URLException.class)
@@ -100,7 +96,6 @@ public class CapabilitiesTest {
 		assertEquals(expectedLayer.getGeometry(), layerDTO.getGeometry());
 
 		assertEquals(expectedLayer.getKeywords(), layerDTO.getKeywords());
-		assertEquals(expectedLayer.getLegend(), layerDTO.getLegend());
 		assertEquals(expectedLayer.getAttribution(), layerDTO.getAttribution());
 		assertEquals(expectedLayer.getQueryable(), layerDTO.getQueryable());
 

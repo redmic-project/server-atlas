@@ -22,7 +22,7 @@
 		"image/tiff8",
 		"text/html; subtype=openlayers"
 	],
-	"legend": "file:/home/REDMIC/redmic_project/server/atlas/atlas-commands/src/test/resources/data/capabilities/wms.xml?request=GetLegendGraphic&version=1.0.0&format=image/png&layer=topp:states",
+	"legend": "http://externallegend.com",
 	"geometry": {
 		"coordinates": [
 			[
