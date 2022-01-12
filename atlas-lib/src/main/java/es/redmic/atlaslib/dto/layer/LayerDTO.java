@@ -70,13 +70,13 @@ public class LayerDTO extends LayerInfoDTO {
 			+ "{\"name\":\"formats\",\"type\":{\"type\":\"array\",\"items\":\"string\"}},"
 			+ "{\"name\":\"image\",\"type\":[\"null\", \"string\"]},"
 			+ "{\"name\":\"geometry\",\"type\":\"string\"},"
-			+ "{\"name\":\"legend\",\"type\":[\"null\", \"string\"]},"
 			+ "{\"name\":\"attibution\",\"type\":[\"null\", " + AttributionDTO.SCHEMA$ + "]},"
 			+ "{\"name\":\"timeDimension\",\"type\":[\"null\", " + DimensionDTO.SCHEMA$ + "]},"
 			+ "{\"name\":\"elevationDimension\"," + "\"type\":[\"null\", \"es.redmic.atlaslib.dto.layer.DimensionDTO\"]},"
 			+ "{\"name\":\"inserted\",\"type\":[\"null\",{\"type\":\"long\",\"logicalType\":\"timestamp-millis\"}]},"
 			+ "{\"name\":\"updated\",\"type\":[\"null\",{\"type\":\"long\",\"logicalType\":\"timestamp-millis\"}]},"
 			+ "{\"name\":\"parent\",\"type\":" + CategoryDTO.SCHEMA$ + "},"
+			+ "{\"name\":\"legend\",\"type\":[\"null\", \"string\"]},"
 			+ "{\"name\":\"relatedActivities\",\"type\": [\"null\", {\"type\": \"array\",\"items\": "+ LayerActivityDTO.SCHEMA$ +"}]},"
 			+ "{\"name\":\"themeInspire\",\"type\":[\"null\", "+ ThemeInspireDTO.SCHEMA$ +"]},"
 			+ "{\"name\":\"latLonBoundsImage\",\"type\":[\"null\", " + LatLonBoundingBoxDTO.SCHEMA$ + "]},"
@@ -127,8 +127,6 @@ public class LayerDTO extends LayerInfoDTO {
 
 	@NotNull
 	private Polygon geometry;
-
-	private String legend;
 
 	private AttributionDTO attribution;
 
@@ -226,14 +224,6 @@ public class LayerDTO extends LayerInfoDTO {
 		this.geometry = geometry;
 	}
 
-	public String getLegend() {
-		return legend;
-	}
-
-	public void setLegend(String legend) {
-		this.legend = legend;
-	}
-
 	public AttributionDTO getAttribution() {
 		return attribution;
 	}
@@ -315,19 +305,19 @@ public class LayerDTO extends LayerInfoDTO {
 				return null;
 			}
 		case 10:
-			return legend;
-		case 11:
 			return attribution;
-		case 12:
+		case 11:
 			return timeDimension;
-		case 13:
+		case 12:
 			return elevationDimension;
-		case 14:
+		case 13:
 			return getInserted() != null ? getInserted().getMillis() : null;
-		case 15:
+		case 14:
 			return getUpdated() != null ? getUpdated().getMillis() : null;
-		case 16:
+		case 15:
 			return getParent();
+		case 16:
+			return getLegend();
 		case 17:
 			return getRelatedActivities();
 		case 18:
@@ -403,25 +393,25 @@ public class LayerDTO extends LayerInfoDTO {
 			}
 			break;
 		case 10:
-			legend = value != null ? value.toString() : null;
-			break;
-		case 11:
 			attribution = value != null ? (AttributionDTO) value : null;
 			break;
-		case 12:
+		case 11:
 			timeDimension = value != null ? (DimensionDTO) value : null;
 			break;
-		case 13:
+		case 12:
 			elevationDimension = value != null ? (DimensionDTO) value : null;
 			break;
-		case 14:
+		case 13:
 			setInserted(value != null ? new DateTime(value, DateTimeZone.UTC).toDateTime() : null);
 			break;
-		case 15:
+		case 14:
 			setUpdated(value != null ? new DateTime(value, DateTimeZone.UTC).toDateTime() : null);
 			break;
-		case 16:
+		case 15:
 			setParent((CategoryDTO) value);
+			break;
+		case 16:
+			setLegend(value != null ? value.toString() : null);
 			break;
 		case 17:
 			setRelatedActivities(value != null ? (java.util.List) value : null);
@@ -484,7 +474,6 @@ public class LayerDTO extends LayerInfoDTO {
 		result = prime * result + ((contact == null) ? 0 : contact.hashCode());
 		result = prime * result + ((formats == null) ? 0 : formats.hashCode());
 		result = prime * result + ((geometry == null) ? 0 : geometry.hashCode());
-		result = prime * result + ((legend == null) ? 0 : legend.hashCode());
 		result = prime * result + ((attribution == null) ? 0 : attribution.hashCode());
 		result = prime * result + ((timeDimension == null) ? 0 : timeDimension.hashCode());
 		result = prime * result + ((elevationDimension == null) ? 0 : elevationDimension.hashCode());
@@ -527,11 +516,6 @@ public class LayerDTO extends LayerInfoDTO {
 			if (other.geometry != null)
 				return false;
 		} else if (!geometry.equals(other.geometry))
-			return false;
-		if (legend == null) {
-			if (other.legend != null)
-				return false;
-		} else if (!legend.equals(other.legend))
 			return false;
 		if (attribution == null) {
 			if (other.attribution != null)

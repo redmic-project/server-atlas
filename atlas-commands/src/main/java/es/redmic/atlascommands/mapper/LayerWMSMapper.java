@@ -58,11 +58,9 @@ public interface LayerWMSMapper {
 			refInBracketsRegex = ".*(" + refRegex + ").*",
 			formatRegex = ".*&format=(\\w*)%2F(\\w*)&.*",
 			timeDimensionProperty = "time",
-			elevationDimensionProperty = "elevation",
-			legendGraphicUrlParameters = "?request=GetLegendGraphic&version=1.0.0&format=image/png&layer=topp:states";
+			elevationDimensionProperty = "elevation";
 
 	// @formatter:on
-	@Mapping(source = "layer", target = "legend", qualifiedByName = "legend")
 	@Mapping(source = "layer", target = "timeDimension", qualifiedByName = "timeDimension")
 	@Mapping(source = "layer", target = "elevationDimension", qualifiedByName = "elevationDimension")
 	@Mapping(source = "layer", target = "stylesLayer", qualifiedByName = "stylesLayer")
@@ -71,12 +69,6 @@ public interface LayerWMSMapper {
 	@Mapping(source = "layer", target = "keywords", qualifiedByName = "keywords")
 	@Mapping(source = "layer", target = "attribution", qualifiedByName = "attribution")
 	LayerWMSDTO map(Layer layer, @Context String urlSource);
-
-	@Named("legend")
-	default String getLegend(Layer layer, @Context String urlSource) {
-
-		return urlSource + legendGraphicUrlParameters;
-	}
 
 	@Named("timeDimension")
 	default DimensionDTO getElevationDimension(Layer layer, @Context String urlSource) {

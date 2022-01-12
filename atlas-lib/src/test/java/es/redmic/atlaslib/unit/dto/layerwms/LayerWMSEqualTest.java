@@ -114,29 +114,6 @@ public class LayerWMSEqualTest {
 	}
 
 	@Test
-	public void equal_returnFalse_IfLayerWMSLegendIsDifferent() {
-
-		LayerWMSDTO dto1 = LayerDataUtil.getLayerWMS();
-
-		LayerWMSDTO dto2 = LayerDataUtil.getLayerWMS();
-
-		dto1.setLegend("aaaa");
-
-		assertFalse(dto1.equals(dto2));
-	}
-
-	@Test
-	public void equal_returnFalse_IfLayerWMSLegendIsNull() {
-
-		LayerWMSDTO dto1 = LayerDataUtil.getLayerWMS();
-
-		LayerWMSDTO dto2 = LayerDataUtil.getLayerWMS();
-
-		dto1.setLegend(null);
-		assertFalse(dto1.equals(dto2));
-	}
-
-	@Test
 	public void equal_returnFalse_IfLayerWMSAttributionIsDifferent() {
 
 		LayerWMSDTO dto1 = LayerDataUtil.getLayerWMS();

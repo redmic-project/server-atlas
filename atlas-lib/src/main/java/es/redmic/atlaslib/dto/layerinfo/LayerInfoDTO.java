@@ -54,6 +54,7 @@ public class LayerInfoDTO extends LayerCompactDTO {
 	public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse(
 		"{\"type\":\"record\",\"name\":\"LayerDTO\",\"namespace\":\"es.redmic.atlaslib.dto.layerinfo\",\"fields\":["
 			+ "{\"name\":\"parent\",\"type\":" + CategoryDTO.SCHEMA$ + "},"
+			+ "{\"name\":\"legend\",\"type\":[\"null\", \"string\"]},"
 			+ "{\"name\":\"relatedActivities\",\"type\": [\"null\", {\"type\": \"array\",\"items\": "+ LayerActivityDTO.SCHEMA$ +"}]},"
 			+ "{\"name\":\"themeInspire\",\"type\":[\"null\", " + ThemeInspireDTO.SCHEMA$ + "]},"
 			+ "{\"name\":\"latLonBoundsImage\",\"type\":[\"null\", " + LatLonBoundingBoxDTO.SCHEMA$ + "]},"
@@ -79,12 +80,22 @@ public class LayerInfoDTO extends LayerCompactDTO {
 	@JsonSchemaUrlUuid(value = "controller.mapping.CATEGORY")
 	CategoryDTO parent;
 
+	private String legend;
+
 	public CategoryDTO getParent() {
 		return parent;
 	}
 
 	public void setParent(CategoryDTO parent) {
 		this.parent = parent;
+	}
+
+	public String getLegend() {
+		return legend;
+	}
+
+	public void setLegend(String legend) {
+		this.legend = legend;
 	}
 
 	@JsonIgnore
@@ -208,6 +219,11 @@ public class LayerInfoDTO extends LayerCompactDTO {
 			if (other.parent != null)
 				return false;
 		} else if (!parent.equals(other.parent))
+			return false;
+		if (legend == null) {
+			if (other.legend != null)
+				return false;
+		} else if (!legend.equals(other.legend))
 			return false;
 		return true;
 	}

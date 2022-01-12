@@ -47,7 +47,6 @@ public class LayerWMS extends BaseAbstractStringES {
 	private List<LayerActivity> relatedActivities;
 	private List<String> formats;
 	private Polygon geometry;
-	private String legend;
 	private Attribution attribution;
 	private Dimension timeDimension;
 	private Dimension elevationDimension;
@@ -152,14 +151,6 @@ public class LayerWMS extends BaseAbstractStringES {
 
 	public void setGeometry(Polygon geometry) {
 		this.geometry = geometry;
-	}
-
-	public String getLegend() {
-		return legend;
-	}
-
-	public void setLegend(String legend) {
-		this.legend = legend;
 	}
 
 	public Attribution getAttribution() {

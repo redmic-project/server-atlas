@@ -65,7 +65,6 @@ public class LayerWMSDTO extends LayerBaseDTO {
 			+ "{\"name\":\"formats\",\"type\":{\"type\":\"array\",\"items\":\"string\"}},"
 			+ "{\"name\":\"image\",\"type\":[\"string\", \"null\"]},"
 			+ "{\"name\":\"geometry\",\"type\":\"string\"},"
-			+ "{\"name\":\"legend\",\"type\":[\"string\", \"null\"]},"
 			+ "{\"name\":\"attibution\",\"type\":[" + AttributionDTO.SCHEMA$ + ",\"null\"]},"
 			+ "{\"name\":\"timeDimension\",\"type\":[" + DimensionDTO.SCHEMA$ + ",\"null\"]},"
 			+ "{\"name\":\"elevationDimension\"," + "\"type\":"
@@ -108,8 +107,6 @@ public class LayerWMSDTO extends LayerBaseDTO {
 
 	@NotNull
 	private Polygon geometry;
-
-	private String legend;
 
 	private AttributionDTO attribution;
 
@@ -197,14 +194,6 @@ public class LayerWMSDTO extends LayerBaseDTO {
 		this.geometry = geometry;
 	}
 
-	public String getLegend() {
-		return legend;
-	}
-
-	public void setLegend(String legend) {
-		this.legend = legend;
-	}
-
 	public AttributionDTO getAttribution() {
 		return attribution;
 	}
@@ -265,16 +254,14 @@ public class LayerWMSDTO extends LayerBaseDTO {
 				return null;
 			}
 		case 10:
-			return legend;
-		case 11:
 			return attribution;
-		case 12:
+		case 11:
 			return timeDimension;
-		case 13:
+		case 12:
 			return elevationDimension;
-		case 14:
+		case 13:
 			return getName();
-		case 15:
+		case 14:
 			return getId();
 		default:
 			throw new org.apache.avro.AvroRuntimeException("Bad index");
@@ -323,21 +310,18 @@ public class LayerWMSDTO extends LayerBaseDTO {
 			}
 			break;
 		case 10:
-			legend = value != null ? value.toString() : null;
-			break;
-		case 11:
 			attribution = value != null ? (AttributionDTO) value : null;
 			break;
-		case 12:
+		case 11:
 			timeDimension = value != null ? (DimensionDTO) value : null;
 			break;
-		case 13:
+		case 12:
 			elevationDimension = value != null ? (DimensionDTO) value : null;
 			break;
-		case 14:
+		case 13:
 			setName(value.toString());
 			break;
-		case 15:
+		case 14:
 			setId(value.toString());
 			break;
 		default:
@@ -359,7 +343,6 @@ public class LayerWMSDTO extends LayerBaseDTO {
 		result = prime * result + ((contact == null) ? 0 : contact.hashCode());
 		result = prime * result + ((formats == null) ? 0 : formats.hashCode());
 		result = prime * result + ((geometry == null) ? 0 : geometry.hashCode());
-		result = prime * result + ((legend == null) ? 0 : legend.hashCode());
 		result = prime * result + ((attribution == null) ? 0 : attribution.hashCode());
 		result = prime * result + ((timeDimension == null) ? 0 : timeDimension.hashCode());
 		result = prime * result + ((elevationDimension == null) ? 0 : elevationDimension.hashCode());
@@ -400,11 +383,6 @@ public class LayerWMSDTO extends LayerBaseDTO {
 			if (other.geometry != null)
 				return false;
 		} else if (!geometry.equals(other.geometry))
-			return false;
-		if (legend == null) {
-			if (other.legend != null)
-				return false;
-		} else if (!legend.equals(other.legend))
 			return false;
 		if (attribution == null) {
 			if (other.attribution != null)

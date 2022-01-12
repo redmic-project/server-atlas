@@ -549,7 +549,6 @@ public abstract class LayerDataUtil {
 
 		LayerWMSDTO layer = new LayerWMSDTO();
 
-		layer.setLegend("https://redmic.local/ww");
 		layer.setAttribution(getAttribution());
 		layer.setTimeDimension(getDimension());
 		layer.setElevationDimension(getDimension());
@@ -612,6 +611,7 @@ public abstract class LayerDataUtil {
 		layerInfo.setThemeInspire(ThemeInspireDataUtil.getThemeInspire("cc"));
 		layerInfo.setProtocols(getProtocols());
 		layerInfo.setLatLonBoundsImage(getLatLonBoundingBoxDTO());
+		layerInfo.setLegend("https://redmic.local/ww");
 
 		return layerInfo;
 	}

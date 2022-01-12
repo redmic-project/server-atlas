@@ -41,6 +41,7 @@ public class Layer extends LayerWMS {
 	private String urlSource;
 	private LatLonBoundingBox latLonBoundsImage;
 	private List<Protocol> protocols;
+	private String legend;
 	private List<Download> downloads;
 	private TimeDefinition timeDefinition;
 	private String image;
@@ -120,6 +121,14 @@ public class Layer extends LayerWMS {
 
 	public void setProtocols(List<Protocol> protocols) {
 		this.protocols = protocols;
+	}
+
+	public String getLegend() {
+		return legend;
+	}
+
+	public void setLegend(String legend) {
+		this.legend = legend;
 	}
 
 	public List<Download> getDownloads() {
