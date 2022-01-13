@@ -622,6 +622,7 @@ public abstract class LayerDataUtil {
 		dimension.setName("time");
 		dimension.setUnits("ISO8601");
 		dimension.setDefaultValue("P30M/PRESENT");
+		dimension.setValue("2021-01-01T00:00:00.000Z/2021-12-18T00:00:00.000Z/PT2H");
 
 		return dimension;
 	}

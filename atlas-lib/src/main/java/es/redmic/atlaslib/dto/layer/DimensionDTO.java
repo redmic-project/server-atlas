@@ -9,9 +9,9 @@ package es.redmic.atlaslib.dto.layer;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,8 +26,7 @@ import org.apache.avro.Schema;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class DimensionDTO extends org.apache.avro.specific.SpecificRecordBase
-		implements org.apache.avro.specific.SpecificRecord {
+public class DimensionDTO extends org.apache.avro.specific.SpecificRecordBase {
 
 	// @formatter:off
 
@@ -35,6 +34,7 @@ public class DimensionDTO extends org.apache.avro.specific.SpecificRecordBase
 	public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse(
 		"{\"type\":\"record\",\"name\":\"DimensionDTO\",\"namespace\":\"es.redmic.atlaslib.dto.layer\",\"fields\":["
 				+ "{\"name\":\"name\",\"type\":\"string\"},"
+				+ "{\"name\":\"value\",\"type\":\"string\"},"
 				+ "{\"name\":\"units\",\"type\":\"string\"},"
 				+ "{\"name\":\"unitSymbol\",\"type\":[\"string\", \"null\"]},"
 				+ "{\"name\":\"defaultValue\",\"type\":\"string\"}]}");
@@ -45,6 +45,9 @@ public class DimensionDTO extends org.apache.avro.specific.SpecificRecordBase
 
 	@NotNull
 	private String name;
+
+	@NotNull
+	private String value;
 
 	@NotNull
 	private String units;
@@ -60,6 +63,14 @@ public class DimensionDTO extends org.apache.avro.specific.SpecificRecordBase
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getValue() {
+		return this.value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
 	}
 
 	public String getUnits() {
@@ -92,6 +103,7 @@ public class DimensionDTO extends org.apache.avro.specific.SpecificRecordBase
 		int result = 1;
 		result = prime * result + ((defaultValue == null) ? 0 : defaultValue.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((value == null) ? 0 : value.hashCode());
 		result = prime * result + ((units == null) ? 0 : units.hashCode());
 		result = prime * result + ((unitSymbol == null) ? 0 : unitSymbol.hashCode());
 		return result;
@@ -115,6 +127,11 @@ public class DimensionDTO extends org.apache.avro.specific.SpecificRecordBase
 			if (other.name != null)
 				return false;
 		} else if (!name.equals(other.name))
+			return false;
+		if (value == null) {
+			if (other.value != null)
+				return false;
+		} else if (!value.equals(other.value))
 			return false;
 		if (units == null) {
 			if (other.units != null)
@@ -142,10 +159,12 @@ public class DimensionDTO extends org.apache.avro.specific.SpecificRecordBase
 		case 0:
 			return name;
 		case 1:
-			return units;
+			return value;
 		case 2:
-			return unitSymbol;
+			return units;
 		case 3:
+			return unitSymbol;
+		case 4:
 			return defaultValue;
 		default:
 			throw new org.apache.avro.AvroRuntimeException("Bad index");
@@ -160,12 +179,15 @@ public class DimensionDTO extends org.apache.avro.specific.SpecificRecordBase
 			name = value$.toString();
 			break;
 		case 1:
-			units = value$.toString();
+			value = value$.toString();
 			break;
 		case 2:
-			unitSymbol = value$ != null ? value$.toString() : null;
+			units = value$.toString();
 			break;
 		case 3:
+			unitSymbol = value$ != null ? value$.toString() : null;
+			break;
+		case 4:
 			defaultValue = value$.toString();
 			break;
 		default:
