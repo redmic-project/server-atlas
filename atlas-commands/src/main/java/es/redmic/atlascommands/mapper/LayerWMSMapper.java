@@ -197,7 +197,10 @@ public interface LayerWMSMapper {
 		dimension.setName(source.getName());
 		dimension.setUnits(source.getUnits());
 		dimension.setUnitSymbol(source.getUnitSymbol());
-		dimension.setDefaultValue(source.getExtent().getDefaultValue());
+		if (source.getExtent() != null) {
+			dimension.setDefaultValue(source.getExtent().getDefaultValue());
+			dimension.setValue(source.getExtent().getValue());
+		}
 
 		return dimension;
 	}
