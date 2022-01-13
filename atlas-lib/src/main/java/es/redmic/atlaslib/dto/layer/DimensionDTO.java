@@ -34,10 +34,10 @@ public class DimensionDTO extends org.apache.avro.specific.SpecificRecordBase {
 	public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse(
 		"{\"type\":\"record\",\"name\":\"DimensionDTO\",\"namespace\":\"es.redmic.atlaslib.dto.layer\",\"fields\":["
 				+ "{\"name\":\"name\",\"type\":\"string\"},"
-				+ "{\"name\":\"value\",\"type\":\"string\"},"
+				+ "{\"name\":\"value\",\"type\":[\"string\", \"null\"]},"
 				+ "{\"name\":\"units\",\"type\":\"string\"},"
 				+ "{\"name\":\"unitSymbol\",\"type\":[\"string\", \"null\"]},"
-				+ "{\"name\":\"defaultValue\",\"type\":\"string\"}]}");
+				+ "{\"name\":\"defaultValue\",\"type\":[\"string\", \"null\"]}]}");
 	// @formatter:on
 
 	public DimensionDTO() {
@@ -46,7 +46,6 @@ public class DimensionDTO extends org.apache.avro.specific.SpecificRecordBase {
 	@NotNull
 	private String name;
 
-	@NotNull
 	private String value;
 
 	@NotNull
@@ -54,7 +53,6 @@ public class DimensionDTO extends org.apache.avro.specific.SpecificRecordBase {
 
 	private String unitSymbol;
 
-	@NotNull
 	private String defaultValue;
 
 	public String getName() {
