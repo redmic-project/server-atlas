@@ -71,6 +71,9 @@
 		"parent": {
 			"type": "string",
 			"url": "/api/atlas/view/category"
+		},
+		"legend": {
+			"type": ["string", "null"]
 		}
 	},
 	"required": ["name", "protocols", "atlas", "refresh", "urlSource", "parent"],
