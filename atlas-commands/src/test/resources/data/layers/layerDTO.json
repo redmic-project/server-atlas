@@ -103,11 +103,13 @@
 	],
 	"timeDimension": {
 		"name": "time",
+		"value": "2017-03-15T08:15:38.742Z",
 		"units": "ISO8601",
 		"defaultValue": "2017-03-15T08:15:38.742Z"
 	},
 	"elevationDimension": {
 		"name": "elevation",
+		"value": "-3301.0/1600.0/0",
 		"units": "EPSG:5030",
 		"unitSymbol": "m",
 		"defaultValue": "1"
