@@ -109,11 +109,18 @@ public class LayerESRepository extends RWDataESRepository<Layer, GeoDataQueryDTO
 	@Override
 	protected EventApplicationResult checkInsertConstraintsFulfilled(Layer modelToIndex) {
 
-		QueryBuilder idTerm = QueryBuilders.termQuery(ID_PROPERTY, modelToIndex.getId()),
-				nameUrlSourceAndStylesTerm = QueryBuilders.boolQuery()
+		QueryBuilder idTerm = QueryBuilders.termQuery(ID_PROPERTY, modelToIndex.getId());
+
+		BoolQueryBuilder nameUrlSourceAndStylesTerm = QueryBuilders.boolQuery()
 						.must(QueryBuilders.termQuery(NAME_PROPERTY, modelToIndex.getName()))
-						.must(QueryBuilders.termQuery(URL_SOURCE_PROPERTY, modelToIndex.getUrlSource()))
-						.must(QueryBuilders.termQuery(STYLES_PROPERTY, modelToIndex.getStyles()));
+						.must(QueryBuilders.termQuery(URL_SOURCE_PROPERTY, modelToIndex.getUrlSource()));
+
+		String styles = modelToIndex.getStyles();
+		if (styles != null) {
+			nameUrlSourceAndStylesTerm.must(QueryBuilders.termQuery(STYLES_PROPERTY, modelToIndex.getStyles()));
+		} else {
+			nameUrlSourceAndStylesTerm.mustNot(QueryBuilders.existsQuery(STYLES_PROPERTY));
+		}
 
 		MultiSearchRequest request = new MultiSearchRequest();
 
@@ -158,12 +165,22 @@ public class LayerESRepository extends RWDataESRepository<Layer, GeoDataQueryDTO
 	protected EventApplicationResult checkUpdateConstraintsFulfilled(Layer modelToIndex) {
 		// @formatter:off
 
-		BoolQueryBuilder nameUrlSourceAndStylesTerm = QueryBuilders.boolQuery()
+		BoolQueryBuilder nameUrlSourceAndStylesTerm = QueryBuilders.boolQuery();
+
+		String styles = modelToIndex.getStyles();
+		if (styles != null) {
+			nameUrlSourceAndStylesTerm.mustNot(QueryBuilders.termQuery(ID_PROPERTY, modelToIndex.getId()))
 				.must(QueryBuilders.boolQuery()
-						.must(QueryBuilders.termQuery(NAME_PROPERTY, modelToIndex.getName()))
-						.must(QueryBuilders.termQuery(URL_SOURCE_PROPERTY, modelToIndex.getUrlSource()))
-						.must(QueryBuilders.termQuery(STYLES_PROPERTY, modelToIndex.getStyles())))
-				.mustNot(QueryBuilders.termQuery(ID_PROPERTY, modelToIndex.getId()));
+					.must(QueryBuilders.termQuery(NAME_PROPERTY, modelToIndex.getName()))
+					.must(QueryBuilders.termQuery(URL_SOURCE_PROPERTY, modelToIndex.getUrlSource()))
+					.must(QueryBuilders.termQuery(STYLES_PROPERTY, modelToIndex.getStyles())));
+		} else {
+			nameUrlSourceAndStylesTerm.mustNot(QueryBuilders.termQuery(ID_PROPERTY, modelToIndex.getId()))
+				.must(QueryBuilders.boolQuery()
+					.must(QueryBuilders.termQuery(NAME_PROPERTY, modelToIndex.getName()))
+					.must(QueryBuilders.termQuery(URL_SOURCE_PROPERTY, modelToIndex.getUrlSource()))
+					.mustNot(QueryBuilders.existsQuery(STYLES_PROPERTY)));
+		}
 
 		MultiSearchRequest request = new MultiSearchRequest();
 
