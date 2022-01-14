@@ -46,6 +46,7 @@ public class Layer extends LayerWMS {
 	private TimeDefinition timeDefinition;
 	private String image;
 	private String styles;
+	private List<LayerActivity> relatedActivities;
 
 	@JsonSerialize(using = CustomDateTimeSerializer.class)
 	@JsonDeserialize(using = CustomDateTimeDeserializer.class)
@@ -161,6 +162,14 @@ public class Layer extends LayerWMS {
 
 	public void setStyles(String styles) {
 		this.styles = styles;
+	}
+
+	public List<LayerActivity> getRelatedActivities() {
+		return relatedActivities;
+	}
+
+	public void setRelatedActivities(List<LayerActivity> relatedActivities) {
+		this.relatedActivities = relatedActivities;
 	}
 
 	public DateTime getInserted() {
