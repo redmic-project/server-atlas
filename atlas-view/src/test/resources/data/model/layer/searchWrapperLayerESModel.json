@@ -83,14 +83,15 @@
 						"fax": "",
 						"address": "Edf. Puerto Ciudad S/C de Tenerife 38101 España "
 					},
-					"activities": [
+					"relatedActivities": [
 						{
-							"path": "root.1.12",
-							"name": "Banco de datos de especies marinas de Canarias (DIADEMA)",
-							"id": 12
+							"activity": {
+								"id": "12"
+							}
 						}
 					],
 					"urlSource": "https://atlas.redmic.es/geoserver/sd/wms",
+					"styles": "el:batimetria50mCanarias",
 					"queryable": true,
 					"formats": [
 						"image/png",
@@ -120,6 +121,17 @@
 							"url": "https://atlas.redmic.es/geoserver/sd/wms"
 						}
 					],
+					"downloads": [
+						{
+							"name": "geoserver",
+							"url": "https://atlas.redmic.es/geoserver/sd/wms"
+						}
+					],
+					"timeDefinition": {
+						"startDate": "2017-05-23T12:35:12.052+00:00",
+						"endDate": "2019-05-23T12:35:12.052+00:00",
+						"interval": "1h"
+					},
 					"geometry": {
 						"type": "Polygon",
 						"coordinates": [
@@ -143,11 +155,13 @@
 					},
 					"timeDimension": {
 						"name": "time",
+						"value": "2017-03-15T08:15:38.742Z",
 						"units": "ISO8601",
 						"defaultValue": "P30M/PRESENT"
 					},
 					"elevationDimension": {
 						"name": "elevation",
+						"value": "-3301.0/1600.0/0",
 						"units": "ISO8601",
 						"unitSymbol": "m",
 						"defaultValue": "1"

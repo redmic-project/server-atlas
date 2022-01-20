@@ -9,9 +9,9 @@ package es.redmic.atlascommands.mapper;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,7 +37,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
-import es.redmic.atlaslib.dto.layer.ActivityDTO;
 import es.redmic.atlaslib.dto.layer.AttributionDTO;
 import es.redmic.atlaslib.dto.layer.DimensionDTO;
 import es.redmic.atlaslib.dto.layer.LogoURLDTO;
@@ -50,7 +49,7 @@ public interface LayerWMSMapper {
 	final int SRID = 4326;
 
 	// @formatter:off
-	
+
 	// TODO: Pasar por contexto
 
 	final String SRS = "EPSG:4326",
@@ -59,26 +58,17 @@ public interface LayerWMSMapper {
 			refInBracketsRegex = ".*(" + refRegex + ").*",
 			formatRegex = ".*&format=(\\w*)%2F(\\w*)&.*",
 			timeDimensionProperty = "time",
-			elevationDimensionProperty = "elevation",
-			legendGraphicUrlParameters = "?request=GetLegendGraphic&version=1.0.0&format=image/png&layer=topp:states";
-	
+			elevationDimensionProperty = "elevation";
+
 	// @formatter:on
-	@Mapping(source = "layer", target = "legend", qualifiedByName = "legend")
 	@Mapping(source = "layer", target = "timeDimension", qualifiedByName = "timeDimension")
 	@Mapping(source = "layer", target = "elevationDimension", qualifiedByName = "elevationDimension")
 	@Mapping(source = "layer", target = "stylesLayer", qualifiedByName = "stylesLayer")
 	@Mapping(source = "layer", target = "abstractLayer", qualifiedByName = "abstractLayer")
-	@Mapping(source = "layer", target = "activities", qualifiedByName = "activities")
 	@Mapping(source = "layer", target = "geometry", qualifiedByName = "geometry")
 	@Mapping(source = "layer", target = "keywords", qualifiedByName = "keywords")
 	@Mapping(source = "layer", target = "attribution", qualifiedByName = "attribution")
 	LayerWMSDTO map(Layer layer, @Context String urlSource);
-
-	@Named("legend")
-	default String getLegend(Layer layer, @Context String urlSource) {
-
-		return urlSource + legendGraphicUrlParameters;
-	}
 
 	@Named("timeDimension")
 	default DimensionDTO getElevationDimension(Layer layer, @Context String urlSource) {
@@ -136,35 +126,6 @@ public interface LayerWMSMapper {
 			}
 		}
 		return abstractLayer;
-	}
-
-	@Named("activities")
-	default List<ActivityDTO> getActivities(Layer layer, @Context String urlSource) {
-
-		if (layer.get_abstract() == null)
-			return null;
-
-		String abstractLayer = layer.get_abstract().replaceAll(endLineRegex, " ");
-
-		if (!abstractLayer.matches(refInBracketsRegex))
-			return null;
-
-		String ref = abstractLayer.replaceAll(refInBracketsRegex, "$1");
-
-		if (!ref.matches(refRegex))
-			return null;
-
-		List<ActivityDTO> activities = new ArrayList<>();
-
-		String listAct = ref.replaceAll(refRegex, "$1");
-		String[] listActSplit = listAct.split(",");
-
-		for (int i = 0; i < listActSplit.length; i++) {
-			ActivityDTO activity = new ActivityDTO();
-			activity.setId(listActSplit[i]);
-			activities.add(activity);
-		}
-		return activities;
 	}
 
 	@Named("geometry")
@@ -236,7 +197,10 @@ public interface LayerWMSMapper {
 		dimension.setName(source.getName());
 		dimension.setUnits(source.getUnits());
 		dimension.setUnitSymbol(source.getUnitSymbol());
-		dimension.setDefaultValue(source.getExtent().getDefaultValue());
+		if (source.getExtent() != null) {
+			dimension.setDefaultValue(source.getExtent().getDefaultValue());
+			dimension.setValue(source.getExtent().getValue());
+		}
 
 		return dimension;
 	}

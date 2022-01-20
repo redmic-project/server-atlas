@@ -1,10 +1,12 @@
 package es.redmic.atlasview.model.layer;
 
+import javax.validation.constraints.NotNull;
+
 /*-
  * #%L
  * Atlas-query-endpoint
  * %%
- * Copyright (C) 2019 REDMIC Project / Server
+ * Copyright (C) 2019 - 2021 REDMIC Project / Server
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,28 +22,40 @@ package es.redmic.atlasview.model.layer;
  * #L%
  */
 
-public class Protocol {
+public class TimeDefinition {
 
-	private String type;
+	public TimeDefinition() {
 
-	private String url;
-
-	public Protocol() {
 	}
 
-	public String getType() {
-		return type;
+	@NotNull
+	private String startDate;
+
+	private String endDate;
+
+	private String interval;
+
+	public String getStartDate() {
+		return this.startDate;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public void setStartDate(String startDate) {
+		this.startDate = startDate;
 	}
 
-	public String getUrl() {
-		return url;
+	public String getEndDate() {
+		return this.endDate;
 	}
 
-	public void setUrl(String url) {
-		this.url = url;
+	public void setEndDate(String endDate) {
+		this.endDate = endDate;
+	}
+
+	public String getInterval() {
+		return this.interval;
+	}
+
+	public void setInterval(String interval) {
+		this.interval = interval;
 	}
 }

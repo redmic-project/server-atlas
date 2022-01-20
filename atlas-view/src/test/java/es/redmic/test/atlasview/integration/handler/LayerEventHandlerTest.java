@@ -9,9 +9,9 @@ package es.redmic.test.atlasview.integration.handler;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -275,11 +275,12 @@ public class LayerEventHandlerTest extends DocumentationViewBaseTest {
 		Map<String, String> arguments = createLayerFailedEvent.getArguments();
 		assertNotNull(arguments);
 
-		assertEquals(3, arguments.size());
+		assertEquals(4, arguments.size());
 
 		assertNotNull(arguments.get("id"));
 		assertNotNull(arguments.get("name"));
 		assertNotNull(arguments.get("urlSource"));
+		assertNotNull(arguments.get("styles"));
 	}
 
 	@Test
@@ -352,11 +353,12 @@ public class LayerEventHandlerTest extends DocumentationViewBaseTest {
 		Map<String, String> arguments = createLayerFailedEvent.getArguments();
 		assertNotNull(arguments);
 
-		assertEquals(arguments.size(), 3);
+		assertEquals(arguments.size(), 4);
 
 		assertNotNull(arguments.get("id"));
 		assertNotNull(arguments.get("name"));
 		assertNotNull(arguments.get("urlSource"));
+		assertNotNull(arguments.get("styles"));
 	}
 
 	@Test

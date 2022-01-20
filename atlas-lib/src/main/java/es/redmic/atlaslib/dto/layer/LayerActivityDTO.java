@@ -1,7 +1,4 @@
-package es.redmic.atlaslib.dto.category;
-
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+package es.redmic.atlaslib.dto.layer;
 
 /*-
  * #%L
@@ -23,51 +20,41 @@ import javax.validation.constraints.Size;
  * #L%
  */
 
+
 import org.apache.avro.Schema;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.kjetland.jackson.jsonSchema.annotations.JsonSchemaUrlUuid;
 
-import es.redmic.brokerlib.avro.common.CommonDTO;
-
-/**
- * DTO de entrada para datos enviados por el cliente y que corresponde con una
- * categoría que englobará un conjunto de capas
- *
- * Necesario validación DTO
- *
- */
-public class CategoryDTO extends CommonDTO {
+public class LayerActivityDTO extends org.apache.avro.specific.SpecificRecordBase {
 
 	// @formatter:off
 
 	@JsonIgnore
 	public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse(
-		"{\"type\":\"record\",\"name\":\"CategoryDTO\",\"namespace\":\"es.redmic.atlaslib.dto.category\",\"fields\":["
-				+ "{\"name\":\"name\",\"type\":[\"string\", \"null\"], \"default\": null },"
-				+ "{\"name\":\"id\",\"type\":\"string\"}]}");
+		"{\"type\":\"record\",\"name\":\"LayerActivityDTO\",\"namespace\":\"es.redmic.atlaslib.dto.layer\",\"fields\":["
+				+ "{\"name\": \"activity\",\"type\":" + ActivityDTO.SCHEMA$ + "}]}");
 	// @formatter:on
 
-	public CategoryDTO() {
-		super();
+	public LayerActivityDTO() {
 	}
 
-	@NotNull
-	@Size(min = 3, max = 150)
-	private String name;
+	@JsonSchemaUrlUuid(value="controller.mapping.ACTIVITY")
+	private ActivityDTO activity;
 
-	public String getName() {
-		return name;
+	public ActivityDTO getActivity() {
+		return this.activity;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setActivity(ActivityDTO activity) {
+		this.activity = activity;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		int result = 1;
+		result = prime * result + ((activity == null) ? 0 : activity.hashCode());
 		return result;
 	}
 
@@ -75,15 +62,15 @@ public class CategoryDTO extends CommonDTO {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (!super.equals(obj))
+		if (obj == null)
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		CategoryDTO other = (CategoryDTO) obj;
-		if (name == null) {
-			if (other.name != null)
+		LayerActivityDTO other = (LayerActivityDTO) obj;
+		if (activity == null) {
+			if (other.activity != null)
 				return false;
-		} else if (!name.equals(other.name))
+		} else if (!activity.equals(other.activity))
 			return false;
 		return true;
 	}
@@ -96,12 +83,10 @@ public class CategoryDTO extends CommonDTO {
 
 	@JsonIgnore
 	@Override
-	public Object get(int field) {
-		switch (field) {
+	public java.lang.Object get(int field$) {
+		switch (field$) {
 		case 0:
-			return getName();
-		case 1:
-			return getId();
+			return activity;
 		default:
 			throw new org.apache.avro.AvroRuntimeException("Bad index");
 		}
@@ -109,13 +94,10 @@ public class CategoryDTO extends CommonDTO {
 
 	@JsonIgnore
 	@Override
-	public void put(int field, Object value) {
-		switch (field) {
+	public void put(int field$, java.lang.Object value$) {
+		switch (field$) {
 		case 0:
-			setName(value != null ? value.toString() : null);
-			break;
-		case 1:
-			setId(value.toString());
+			activity = (ActivityDTO) value$;
 			break;
 		default:
 			throw new org.apache.avro.AvroRuntimeException("Bad index");
