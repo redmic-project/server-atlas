@@ -22,7 +22,7 @@
 		"image/tiff8",
 		"text/html; subtype=openlayers"
 	],
-	"legend": "file:/home/REDMIC/redmic_project/server/atlas/atlas-commands/src/test/resources/data/capabilities/wms.xml?request=GetLegendGraphic&version=1.0.0&format=image/png&layer=topp:states",
+	"legend": "http://externallegend.com",
 	"geometry": {
 		"coordinates": [
 			[
@@ -95,20 +95,15 @@
 		"address": "Edf. Puerto-Ciudad, of. 1b, S/C de Tenerife 38001 Spain ",
 		"email": "gis@oag-fundacion.org"
 	},
-	"activities": [
-		{
-			"id": "817",
-			"name": null,
-			"path": null
-		}
-	],
 	"timeDimension": {
 		"name": "time",
+		"value": "2017-03-15T08:15:38.742Z",
 		"units": "ISO8601",
 		"defaultValue": "2017-03-15T08:15:38.742Z"
 	},
 	"elevationDimension": {
 		"name": "elevation",
+		"value": "-3301.0/1600.0/0",
 		"units": "EPSG:5030",
 		"unitSymbol": "m",
 		"defaultValue": "1"

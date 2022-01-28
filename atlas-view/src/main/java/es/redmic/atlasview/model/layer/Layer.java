@@ -9,9 +9,9 @@ package es.redmic.atlasview.model.layer;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,7 +41,12 @@ public class Layer extends LayerWMS {
 	private String urlSource;
 	private LatLonBoundingBox latLonBoundsImage;
 	private List<Protocol> protocols;
+	private String legend;
+	private List<Download> downloads;
+	private TimeDefinition timeDefinition;
 	private String image;
+	private String styles;
+	private List<LayerActivity> relatedActivities;
 
 	@JsonSerialize(using = CustomDateTimeSerializer.class)
 	@JsonDeserialize(using = CustomDateTimeDeserializer.class)
@@ -119,12 +124,52 @@ public class Layer extends LayerWMS {
 		this.protocols = protocols;
 	}
 
+	public String getLegend() {
+		return legend;
+	}
+
+	public void setLegend(String legend) {
+		this.legend = legend;
+	}
+
+	public List<Download> getDownloads() {
+		return this.downloads;
+	}
+
+	public void setDownloads(List<Download> downloads) {
+		this.downloads = downloads;
+	}
+
+	public TimeDefinition getTimeDefinition() {
+		return this.timeDefinition;
+	}
+
+	public void setTimeDefinition(TimeDefinition timeDefinition) {
+		this.timeDefinition = timeDefinition;
+	}
+
 	public String getImage() {
 		return image;
 	}
 
 	public void setImage(String image) {
 		this.image = image;
+	}
+
+	public String getStyles() {
+		return this.styles;
+	}
+
+	public void setStyles(String styles) {
+		this.styles = styles;
+	}
+
+	public List<LayerActivity> getRelatedActivities() {
+		return relatedActivities;
+	}
+
+	public void setRelatedActivities(List<LayerActivity> relatedActivities) {
+		this.relatedActivities = relatedActivities;
 	}
 
 	public DateTime getInserted() {

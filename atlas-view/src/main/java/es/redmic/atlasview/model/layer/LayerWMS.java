@@ -9,9 +9,9 @@ package es.redmic.atlasview.model.layer;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,7 +27,6 @@ import org.locationtech.jts.geom.Polygon;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import es.redmic.elasticsearchlib.common.model.JoinIndex;
-import es.redmic.models.es.administrative.model.ActivityCompact;
 import es.redmic.models.es.common.model.BaseAbstractStringES;
 
 public class LayerWMS extends BaseAbstractStringES {
@@ -45,10 +44,9 @@ public class LayerWMS extends BaseAbstractStringES {
 	private List<String> srs;
 	private List<StyleLayer> stylesLayer;
 	private Contact contact;
-	private List<ActivityCompact> activities;
+
 	private List<String> formats;
 	private Polygon geometry;
-	private String legend;
 	private Attribution attribution;
 	private Dimension timeDimension;
 	private Dimension elevationDimension;
@@ -131,14 +129,6 @@ public class LayerWMS extends BaseAbstractStringES {
 		this.contact = contact;
 	}
 
-	public List<ActivityCompact> getActivities() {
-		return activities;
-	}
-
-	public void setActivities(List<ActivityCompact> activities) {
-		this.activities = activities;
-	}
-
 	public List<String> getFormats() {
 		return formats;
 	}
@@ -153,14 +143,6 @@ public class LayerWMS extends BaseAbstractStringES {
 
 	public void setGeometry(Polygon geometry) {
 		this.geometry = geometry;
-	}
-
-	public String getLegend() {
-		return legend;
-	}
-
-	public void setLegend(String legend) {
-		this.legend = legend;
 	}
 
 	public Attribution getAttribution() {

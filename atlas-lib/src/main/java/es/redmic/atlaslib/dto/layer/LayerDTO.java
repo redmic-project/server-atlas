@@ -9,9 +9,9 @@ package es.redmic.atlaslib.dto.layer;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -61,34 +61,34 @@ public class LayerDTO extends LayerInfoDTO {
 	public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse(
 		"{\"type\":\"record\",\"name\":\"LayerDTO\",\"namespace\":\"es.redmic.atlaslib.dto.layer\",\"fields\":["
 			+ "{\"name\":\"title\",\"type\":\"string\"},"
-			+ "{\"name\":\"abstractLayer\",\"type\":[\"string\", \"null\"]},"
-			+ "{\"name\":\"keywords\",\"type\":[{\"type\":\"array\",\"items\":\"string\"},\"null\"]},"
+			+ "{\"name\":\"abstractLayer\",\"type\":[\"null\", \"string\"]},"
+			+ "{\"name\":\"keywords\",\"type\":[\"null\", {\"type\":\"array\",\"items\":\"string\"}]},"
 			+ "{\"name\":\"srs\",\"type\":{\"type\":\"array\",\"items\":\"string\"}},"
-			+ "{\"name\":\"stylesLayer\",\"type\":[{\"type\": \"array\",\"items\":" + StyleLayerDTO.SCHEMA$ + "},\"null\"]},"
-			+ "{\"name\":\"contact\",\"type\":[" + ContactDTO.SCHEMA$ + ",\"null\"]},"
-			+ "{\"name\": \"activities\",\"type\": [{\"type\": \"array\",\"items\": "+ ActivityDTO.SCHEMA$ +"},\"null\"]},"
+			+ "{\"name\":\"stylesLayer\",\"type\":[\"null\", {\"type\": \"array\",\"items\":" + StyleLayerDTO.SCHEMA$ + "}]},"
+			+ "{\"name\":\"contact\",\"type\":[\"null\"," + ContactDTO.SCHEMA$ + "]},"
 			+ "{\"name\":\"queryable\",\"type\":\"boolean\", \"default\": \"true\"},"
 			+ "{\"name\":\"formats\",\"type\":{\"type\":\"array\",\"items\":\"string\"}},"
-			+ "{\"name\":\"image\",\"type\":[\"string\", \"null\"]},"
+			+ "{\"name\":\"image\",\"type\":[\"null\", \"string\"]},"
 			+ "{\"name\":\"geometry\",\"type\":\"string\"},"
-			+ "{\"name\":\"legend\",\"type\":[\"string\", \"null\"]},"
-			+ "{\"name\":\"attibution\",\"type\":[" + AttributionDTO.SCHEMA$ + ",\"null\"]},"
-			+ "{\"name\":\"timeDimension\",\"type\":[" + DimensionDTO.SCHEMA$ + ",\"null\"]},"
-			+ "{\"name\":\"elevationDimension\"," + "\"type\":"
-					+ "[\"es.redmic.atlaslib.dto.layer.DimensionDTO\",\"null\"]},"
-			+ "{\"name\":\"inserted\",\"type\":[\"null\",{\"type\":\"long\",\"logicalType\":\"timestamp-millis\"}],"
-				+ "\"default\": null},"
-			+ "{\"name\":\"updated\",\"type\":[\"null\",{\"type\":\"long\",\"logicalType\":\"timestamp-millis\"}],"
-				+ "\"default\": null},"
+			+ "{\"name\":\"attibution\",\"type\":[\"null\", " + AttributionDTO.SCHEMA$ + "]},"
+			+ "{\"name\":\"timeDimension\",\"type\":[\"null\", " + DimensionDTO.SCHEMA$ + "]},"
+			+ "{\"name\":\"elevationDimension\"," + "\"type\":[\"null\", \"es.redmic.atlaslib.dto.layer.DimensionDTO\"]},"
+			+ "{\"name\":\"inserted\",\"type\":[\"null\",{\"type\":\"long\",\"logicalType\":\"timestamp-millis\"}]},"
+			+ "{\"name\":\"updated\",\"type\":[\"null\",{\"type\":\"long\",\"logicalType\":\"timestamp-millis\"}]},"
 			+ "{\"name\":\"parent\",\"type\":" + CategoryDTO.SCHEMA$ + "},"
-			+ "{\"name\":\"themeInspire\",\"type\":["+ ThemeInspireDTO.SCHEMA$ +", \"null\"]},"
-			+ "{\"name\":\"latLonBoundsImage\",\"type\":[" + LatLonBoundingBoxDTO.SCHEMA$ + ", \"null\"]},"
-			+ "{\"name\": \"protocols\",\"type\": [{\"type\": \"array\",\"items\":" + ProtocolDTO.SCHEMA$ + "},\"null\"]},"
-			+ "{\"name\":\"description\",\"type\":[\"string\", \"null\"]},"
-			+ "{\"name\":\"alias\",\"type\":[\"string\", \"null\"]},"
+			+ "{\"name\":\"legend\",\"type\":[\"null\", \"string\"]},"
+			+ "{\"name\":\"relatedActivities\",\"type\": [\"null\", {\"type\": \"array\",\"items\": "+ LayerActivityDTO.SCHEMA$ +"}]},"
+			+ "{\"name\":\"themeInspire\",\"type\":[\"null\", "+ ThemeInspireDTO.SCHEMA$ +"]},"
+			+ "{\"name\":\"latLonBoundsImage\",\"type\":[\"null\", " + LatLonBoundingBoxDTO.SCHEMA$ + "]},"
+			+ "{\"name\":\"protocols\",\"type\": [{\"type\": \"array\",\"items\":" + ProtocolDTO.SCHEMA$ + "}]},"
+			+ "{\"name\":\"downloads\",\"type\": [\"null\", {\"type\": \"array\",\"items\":" + DownloadDTO.SCHEMA$ + "}]},"
+			+ "{\"name\":\"timeDefinition\",\"type\":[\"null\", " + TimeDefinitionDTO.SCHEMA$ + "]},"
+			+ "{\"name\":\"description\",\"type\":[\"null\", \"string\"]},"
+			+ "{\"name\":\"alias\",\"type\":[\"null\", \"string\"]},"
 			+ "{\"name\":\"atlas\",\"type\":\"boolean\", \"default\": \"false\"},"
 			+ "{\"name\":\"refresh\",\"type\":\"int\", \"default\": \"0\"},"
 			+ "{\"name\":\"urlSource\",\"type\":\"string\"},"
+			+ "{\"name\":\"styles\",\"type\": [\"null\", \"string\"]},"
 			+ "{\"name\":\"name\",\"type\":\"string\"},"
 			+ "{\"name\":\"id\",\"type\":\"string\"}]}");
 	// @formatter:on
@@ -115,9 +115,6 @@ public class LayerDTO extends LayerInfoDTO {
 	@Valid
 	private ContactDTO contact;
 
-	@Valid
-	private List<ActivityDTO> activities;
-
 	@JsonSchemaDefault(value = "true")
 	@NotNull
 	private Boolean queryable = true;
@@ -130,8 +127,6 @@ public class LayerDTO extends LayerInfoDTO {
 
 	@NotNull
 	private Polygon geometry;
-
-	private String legend;
 
 	private AttributionDTO attribution;
 
@@ -197,14 +192,6 @@ public class LayerDTO extends LayerInfoDTO {
 		this.contact = contact;
 	}
 
-	public List<ActivityDTO> getActivities() {
-		return activities;
-	}
-
-	public void setActivities(List<ActivityDTO> activities) {
-		this.activities = activities;
-	}
-
 	public Boolean getQueryable() {
 		return queryable;
 	}
@@ -235,14 +222,6 @@ public class LayerDTO extends LayerInfoDTO {
 
 	public void setGeometry(Polygon geometry) {
 		this.geometry = geometry;
-	}
-
-	public String getLegend() {
-		return legend;
-	}
-
-	public void setLegend(String legend) {
-		this.legend = legend;
 	}
 
 	public AttributionDTO getAttribution() {
@@ -313,34 +292,34 @@ public class LayerDTO extends LayerInfoDTO {
 		case 5:
 			return contact;
 		case 6:
-			return activities;
-		case 7:
 			return queryable;
-		case 8:
+		case 7:
 			return formats;
-		case 9:
+		case 8:
 			return image;
-		case 10:
+		case 9:
 			try {
 				return mapper.writeValueAsString(getGeometry());
 			} catch (JsonProcessingException e) {
 				e.printStackTrace();
 				return null;
 			}
-		case 11:
-			return legend;
-		case 12:
+		case 10:
 			return attribution;
-		case 13:
+		case 11:
 			return timeDimension;
-		case 14:
+		case 12:
 			return elevationDimension;
-		case 15:
+		case 13:
 			return getInserted() != null ? getInserted().getMillis() : null;
-		case 16:
+		case 14:
 			return getUpdated() != null ? getUpdated().getMillis() : null;
-		case 17:
+		case 15:
 			return getParent();
+		case 16:
+			return getLegend();
+		case 17:
+			return getRelatedActivities();
 		case 18:
 			return getThemeInspire();
 		case 19:
@@ -348,18 +327,24 @@ public class LayerDTO extends LayerInfoDTO {
 		case 20:
 			return getProtocols();
 		case 21:
-			return getDescription();
+			return getDownloads();
 		case 22:
-			return getAlias();
+			return getTimeDefinition();
 		case 23:
-			return getAtlas();
+			return getDescription();
 		case 24:
-			return getRefresh();
+			return getAlias();
 		case 25:
-			return getUrlSource();
+			return getAtlas();
 		case 26:
-			return getName();
+			return getRefresh();
 		case 27:
+			return getUrlSource();
+		case 28:
+			return getStyles();
+		case 29:
+			return getName();
+		case 30:
 			return getId();
 		default:
 			throw new org.apache.avro.AvroRuntimeException("Bad index");
@@ -390,18 +375,15 @@ public class LayerDTO extends LayerInfoDTO {
 			contact = value != null ? (ContactDTO) value : null;
 			break;
 		case 6:
-			activities = value != null ? (java.util.List) value : null;
-			break;
-		case 7:
 			queryable = value != null ? (Boolean) value : null;
 			break;
-		case 8:
+		case 7:
 			formats = value != null ? getStringList((java.util.List) value) : null;
 			break;
-		case 9:
+		case 8:
 			image = value != null ? value.toString() : null;
 			break;
-		case 10:
+		case 9:
 			try {
 				if (value != null) {
 					setGeometry(mapper.readValue(value.toString(), Polygon.class));
@@ -410,26 +392,29 @@ public class LayerDTO extends LayerInfoDTO {
 				e.printStackTrace();
 			}
 			break;
-		case 11:
-			legend = value != null ? value.toString() : null;
-			break;
-		case 12:
+		case 10:
 			attribution = value != null ? (AttributionDTO) value : null;
 			break;
-		case 13:
+		case 11:
 			timeDimension = value != null ? (DimensionDTO) value : null;
 			break;
-		case 14:
+		case 12:
 			elevationDimension = value != null ? (DimensionDTO) value : null;
 			break;
-		case 15:
+		case 13:
 			setInserted(value != null ? new DateTime(value, DateTimeZone.UTC).toDateTime() : null);
 			break;
-		case 16:
+		case 14:
 			setUpdated(value != null ? new DateTime(value, DateTimeZone.UTC).toDateTime() : null);
 			break;
-		case 17:
+		case 15:
 			setParent((CategoryDTO) value);
+			break;
+		case 16:
+			setLegend(value != null ? value.toString() : null);
+			break;
+		case 17:
+			setRelatedActivities(value != null ? (java.util.List) value : null);
 			break;
 		case 18:
 			setThemeInspire(value != null ? (ThemeInspireDTO) value : null);
@@ -441,24 +426,33 @@ public class LayerDTO extends LayerInfoDTO {
 			setProtocols(value != null ? (java.util.List) value : null);
 			break;
 		case 21:
-			setDescription(value != null ? value.toString() : null);
+			setDownloads(value != null ? (java.util.List) value : null);
 			break;
 		case 22:
-			setAlias(value != null ? value.toString() : null);
+			setTimeDefinition(value != null ? (TimeDefinitionDTO) value : null);
 			break;
 		case 23:
-			setAtlas((Boolean) value);
+			setDescription(value != null ? value.toString() : null);
 			break;
 		case 24:
-			setRefresh((int) value);
+			setAlias(value != null ? value.toString() : null);
 			break;
 		case 25:
-			setUrlSource(value != null ? value.toString() : null);
+			setAtlas((Boolean) value);
 			break;
 		case 26:
-			setName(value.toString());
+			setRefresh((int) value);
 			break;
 		case 27:
+			setUrlSource(value != null ? value.toString() : null);
+			break;
+		case 28:
+			setStyles(value != null ? value.toString() : null);
+			break;
+		case 29:
+			setName(value.toString());
+			break;
+		case 30:
 			setId(value.toString());
 			break;
 		default:
@@ -477,11 +471,9 @@ public class LayerDTO extends LayerInfoDTO {
 		final int prime = 31;
 		int result = super.hashCode();
 		result = prime * result + ((abstractLayer == null) ? 0 : abstractLayer.hashCode());
-		result = prime * result + ((activities == null) ? 0 : activities.hashCode());
 		result = prime * result + ((contact == null) ? 0 : contact.hashCode());
 		result = prime * result + ((formats == null) ? 0 : formats.hashCode());
 		result = prime * result + ((geometry == null) ? 0 : geometry.hashCode());
-		result = prime * result + ((legend == null) ? 0 : legend.hashCode());
 		result = prime * result + ((attribution == null) ? 0 : attribution.hashCode());
 		result = prime * result + ((timeDimension == null) ? 0 : timeDimension.hashCode());
 		result = prime * result + ((elevationDimension == null) ? 0 : elevationDimension.hashCode());
@@ -510,11 +502,6 @@ public class LayerDTO extends LayerInfoDTO {
 				return false;
 		} else if (!abstractLayer.equals(other.abstractLayer))
 			return false;
-		if (activities == null) {
-			if (other.activities != null)
-				return false;
-		} else if (!activities.equals(other.activities))
-			return false;
 		if (contact == null) {
 			if (other.contact != null)
 				return false;
@@ -529,11 +516,6 @@ public class LayerDTO extends LayerInfoDTO {
 			if (other.geometry != null)
 				return false;
 		} else if (!geometry.equals(other.geometry))
-			return false;
-		if (legend == null) {
-			if (other.legend != null)
-				return false;
-		} else if (!legend.equals(other.legend))
 			return false;
 		if (attribution == null) {
 			if (other.attribution != null)

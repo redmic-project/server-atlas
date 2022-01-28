@@ -11,6 +11,14 @@
 			"minLength": 1,
 			"maxLength": 500
 		},
+		"relatedActivities": {
+			"type": ["array", "null"],
+			"uniqueItemsByRequiredProperties": true,
+			"uniqueItems": true,
+			"items": {
+				"$ref": "#/definitions/LayerActivityDTO"
+			}
+		},
 		"themeInspire": {
 			"type": ["string", "null"],
 			"url": "/api/atlas/view/themeinspire"
@@ -26,6 +34,17 @@
 			"items": {
 				"$ref": "#/definitions/ProtocolDTO"
 			}
+		},
+		"downloads": {
+			"type": ["array", "null"],
+			"uniqueItemsByRequiredProperties": true,
+			"uniqueItems": true,
+			"items": {
+				"$ref": "#/definitions/DownloadDTO"
+			}
+		},
+		"timeDefinition": {
+			"$ref": "#/definitions/TimeDefinitionDTO"
 		},
 		"description": {
 			"type": ["string", "null"],
@@ -46,13 +65,28 @@
 		"urlSource": {
 			"type": "string"
 		},
+		"styles": {
+			"type": ["string","null"]
+		},
 		"parent": {
 			"type": "string",
 			"url": "/api/atlas/view/category"
+		},
+		"legend": {
+			"type": ["string", "null"]
 		}
 	},
 	"required": ["name", "protocols", "atlas", "refresh", "urlSource", "parent"],
 	"definitions": {
+		"LayerActivityDTO": {
+			"type": ["object", "null"],
+			"properties": {
+				"activity": {
+					"type": ["string", "null"],
+					"url": "/api/atlas/view/activities"
+				}
+			}
+		},
 		"LatLonBoundingBoxDTO": {
 			"type": ["object", "null"],
 			"properties": {
@@ -83,6 +117,33 @@
 				}
 			},
 			"required": ["type", "url"]
+		},
+		"DownloadDTO": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"type": "string"
+				},
+				"url": {
+					"type": "string",
+					"format": "url"
+				}
+			},
+			"required": ["name", "url"]
+		},
+		"TimeDefinitionDTO": {
+			"type": ["object", "null"],
+			"properties": {
+				"startDate": {
+					"type": ["string", "null"]
+				},
+				"endDate": {
+					"type": ["string", "null"]
+				},
+				"interval": {
+					"type": ["string", "null"]
+				}
+			}
 		}
 	}
 }

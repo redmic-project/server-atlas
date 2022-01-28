@@ -9,9 +9,9 @@ package es.redmic.test.atlascommands.unit.aggregate.layerinfo;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -56,8 +56,7 @@ public class LayerInfoMapperTest {
 
 		// Establece urlSource dinámicamente (depende de donde se ejecute)
 		expectedLayer.setUrlSource(URL_CAPABILITIES);
-		expectedLayer.setLegend(
-				URL_CAPABILITIES + "?request=GetLegendGraphic&version=1.0.0&format=image/png&layer=topp:states");
+		expectedLayer.setLegend("http://externallegend.com");
 		layerInfo.setUrlSource(URL_CAPABILITIES);
 	}
 

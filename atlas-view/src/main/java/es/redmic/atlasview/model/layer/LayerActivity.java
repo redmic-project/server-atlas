@@ -2,7 +2,7 @@ package es.redmic.atlasview.model.layer;
 
 /*-
  * #%L
- * Atlas-query-endpoint
+ * Atlas-view
  * %%
  * Copyright (C) 2019 REDMIC Project / Server
  * %%
@@ -20,28 +20,18 @@ package es.redmic.atlasview.model.layer;
  * #L%
  */
 
-public class Protocol {
+public class LayerActivity {
 
-	private String type;
-
-	private String url;
-
-	public Protocol() {
+	public LayerActivity() {
 	}
 
-	public String getType() {
-		return type;
+	private Activity activity;
+
+	public Activity getActivity() {
+		return this.activity;
 	}
 
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	public String getUrl() {
-		return url;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
+	public void setActivity(Activity activity) {
+		this.activity = activity;
 	}
 }

@@ -51,13 +51,6 @@
 		"fax": "",
 		"address": "Edf. Puerto Ciudad S/C de Tenerife 38101 España "
 	},
-	"activities": [
-		{
-			"path": "root.1.12",
-			"name": "Banco de datos de especies marinas de Canarias (DIADEMA)",
-			"id": "12"
-		}
-	],
 	"queryable": true,
 	"formats": [
 		"image/png",
@@ -97,11 +90,13 @@
 	},
 	"timeDimension": {
 		"name": "time",
+		"value": "2017-03-15T08:15:38.742Z",
 		"units": "ISO8601",
 		"defaultValue": "P30M/PRESENT"
 	},
 	"elevationDimension": {
 		"name": "elevation",
+		"value": "-3301.0/1600.0/0",
 		"units": "ISO8601",
 		"unitSymbol": "m",
 		"defaultValue": "1"

@@ -72,7 +72,8 @@ public class LayerESRepository extends RWDataESRepository<Layer, GeoDataQueryDTO
 
 	private final String ID_PROPERTY = "id",
 			NAME_PROPERTY = "name",
-			URL_SOURCE_PROPERTY = "urlSource";
+			URL_SOURCE_PROPERTY = "urlSource",
+			STYLES_PROPERTY = "styles";
 	// @formatter:on
 
 	@Autowired
@@ -108,18 +109,26 @@ public class LayerESRepository extends RWDataESRepository<Layer, GeoDataQueryDTO
 	@Override
 	protected EventApplicationResult checkInsertConstraintsFulfilled(Layer modelToIndex) {
 
-		QueryBuilder idTerm = QueryBuilders.termQuery(ID_PROPERTY, modelToIndex.getId()),
-				nameAndUrlSourceTerm = QueryBuilders.boolQuery()
+		QueryBuilder idTerm = QueryBuilders.termQuery(ID_PROPERTY, modelToIndex.getId());
+
+		BoolQueryBuilder nameUrlSourceAndStylesTerm = QueryBuilders.boolQuery()
 						.must(QueryBuilders.termQuery(NAME_PROPERTY, modelToIndex.getName()))
 						.must(QueryBuilders.termQuery(URL_SOURCE_PROPERTY, modelToIndex.getUrlSource()));
+
+		String styles = modelToIndex.getStyles();
+		if (styles != null) {
+			nameUrlSourceAndStylesTerm.must(QueryBuilders.termQuery(STYLES_PROPERTY, modelToIndex.getStyles()));
+		} else {
+			nameUrlSourceAndStylesTerm.mustNot(QueryBuilders.existsQuery(STYLES_PROPERTY));
+		}
 
 		MultiSearchRequest request = new MultiSearchRequest();
 
 		SearchSourceBuilder requestBuilderId = new SearchSourceBuilder().query(idTerm).size(1),
-				requestBuilderNameAndUrlSource = new SearchSourceBuilder().query(nameAndUrlSourceTerm).size(1);
+				requestBuilderNameUrlSourceAndStyles = new SearchSourceBuilder().query(nameUrlSourceAndStylesTerm).size(1);
 
 		request.add(new SearchRequest().indices(getIndex()).source(requestBuilderId))
-				.add(new SearchRequest().indices(getIndex()).source(requestBuilderNameAndUrlSource));
+				.add(new SearchRequest().indices(getIndex()).source(requestBuilderNameUrlSourceAndStyles));
 
 		MultiSearchResponse sr;
 		try {
@@ -140,6 +149,7 @@ public class LayerESRepository extends RWDataESRepository<Layer, GeoDataQueryDTO
 		if (responses != null && responses[1].getResponse().getHits().getTotalHits() > 0) {
 			arguments.put(NAME_PROPERTY, modelToIndex.getName());
 			arguments.put(URL_SOURCE_PROPERTY, modelToIndex.getUrlSource());
+			arguments.put(STYLES_PROPERTY, modelToIndex.getStyles());
 		}
 
 		if (arguments.size() > 0) {
@@ -155,15 +165,26 @@ public class LayerESRepository extends RWDataESRepository<Layer, GeoDataQueryDTO
 	protected EventApplicationResult checkUpdateConstraintsFulfilled(Layer modelToIndex) {
 		// @formatter:off
 
-		BoolQueryBuilder nameAndUrlSourceTerm = QueryBuilders.boolQuery()
+		BoolQueryBuilder nameUrlSourceAndStylesTerm = QueryBuilders.boolQuery();
+
+		String styles = modelToIndex.getStyles();
+		if (styles != null) {
+			nameUrlSourceAndStylesTerm.mustNot(QueryBuilders.termQuery(ID_PROPERTY, modelToIndex.getId()))
 				.must(QueryBuilders.boolQuery()
-						.must(QueryBuilders.termQuery(NAME_PROPERTY, modelToIndex.getName()))
-						.must(QueryBuilders.termQuery(URL_SOURCE_PROPERTY, modelToIndex.getUrlSource())))
-				.mustNot(QueryBuilders.termQuery(ID_PROPERTY, modelToIndex.getId()));
+					.must(QueryBuilders.termQuery(NAME_PROPERTY, modelToIndex.getName()))
+					.must(QueryBuilders.termQuery(URL_SOURCE_PROPERTY, modelToIndex.getUrlSource()))
+					.must(QueryBuilders.termQuery(STYLES_PROPERTY, modelToIndex.getStyles())));
+		} else {
+			nameUrlSourceAndStylesTerm.mustNot(QueryBuilders.termQuery(ID_PROPERTY, modelToIndex.getId()))
+				.must(QueryBuilders.boolQuery()
+					.must(QueryBuilders.termQuery(NAME_PROPERTY, modelToIndex.getName()))
+					.must(QueryBuilders.termQuery(URL_SOURCE_PROPERTY, modelToIndex.getUrlSource()))
+					.mustNot(QueryBuilders.existsQuery(STYLES_PROPERTY)));
+		}
 
 		MultiSearchRequest request = new MultiSearchRequest();
 
-		SearchSourceBuilder requestBuilder = new SearchSourceBuilder().query(nameAndUrlSourceTerm).size(1);
+		SearchSourceBuilder requestBuilder = new SearchSourceBuilder().query(nameUrlSourceAndStylesTerm).size(1);
 
 		request.add(new SearchRequest().indices(getIndex()).source(requestBuilder));
 
@@ -185,6 +206,7 @@ public class LayerESRepository extends RWDataESRepository<Layer, GeoDataQueryDTO
 			arguments.put(ID_PROPERTY, modelToIndex.getId().toString());
 			arguments.put(NAME_PROPERTY, modelToIndex.getName());
 			arguments.put(URL_SOURCE_PROPERTY, modelToIndex.getUrlSource());
+			arguments.put(STYLES_PROPERTY, modelToIndex.getStyles());
 		}
 
 		if (arguments.size() > 0) {
@@ -282,7 +304,7 @@ public class LayerESRepository extends RWDataESRepository<Layer, GeoDataQueryDTO
 		if (terms.containsKey("activities")) {
 
 			List<Integer> ids = (List<Integer>) terms.get("activities");
-			query.must(QueryBuilders.nestedQuery("activities", QueryBuilders.boolQuery().filter(QueryBuilders.termsQuery("activities.id", ids)),
+			query.must(QueryBuilders.nestedQuery("relatedActivities", QueryBuilders.boolQuery().filter(QueryBuilders.termsQuery("relatedActivities.activity.id", ids)),
 				ScoreMode.Avg));
 		}
 		return super.getTermQuery(terms, query);

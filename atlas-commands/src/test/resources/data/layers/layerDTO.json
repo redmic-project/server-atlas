@@ -21,7 +21,7 @@
 		"image/tiff8",
 		"text/html; subtype=openlayers"
 	],
-	"legend": "file:/home/REDMIC/redmic_project/server/atlas/atlas-commands/src/test/resources/data/capabilities/wms.xml?request=GetLegendGraphic&version=1.0.0&format=image/png&layer=topp:states",
+	"legend": "http://externallegend.com",
 	"geometry": {
 		"coordinates": [
 			[
@@ -94,20 +94,22 @@
 		"address": "Edf. Puerto-Ciudad, of. 1b, S/C de Tenerife 38001 Spain ",
 		"email": "gis@oag-fundacion.org"
 	},
-	"activities": [
+	"relatedActivities": [
 		{
-			"id": "817",
-			"name": null,
-			"path": null
+			"activity": {
+				"id": "817"
+			}
 		}
 	],
 	"timeDimension": {
 		"name": "time",
+		"value": "2017-03-15T08:15:38.742Z",
 		"units": "ISO8601",
 		"defaultValue": "2017-03-15T08:15:38.742Z"
 	},
 	"elevationDimension": {
 		"name": "elevation",
+		"value": "-3301.0/1600.0/0",
 		"units": "EPSG:5030",
 		"unitSymbol": "m",
 		"defaultValue": "1"
@@ -132,7 +134,7 @@
 		"name": "Elevaciones",
 		"name_en": "Elevation"
 	},
-	
+
 	"latLonBoundsImage": {
 		"maxX": -15.826663970947266,
 		"maxY": 27.962779998779297,
@@ -143,11 +145,18 @@
 		"type": "WMS",
 		"url" :"https://atlas.redmic.es/geoserver/tn/wms"
 	}],
+	"downloads": [{
+		"name": "geoserver",
+		"url" :"https://atlas.redmic.es/geoserver/tn/wms"
+	}],
+	"timeDefinition": {
+		"startDate": "2017-05-23T12:35:12.052+00:00",
+		"endDate": "2019-05-23T12:35:12.052+00:00",
+		"interval": "1h"
+	},
 	"description": "Batimetrías de costera de las Islas Canarias (DGC)",
 	"alias": "Batimetrías by operator",
 	"atlas": true,
 	"refresh": "1",
-	"urlSource": "file:/home/REDMIC/redmic_project/server/atlas/atlas-commands/src/test/resources/data/capabilities/wms.xml",
-	"name": "batimetriaGlobal",
 	"id": "layer-1234"
 }

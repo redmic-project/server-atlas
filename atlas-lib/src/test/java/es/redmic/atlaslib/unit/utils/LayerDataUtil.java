@@ -9,9 +9,9 @@ package es.redmic.atlaslib.unit.utils;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,6 +39,7 @@ import es.redmic.atlaslib.dto.layer.AttributionDTO;
 import es.redmic.atlaslib.dto.layer.ContactDTO;
 import es.redmic.atlaslib.dto.layer.DimensionDTO;
 import es.redmic.atlaslib.dto.layer.LatLonBoundingBoxDTO;
+import es.redmic.atlaslib.dto.layer.LayerActivityDTO;
 import es.redmic.atlaslib.dto.layer.LayerDTO;
 import es.redmic.atlaslib.dto.layer.ProtocolDTO;
 import es.redmic.atlaslib.dto.layer.StyleLayerDTO;
@@ -529,7 +530,7 @@ public abstract class LayerDataUtil {
 		layer.setFormats(formats);
 
 		layer.setGeometry(getGeometry());
-		layer.setActivities(getActivities());
+		layer.setRelatedActivities(getActivities());
 		layer.setContact(getContact());
 		layer.setParent(CategoryDataUtil.getCategory("3442"));
 		layer.setThemeInspire(ThemeInspireDataUtil.getThemeInspire("cc"));
@@ -548,7 +549,6 @@ public abstract class LayerDataUtil {
 
 		LayerWMSDTO layer = new LayerWMSDTO();
 
-		layer.setLegend("https://redmic.local/ww");
 		layer.setAttribution(getAttribution());
 		layer.setTimeDimension(getDimension());
 		layer.setElevationDimension(getDimension());
@@ -571,7 +571,6 @@ public abstract class LayerDataUtil {
 		layer.setFormats(formats);
 
 		layer.setGeometry(getGeometry());
-		layer.setActivities(getActivities());
 		layer.setContact(getContact());
 		layer.setStylesLayer(getStylesLayer());
 
@@ -606,10 +605,13 @@ public abstract class LayerDataUtil {
 		layerInfo.setAlias("Prueba");
 		layerInfo.setDescription("Prueba");
 		layerInfo.setUrlSource("http://redmic.es");
+		layerInfo.setStyles("styles");
 		layerInfo.setParent(CategoryDataUtil.getCategory("3442"));
+		layerInfo.setRelatedActivities(getActivities());
 		layerInfo.setThemeInspire(ThemeInspireDataUtil.getThemeInspire("cc"));
 		layerInfo.setProtocols(getProtocols());
 		layerInfo.setLatLonBoundsImage(getLatLonBoundingBoxDTO());
+		layerInfo.setLegend("https://redmic.local/ww");
 
 		return layerInfo;
 	}
@@ -620,6 +622,7 @@ public abstract class LayerDataUtil {
 		dimension.setName("time");
 		dimension.setUnits("ISO8601");
 		dimension.setDefaultValue("P30M/PRESENT");
+		dimension.setValue("2021-01-01T00:00:00.000Z/2021-12-18T00:00:00.000Z/PT2H");
 
 		return dimension;
 	}
@@ -636,16 +639,17 @@ public abstract class LayerDataUtil {
 	}
 
 	@SuppressWarnings("serial")
-	public static List<ActivityDTO> getActivities() {
+	public static List<LayerActivityDTO> getActivities() {
 
 		ActivityDTO activity = new ActivityDTO();
 		activity.setId("3");
-		activity.setName("AIS");
-		activity.setPath("r.1.2.3");
 
-		return new ArrayList<ActivityDTO>() {
+		LayerActivityDTO layerActivity = new LayerActivityDTO();
+		layerActivity.setActivity(activity);
+
+		return new ArrayList<LayerActivityDTO>() {
 			{
-				add(activity);
+				add(layerActivity);
 			}
 		};
 	}

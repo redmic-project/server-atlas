@@ -9,9 +9,9 @@ package es.redmic.atlaslib.unit.dto.layer;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -530,7 +530,7 @@ public class LayerEqualTest {
 
 		LayerDTO dto2 = LayerDataUtil.getLayer();
 
-		dto1.getActivities().get(0).setName("aaa");
+		dto1.getRelatedActivities().get(0).getActivity().setId("32434");
 
 		assertFalse(dto1.equals(dto2));
 	}
@@ -542,7 +542,7 @@ public class LayerEqualTest {
 
 		LayerDTO dto2 = LayerDataUtil.getLayer();
 
-		dto1.setActivities(null);
+		dto1.setRelatedActivities(null);
 		assertFalse(dto1.equals(dto2));
 	}
 
