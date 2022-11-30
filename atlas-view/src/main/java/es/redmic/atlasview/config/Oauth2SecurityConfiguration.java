@@ -48,7 +48,7 @@ public class Oauth2SecurityConfiguration {
 			http.authorizeRequests().antMatchers("/**/settings/**").access(
 					"#oauth2.hasScope('write') and hasAnyRole('ROLE_ADMINISTRATOR', 'ROLE_OAG', 'ROLE_COLLABORATOR', 'ROLE_USER')");
 
-			http.authorizeRequests().antMatchers(HttpMethod.GET, "/actuator/**").permitAll();
+			http.authorizeRequests().antMatchers("/actuator/**").permitAll();
 
 			http.authorizeRequests().antMatchers(HttpMethod.GET, "/**").permitAll();
 
