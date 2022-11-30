@@ -39,7 +39,7 @@ public class Oauth2SecurityConfiguration {
 			// @formatter:off
 
 			http.cors().and().anonymous().and().authorizeRequests()
-				.antMatchers(HttpMethod.GET, "/actuator/**").permitAll();
+				.antMatchers("/actuator/**").permitAll();
 
 			http.authorizeRequests()
 				.antMatchers(HttpMethod.POST, "/discover-layers/**").permitAll();
