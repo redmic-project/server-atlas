@@ -12,7 +12,7 @@
 	<groupId>es.redmic.atlas</groupId>
 	<artifactId>atlas</artifactId>
 	<packaging>pom</packaging>
-	<version>0.3.0-feature-updateServiceLabels</version>
+	<version>0.4.0</version>
 	<name>atlas</name>
 
 	<properties>
