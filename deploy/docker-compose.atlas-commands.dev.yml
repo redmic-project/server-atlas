@@ -1,13 +1,10 @@
-version: '3.5'
+version: '3.9'
 
 services:
   atlas-commands:
     environment:
       SPRING_PROFILES_ACTIVE: pre
     deploy:
-      placement:
-        constraints:
-          - node.hostname == ${ATLAS_COMMANDS_PLACEMENT_CONSTRAINTS_NODE_HOSTNAME:-hostname}
       resources:
         limits:
           cpus: '${ATLAS_COMMANDS_RESOURCES_LIMITS_CPUS:-0.5}'
@@ -21,6 +18,6 @@ volumes:
     name: atlas-commands-{{.Task.Slot}}-vol
     driver: local
     driver_opts:
-      type: ${COMMANDS_VOL_TYPE:-nfs4}
-      o: addr=${COMMANDS_VOL_ADDR:-127.0.0.1},${COMMANDS_VOL_OPTIONS:-rw,nolock,noatime,tcp,rsize=8192,wsize=8192,timeo=14}
+      type: ${VOL_TYPE:-nfs4}
+      o: addr=${VOL_ADDR:-127.0.0.1},${VOL_OPTS:-rw,nolock,noatime,tcp,rsize=8192,wsize=8192,timeo=14}
       device: :/atlas-commands-{{.Task.Slot}}-vol/

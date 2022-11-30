@@ -1,10 +1,13 @@
-version: '3.5'
+version: '3.9'
 
 services:
   atlas-view:
     environment:
       SPRING_PROFILES_ACTIVE: prod
     deploy:
+      placement:
+        constraints:
+          - node.role == worker
       resources:
         limits:
           cpus: '${ATLAS_VIEW_RESOURCES_LIMITS_CPUS:-0.5}'

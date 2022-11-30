@@ -1,4 +1,4 @@
-version: '3.5'
+version: '3.9'
 
 services:
   atlas-commands:
@@ -27,9 +27,10 @@ services:
       mode: replicated
       replicas: ${REPLICAS:-1}
       labels:
-        traefik.frontend.rule: Host:${PUBLIC_HOSTNAME};PathPrefix:/api/${UNIT_NAME}/commands
-        traefik.backend: ${UNIT_NAME}-commands
-        traefik.port: '${PORT}'
+        traefik.enable: 'true'
+        traefik.http.routers.redmic-atlas-commands.entrypoints: ${TRAEFIK_ENTRYPOINT}
+        traefik.http.routers.redmic-atlas-commands.rule: (Host(`${PUBLIC_HOSTNAME}`) || Host(`${TRAEFIK_SUBDOMAIN}.${PUBLIC_HOSTNAME}`)) && PathPrefix(`/api/${UNIT_NAME}/commands`)
+        traefik.http.services.redmic-atlas-commands.loadbalancer.server.port: ${PORT}
       restart_policy:
         delay: ${ATLAS_COMMANDS_RESTART_DELAY:-15s}
       update_config:
