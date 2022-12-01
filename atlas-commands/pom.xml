@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>es.redmic.atlas</groupId>
 		<artifactId>atlas</artifactId>
-		<version>0.3.0-feature-updateServiceLabels</version>
+		<version>0.4.0</version>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
