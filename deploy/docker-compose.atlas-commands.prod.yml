@@ -1,10 +1,13 @@
-version: '3.5'
+version: '3.9'
 
 services:
   atlas-commands:
     environment:
       SPRING_PROFILES_ACTIVE: prod
     deploy:
+      placement:
+        constraints:
+          - node.role == worker
       resources:
         limits:
           cpus: '${ATLAS_COMMANDS_RESOURCES_LIMITS_CPUS:-0.5}'

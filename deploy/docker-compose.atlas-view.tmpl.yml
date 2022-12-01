@@ -1,4 +1,4 @@
-version: '3.5'
+version: '3.9'
 
 services:
   atlas-view:
@@ -29,9 +29,10 @@ services:
       mode: replicated
       replicas: ${ATLAS_VIEW_REPLICAS:-1}
       labels:
-        traefik.frontend.rule: Host:${PUBLIC_HOSTNAME};PathPrefix:/api/${UNIT_NAME}/view
-        traefik.backend: ${UNIT_NAME}-view
-        traefik.port: '${PORT}'
+        traefik.enable: 'true'
+        traefik.http.routers.redmic-atlas-view.entrypoints: ${TRAEFIK_ENTRYPOINT}
+        traefik.http.routers.redmic-atlas-view.rule: (Host(`${PUBLIC_HOSTNAME}`) || Host(`${TRAEFIK_SUBDOMAIN}.${PUBLIC_HOSTNAME}`)) && PathPrefix(`/api/${UNIT_NAME}/view`)
+        traefik.http.services.redmic-atlas-view.loadbalancer.server.port: ${PORT}
       restart_policy:
         delay: ${ATLAS_VIEW_RESTART_DELAY:-15s}
       update_config:

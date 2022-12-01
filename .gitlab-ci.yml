@@ -126,11 +126,3 @@ maven-build-view:
 .deploy:
   variables:
     STACK: atlas
-
-.deploy-commands:
-  environment:
-    url: https://${PUBLIC_HOSTNAME}/api/${CI_PROJECT_NAME}/commands
-
-.deploy-view:
-  environment:
-    url: https://${PUBLIC_HOSTNAME}/api/${CI_PROJECT_NAME}/view
