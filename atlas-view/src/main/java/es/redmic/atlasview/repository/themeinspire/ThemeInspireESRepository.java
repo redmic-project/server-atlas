@@ -9,9 +9,9 @@ package es.redmic.atlasview.repository.themeinspire;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -48,10 +48,10 @@ public class ThemeInspireESRepository extends RWDataESRepository<ThemeInspire, S
 		implements IDataRepository<ThemeInspire, SimpleQueryDTO> {
 
 	private static String[] INDEX = { "theme-inspire" };
-	private static String TYPE = "domain";
+	private static String TYPE = "_doc";
 
 	// @formatter:off
-	
+
 	private final String ID_PROPERTY = "id",
 			CODE_PROPERTY = "code";
 	// @formatter:on
@@ -104,17 +104,17 @@ public class ThemeInspireESRepository extends RWDataESRepository<ThemeInspire, S
 	@Override
 	protected EventApplicationResult checkUpdateConstraintsFulfilled(ThemeInspire modelToIndex) {
 		// @formatter:off
-		
+
 		BoolQueryBuilder codeTerm = QueryBuilders.boolQuery()
 				.must(QueryBuilders.termQuery(CODE_PROPERTY, modelToIndex.getCode()))
 				.mustNot(QueryBuilders.termQuery(ID_PROPERTY, modelToIndex.getId()));
-		
+
 		MultiSearchRequest request = new MultiSearchRequest();
-		
+
 		SearchSourceBuilder requestBuilderCode = new SearchSourceBuilder().query(codeTerm).size(1);
-		
+
 		request.add(new SearchRequest().indices(getIndex()).source(requestBuilderCode));
-		
+
 		// @formatter:on
 
 		MultiSearchResponse sr;
