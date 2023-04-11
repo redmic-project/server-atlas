@@ -31,10 +31,10 @@
 			"dynamic": false,
 			"properties": {
 				"id": {
-					"type": "text"
+					"type": "keyword"
 				},
 				"code": {
-					"type": "text"
+					"type": "keyword"
 				},
 				"name": {
 					"type": "keyword",
