@@ -1,22 +1,22 @@
 include:
   - project: 'redmic-project/gitlab-ci-templates'
     ref: master
-    file: '/maven-building-functional-unit.yml'
+    file: '/building/maven/functional-unit.yml'
   - project: 'redmic-project/gitlab-ci-templates'
     ref: master
-    file: '/license-listing.yml'
+    file: '/scanning/dependency-scanning.yml'
   - project: 'redmic-project/gitlab-ci-templates'
     ref: master
-    file: '/packaging.yml'
+    file: '/packaging-docker/docker-build.yml'
   - project: 'redmic-project/gitlab-ci-templates'
     ref: master
-    file: '/deployment-functional-unit.yml'
+    file: '/deployment-service/functional-unit/docker-deploy.yml'
 
 stages:
   - build-parent
   - build-lib
   - build-service
-  - license-list
+  - test
   - pre-package
   - package
   - post-package
@@ -119,10 +119,5 @@ maven-build-view:
 
 .docker-build:
   variables:
-    COMPOSE_FILE_NAME: docker-compose.atlas.build.yml
     DBLD_PARENT_IMAGE_NAME: ${REDMIC_SERVER_IMAGE_NAME}
     DBLD_PARENT_IMAGE_TAG: ${REDMIC_SERVER_IMAGE_TAG}
-
-.deploy:
-  variables:
-    STACK: atlas

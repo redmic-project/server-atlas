@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   atlas-view:
     environment:
@@ -7,8 +5,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '${ATLAS_VIEW_RESOURCES_LIMITS_CPUS:-0.5}'
-          memory: ${ATLAS_VIEW_RESOURCES_LIMITS_MEMORY:-512M}
+          cpus: '${RESOURCES_LIMITS_CPUS:-0.5}'
+          memory: ${RESOURCES_LIMITS_MEMORY:-512M}
         reservations:
-          cpus: '${ATLAS_VIEW_RESOURCES_RESERVATIONS_CPUS:-0.001}'
-          memory: ${ATLAS_VIEW_RESOURCES_RESERVATIONS_MEMORY:-410M}
+          cpus: '${RESOURCES_RESERVATIONS_CPUS:-0.001}'
+          memory: ${RESOURCES_RESERVATIONS_MEMORY:-410M}

@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   atlas-commands:
     environment:
@@ -7,17 +5,18 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '${ATLAS_COMMANDS_RESOURCES_LIMITS_CPUS:-0.5}'
-          memory: ${ATLAS_COMMANDS_RESOURCES_LIMITS_MEMORY:-512M}
+          cpus: '${RESOURCES_LIMITS_CPUS:-0.5}'
+          memory: ${RESOURCES_LIMITS_MEMORY:-512M}
         reservations:
-          cpus: '${ATLAS_COMMANDS_RESOURCES_RESERVATIONS_CPUS:-0.01}'
-          memory: ${ATLAS_COMMANDS_RESOURCES_RESERVATIONS_MEMORY:-410M}
+          cpus: '${RESOURCES_RESERVATIONS_CPUS:-0.01}'
+          memory: ${RESOURCES_RESERVATIONS_MEMORY:-410M}
 
 volumes:
   commands-vol:
     name: atlas-commands-{{.Task.Slot}}-vol
-    driver: local
+    driver: ${VOL_DRIVER}
     driver_opts:
-      type: ${VOL_TYPE:-nfs4}
-      o: addr=${VOL_ADDR:-127.0.0.1},${VOL_OPTS:-rw,nolock,noatime,tcp,rsize=8192,wsize=8192,timeo=14}
-      device: :/atlas-commands-{{.Task.Slot}}-vol/
+      type: ${VOL_TYPE}
+      o: addr=${VOL_ADDR},vers=${VOL_VERS},${VOL_OPTS}
+      device: :${VOL_DEVICE_PREFIX}/atlas-commands-{{.Task.Slot}}-vol/
+

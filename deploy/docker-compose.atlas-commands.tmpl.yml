@@ -1,13 +1,12 @@
-version: '3.9'
-
 services:
   atlas-commands:
-    image: ${IMAGE_NAME:-registry.gitlab.com/redmic-project/server/atlas}:${IMAGE_TAG:-latest}
+    image: ${IMAGE_NAME}:${IMAGE_TAG}
     environment:
-      SERVER_PORT: ${PORT}
+      MICROSERVICE_NAME: ${UNIT_NAME}-commands
+      MICROSERVICE_PORT:
+      SERVER_PORT: ${MICROSERVICE_PORT}
       OAUTH_CLIENT_ID:
       OAUTH_CLIENT_SECRET:
-      MICROSERVICE_NAME: ${UNIT_NAME}-commands
       SPRING_KAFKA_CLIENT_ID:
       JAVA_OPTS:
     networks:
@@ -18,23 +17,23 @@ services:
     volumes:
       - commands-vol:/tmp/kafka
     healthcheck:
-      test: wget --spider -q http://localhost:${PORT}/api/${UNIT_NAME}/commands/actuator/health
-      interval: ${ATLAS_COMMANDS_HEALTHCHECK_INTERVAL:-30s}
-      timeout: ${ATLAS_COMMANDS_HEALTHCHECK_TIMEOUT:-15s}
-      retries: ${ATLAS_COMMANDS_HEALTHCHECK_RETRIES:-10}
-      start_period: ${ATLAS_COMMANDS_HEALTHCHECK_START_PERIOD:-3m}
+      test: wget --spider -q http://localhost:${MICROSERVICE_PORT}/api/${UNIT_NAME}/commands/actuator/health
+      interval: ${HEALTHCHECK_INTERVAL:-30s}
+      timeout: ${HEALTHCHECK_TIMEOUT:-15s}
+      retries: ${HEALTHCHECK_RETRIES:-10}
+      start_period: ${HEALTHCHECK_START_PERIOD:-3m}
     deploy:
       mode: replicated
       replicas: ${REPLICAS:-1}
+      restart_policy:
+        delay: ${RESTART_DELAY:-15s}
+      update_config:
+        delay: ${UPDATE_DELAY:-5m}
       labels:
-        traefik.enable: 'true'
+        traefik.enable: ${TRAEFIK_ENABLE}
         traefik.http.routers.redmic-atlas-commands.entrypoints: ${TRAEFIK_ENTRYPOINT}
         traefik.http.routers.redmic-atlas-commands.rule: (Host(`${PUBLIC_HOSTNAME}`) || Host(`${TRAEFIK_SUBDOMAIN}.${PUBLIC_HOSTNAME}`)) && PathPrefix(`/api/${UNIT_NAME}/commands`)
-        traefik.http.services.redmic-atlas-commands.loadbalancer.server.port: ${PORT}
-      restart_policy:
-        delay: ${ATLAS_COMMANDS_RESTART_DELAY:-15s}
-      update_config:
-        delay: ${ATLAS_COMMANDS_UPDATE_DELAY:-5m}
+        traefik.http.services.redmic-atlas-commands.loadbalancer.server.port: ${MICROSERVICE_PORT}
 
 networks:
   metric-net:

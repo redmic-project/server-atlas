@@ -1,0 +1,12 @@
+ARG PARENT_IMAGE_NAME=registry.gitlab.com/redmic-project/docker/redmic-server \
+    PARENT_IMAGE_TAG=latest
+
+FROM ${PARENT_IMAGE_NAME}:${PARENT_IMAGE_TAG}
+
+ARG MICROSERVICE_PORT
+
+ENV MICROSERVICE_PORT=${MICROSERVICE_PORT}
+
+EXPOSE ${MICROSERVICE_PORT}
+
+COPY /*/dist/*.jar ./

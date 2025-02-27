@@ -1,16 +1,15 @@
-version: '3.9'
-
 services:
   atlas-view:
-    image: ${IMAGE_NAME:-registry.gitlab.com/redmic-project/server/atlas}:${IMAGE_TAG:-latest}
+    image: ${IMAGE_NAME}:${IMAGE_TAG}
     environment:
-      SERVER_PORT: ${PORT}
+      MICROSERVICE_NAME: ${UNIT_NAME}-view
+      MICROSERVICE_PORT:
+      SERVER_PORT: ${MICROSERVICE_PORT}
       OAUTH_CLIENT_ID:
       OAUTH_CLIENT_SECRET:
       ELASTIC_CLUSTERNAME:
       ELASTIC_USER:
       ELASTIC_PASSWORD:
-      MICROSERVICE_NAME: ${UNIT_NAME}-view
       SPRING_KAFKA_CLIENT_ID:
       JAVA_OPTS:
     networks:
@@ -20,23 +19,23 @@ services:
       redmic-net:
       traefik-net:
     healthcheck:
-      test: wget --spider -q http://localhost:${PORT}/api/${UNIT_NAME}/view/actuator/health
-      interval: ${ATLAS_VIEW_HEALTHCHECK_INTERVAL:-30s}
-      timeout: ${ATLAS_VIEW_HEALTHCHECK_TIMEOUT:-15s}
-      retries: ${ATLAS_VIEW_HEALTHCHECK_RETRIES:-10}
-      start_period: ${ATLAS_VIEW_HEALTHCHECK_START_PERIOD:-3m}
+      test: wget --spider -q http://localhost:${MICROSERVICE_PORT}/api/${UNIT_NAME}/view/actuator/health
+      interval: ${HEALTHCHECK_INTERVAL:-30s}
+      timeout: ${HEALTHCHECK_TIMEOUT:-15s}
+      retries: ${HEALTHCHECK_RETRIES:-10}
+      start_period: ${HEALTHCHECK_START_PERIOD:-3m}
     deploy:
       mode: replicated
-      replicas: ${ATLAS_VIEW_REPLICAS:-1}
+      replicas: ${REPLICAS:-1}
+      restart_policy:
+        delay: ${TIME_SERIES_VIEW_RESTART_DELAY:-15s}
+      update_config:
+        delay: ${TIME_SERIES_VIEW_UPDATE_DELAY:-2m}
       labels:
-        traefik.enable: 'true'
+        traefik.enable: ${TRAEFIK_ENABLE}
         traefik.http.routers.redmic-atlas-view.entrypoints: ${TRAEFIK_ENTRYPOINT}
         traefik.http.routers.redmic-atlas-view.rule: (Host(`${PUBLIC_HOSTNAME}`) || Host(`${TRAEFIK_SUBDOMAIN}.${PUBLIC_HOSTNAME}`)) && PathPrefix(`/api/${UNIT_NAME}/view`)
-        traefik.http.services.redmic-atlas-view.loadbalancer.server.port: ${PORT}
-      restart_policy:
-        delay: ${ATLAS_VIEW_RESTART_DELAY:-15s}
-      update_config:
-        delay: ${ATLAS_VIEW_UPDATE_DELAY:-2m}
+        traefik.http.services.redmic-atlas-view.loadbalancer.server.port: ${MICROSERVICE_PORT}
 
 networks:
   elastic-net:
